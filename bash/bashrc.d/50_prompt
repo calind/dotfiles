@@ -1,0 +1,49 @@
+#!/bin/bash
+
+find_git_branch() {
+    local dir=. head
+    local git_branch=''
+    until [ "$dir" -ef / ]; do
+        if [ -f "$dir/.git/HEAD" ]; then
+            head=$(< "$dir/.git/HEAD")
+            if [[ $head == ref:\ refs/heads/* ]]; then
+                git_branch="${head#*/*/}"
+            elif [[ $head != '' ]]; then
+                git_branch='detached'
+            else
+                git_branch='unknown'
+            fi
+            local status=$(git status --porcelain 2> /dev/null)
+            if [[ "$status" != "" ]]; then
+                git_prompt=" ($git_branch*) "
+            else
+                git_prompt=" ($git_branch) "
+            fi
+            return
+        fi
+        dir="../$dir"
+    done
+    git_prompt=''
+}
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot="($(cat /etc/debian_chroot))"
+else
+    debian_chroot=
+fi
+
+case "$TERM" in
+    xterm*|rxvt*)
+        TITLEBAR="\[\e]0;$debian_chroot\u@\h: \w\a\]"
+        ;;
+    *)
+        TITLEBAR=""
+        ;;
+esac
+
+PROMPT_COMMAND="find_git_branch; $PROMPT_COMMAND"
+PS1="$debian_chroot\u@\h:\w\$git_prompt\$ "
+PS1="$TITLEBAR$PS1"
+
+unset TITLEBAR bold normal

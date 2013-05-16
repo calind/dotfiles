@@ -1,0 +1,24 @@
+function solarize {
+	if [ -x $HOME/.bash/share/gnome-terminal-colors-solarized/install.sh ] ; then
+		$HOME/.bash/share/gnome-terminal-colors-solarized/install.sh $@
+	fi
+}
+
+function lightoff {
+	export SOLARIZED=dark
+	echo "dark" > $HOME/.solarized
+	solarize -s dark -p Default
+}
+
+function lighton {
+	export SOLARIZED=light
+	echo "light" > $HOME/.solarized
+	solarize -s light -p Default
+}
+
+if [ -f $HOME/.solarized ] ; then
+	SOLARIZED="$(cat $HOME/.solarized)"
+fi
+
+if [ "$SOLARIZED" = "light" ] ; then lighton ; fi
+if [ "$SOLARIZED" = "dark" ] ; then lightoff ; fi

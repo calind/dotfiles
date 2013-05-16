@@ -1,0 +1,3 @@
+[submodule "bash/share/gnome-terminal-colors-solarized"]
+	path = bash/share/gnome-terminal-colors-solarized
+	url = https://github.com/sigurdga/gnome-terminal-colors-solarized.git
