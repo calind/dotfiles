@@ -1,0 +1,4 @@
+if [ -x /usr/local/bin/virtualenvwrapper.sh ] ; then
+    . /usr/local/bin/virtualenvwrapper.sh
+    export VIRTUALENVWRAPPER_HOOK_DIR="$DOTFILES_DIR/virtualenv/hooks"
+fi
