@@ -1,3 +1,48 @@
 [submodule "bash/share/gnome-terminal-colors-solarized"]
 	path = bash/share/gnome-terminal-colors-solarized
 	url = https://github.com/sigurdga/gnome-terminal-colors-solarized.git
+[submodule "vim/bundle/vim-less"]
+	path = vim/bundle/vim-less
+	url = git://github.com/groenewege/vim-less.git
+[submodule "vim/bundle/html5"]
+	path = vim/bundle/html5
+	url = git://github.com/othree/html5.vim.git
+[submodule "vim/bundle/syntastic"]
+	path = vim/bundle/syntastic
+	url = https://github.com/scrooloose/syntastic
+[submodule "vim/bundle/jedi-vim"]
+	path = vim/bundle/jedi-vim
+	url = git://github.com/davidhalter/jedi-vim.git
+[submodule "vim/bundle/vim-shebang"]
+	path = vim/bundle/vim-shebang
+	url = git://github.com/vitalk/vim-shebang
+[submodule "vim/bundle/vim-endwise"]
+	path = vim/bundle/vim-endwise
+	url = git://github.com/tpope/vim-endwise
+[submodule "vim/bundle/neocomplcache"]
+	path = vim/bundle/neocomplcache
+	url = git://github.com/Shougo/neocomplcache.vim
+[submodule "vim/bundle/vim-commentary"]
+	path = vim/bundle/vim-commentary
+	url = git://github.com/tpope/vim-commentary
+[submodule "vim/bundle/vim-virtualenv"]
+	path = vim/bundle/vim-virtualenv
+	url = git://github.com/jmcantrell/vim-virtualenv
+[submodule "vim/bundle/auto-pairs"]
+	path = vim/bundle/auto-pairs
+	url = git://github.com/jiangmiao/auto-pairs.git
+[submodule "vim/bundle/vim-surround"]
+	path = vim/bundle/vim-surround
+	url = git://github.com/tpope/vim-surround
+[submodule "vim/bundle/vim-colors-solarized"]
+	path = vim/bundle/vim-colors-solarized
+	url = git://github.com/altercation/vim-colors-solarized
+[submodule "vim/bundle/vim-fugitive"]
+	path = vim/bundle/vim-fugitive
+	url = git://github.com/tpope/vim-fugitive
+[submodule "vim/bundle/vim-pathogen"]
+	path = vim/bundle/vim-pathogen
+	url = git://github.com/tpope/vim-pathogen
+[submodule "vim/bundle/vim-rooter"]
+	path = vim/bundle/vim-rooter
+	url = git://github.com/airblade/vim-rooter

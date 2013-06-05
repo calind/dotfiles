@@ -2,6 +2,10 @@
 set -e
 
 DOTFILES_DIR="$(dirname "$(readlink -f "$0")")"
+cd $DOTFILES_DIR
+
+echo "Updating git submodules..."
+git submodule update --init --recursive
 
 echo "Installing dotfiles into '$HOME'..."
 
