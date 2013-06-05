@@ -3,9 +3,10 @@
 # for examples
 
 # If not running interactively, don't do anything
+
 [ -z "$PS1" ] && return
 
-if [ -e $HOME/.settings ] ; then
+if [ -f $HOME/.settings ] ; then
     . $HOME/.settings
 fi
 
