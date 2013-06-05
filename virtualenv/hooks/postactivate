@@ -1,9 +1,11 @@
 #!/bin/bash
 # This hook is run after every virtualenv is activated.
+PROJECT_DIR="$(cat $VIRTUAL_ENV/.project 2>/dev/null)"
+
 cd () {
     if (( $# == 0 ))
     then
-        builtin cd $VIRTUAL_ENV
+        builtin cd ${PROJECT_DIR:-$VIRTUAL_ENV}
     else
         builtin cd "$@"
     fi
