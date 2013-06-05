@@ -1,6 +1,6 @@
 function solarize {
-	if [ -x $HOME/.bash/share/gnome-terminal-colors-solarized/install.sh ] ; then
-		$HOME/.bash/share/gnome-terminal-colors-solarized/install.sh $@
+	if [ -x $DOTFILES_DIR/bash/share/gnome-terminal-colors-solarized/install.sh ] ; then
+		$DOTFILES_DIR/bash/share/gnome-terminal-colors-solarized/install.sh $@
 	fi
 }
 
