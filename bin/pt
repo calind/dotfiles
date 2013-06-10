@@ -1,0 +1,7 @@
+#!/bin/bash
+PT="$(which papertrail)"
+if [ "x$PT" = "x" ] ; then
+    echo "papertrail not found: check install instructions at https://github.com/papertrail/papertrail-cli" 1>&2
+    exit 1
+fi
+papertrail "$@" | perl -pe 's/^(.{15})(.)([\S]+)(.)([\S]+)/\e[33m\1\e[0m\2\e[33m\3\e[0m\4\e[33m\5\e[0m/g'
