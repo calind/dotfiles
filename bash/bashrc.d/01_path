@@ -1,1 +1,4 @@
+if [ -d "$DOTFILES_DIR/bin" ] ; then
+    PATH="$DOTFILES_DIR/bin:$PATH"
+fi
 PATH="$HOME/bin:$PATH"
