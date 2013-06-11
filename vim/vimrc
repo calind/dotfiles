@@ -22,7 +22,7 @@ set encoding=utf-8
 set runtimepath+=$DOTFILES_DIR/vim
 
 runtime bundle/vim-pathogen/autoload/pathogen.vim
-execute pathogen#infect()
+execute pathogen#infect("$DOTFILES_DIR/vim/bundle/{}")
 syntax on                       " Highlight known syntaxes
 filetype plugin indent on
 
