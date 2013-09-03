@@ -49,6 +49,8 @@ else
     inoremap <nul> <C-n>
 endif
 
+nnoremap <Leader>w :KillWhitespace<CR>
+
 " / and ? in visual mode search in range
 function! RangeSearch(direction)
   call inputsave()
