@@ -269,6 +269,10 @@ syn keyword ngxDirective proxy_temp_path
 syn keyword ngxDirective proxy_timeout
 syn keyword ngxDirective proxy_upstream_fail_timeout
 syn keyword ngxDirective proxy_upstream_max_fails
+syn keyword ngxDirective proxy_cache_bypass
+syn keyword ngxDirective proxy_no_cache
+syn keyword ngxDirective proxy_cache_lock
+syn keyword ngxDirective proxy_cache_lock_timeout
 syn keyword ngxDirective random_index
 syn keyword ngxDirective read_ahead
 syn keyword ngxDirective real_ip_header
