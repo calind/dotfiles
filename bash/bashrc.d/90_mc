@@ -1,0 +1,3 @@
+#!/bin/bash
+
+export MC_SKIN=$DOTFILES_DIR/mc/solarized.ini
