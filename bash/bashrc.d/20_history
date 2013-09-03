@@ -1,0 +1,3 @@
+#!/bin/bash
+
+export HISTSIZE=5000
