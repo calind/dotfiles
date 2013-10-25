@@ -19,6 +19,8 @@ set cursorline                  " highlight the line of the cursor
 set autoindent
 set modeline                    " respect modeline
 
+set colorcolumn=80              " show vertical line at column 80
+
 "" Ignore some files
 
 set wildignore+=*.pyc
