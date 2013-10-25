@@ -19,9 +19,6 @@
 [submodule "vim/bundle/vim-endwise"]
 	path = vim/bundle/vim-endwise
 	url = git://github.com/tpope/vim-endwise
-[submodule "vim/bundle/neocomplcache"]
-	path = vim/bundle/neocomplcache
-	url = git://github.com/Shougo/neocomplcache.vim
 [submodule "vim/bundle/vim-commentary"]
 	path = vim/bundle/vim-commentary
 	url = git://github.com/tpope/vim-commentary
@@ -52,3 +49,6 @@
 [submodule "vim/bundle/sudo.vim"]
 	path = vim/bundle/sudo.vim
 	url = https://github.com/vim-scripts/sudo.vim.git
+[submodule "vim/bundle/neocomplete.vim"]
+	path = vim/bundle/neocomplete.vim
+	url = https://github.com/Shougo/neocomplete.vim.git
