@@ -42,7 +42,7 @@ inoremap <expr><down> pumvisible() ? "\<down>" : ""
 inoremap <left> <Nop>
 inoremap <right> <Nop>
 
-inoremap <expr><CR>  neocomplcache#close_popup()
+inoremap <expr><CR>  neocomplete#close_popup()
 if has('gui_running')
     inoremap <C-space> <C-n>
 else
