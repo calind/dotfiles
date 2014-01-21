@@ -19,6 +19,7 @@ set cursorline                  " highlight the line of the cursor
 set autoindent
 set modeline                    " respect modeline
 
+set exrc
 set colorcolumn=80              " show vertical line at column 80
 
 "" Ignore some files
@@ -80,10 +81,15 @@ au InsertLeave * set listchars+=trail:•
 au FileType make set noexpandtab
 
 " Make sure all markdown files have the correct filetype set and setup wrapping
-au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn,txt} setf markdown | set wrap | set wrapmargin=2 | set textwidth=80
+autocmd BufNewFile,BufRead *.markdown,*.md,*.mdown,*.mkd,*.mkdn
+      \ if &ft =~# '^\%(conf\|modula2\)$' |
+      \   set ft=markdown |
+      \ else |
+      \   setf markdown |
+      \ endif
 
 " Treat JSON files like JavaScript
-au BufNewFile,BufRead *.json set ft=javascript
+au BufNewFile,BufRead *.json setf javascript
 
 " Set nginx syntax
 au BufRead,BufNewFile /etc/nginx/*,/usr/local/nginx/conf/* if &ft == '' | setfiletype nginx | endif
@@ -101,9 +107,18 @@ au BufNewFile,BufRead *.{md,markdown,html,xml} sy match Comment /\%^---\_.\{-}--
 " disable displaying function definition because F@#$! up with undo/redo
 " let g:jedi#show_function_definition = 0
 
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=jedi#completions
-autocmd FileType python.django setlocal omnifunc=jedi#completions
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+au FileType css setlocal omnifunc=csscomplete#CompleteCSS
+au FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+au FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+au FileType python setlocal omnifunc=jedi#completions
+au FileType python.django setlocal omnifunc=jedi#completions
+au FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+au Filetype markdown setl wrap | setl wrapmargin=2 | setl textwidth=80
+au Filetype yaml setl shiftwidth=2 | setl tabstop=2
+
+
+" set snippets variables
+let g:snips_author = $NAME
+let g:snips_email = $EMAIL
+let g:snips_compary = $COMAPNY
+
