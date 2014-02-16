@@ -59,6 +59,9 @@ set splitright
 " Don't split bellow, since I like to have scratch buffer on top
 " set splitbelow
 
+" automatically set window title
+set title
+
 " Set viertualenv statusline format
 let g:virtualenv_stl_format = '[%n]'
 

@@ -19,10 +19,10 @@
 
 set nocompatible
 set encoding=utf-8
-set runtimepath+=$DOTFILES_DIR/vim
+set runtimepath+=$HOME/dotfiles/vim
 
 runtime bundle/vim-pathogen/autoload/pathogen.vim
-execute pathogen#infect("$DOTFILES_DIR/vim/bundle/{}")
+execute pathogen#infect("$HOME/dotfiles/vim/bundle/{}")
 syntax on                       " Highlight known syntaxes
 filetype plugin indent on
 
