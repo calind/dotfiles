@@ -125,3 +125,6 @@ let g:snips_author = $NAME
 let g:snips_email = $EMAIL
 let g:snips_compary = $COMAPNY
 
+
+" add templates in templates/ using filetype as file name
+au BufNewFile * :silent! exec ":0r ".$HOME."/dotfiles/vim/templates/".&ft.".template"
