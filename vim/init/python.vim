@@ -23,3 +23,5 @@ au FileType htmldjango inoremap {{ {{  }}<left><left><left>
 "         execfile(activate_this, dict(__file__=activate_this))
 " sys.path.insert(0,os.getcwd())
 " EOF
+
+let g:syntastic_python_flake8_args='--ignore=E111,E121'
