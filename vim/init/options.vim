@@ -99,6 +99,8 @@ au BufRead,BufNewFile /etc/nginx/*,/usr/local/nginx/conf/* if &ft == '' | setfil
 " Set syntax for shell files in my custom locations
 au BufRead,BufNewFile *bashrc.d/* if &ft == '' | setfiletype sh | endif
 
+au BufNewFile,BufRead .tmux.conf*,tmux.conf* setf tmux
+
 " Remember last location in file, but not for commit messages.
 " see :help last-position-jump
 au BufReadPost * if &filetype !~ '^git\c' && line("'\"") > 0 && line("'\"") <= line("$")
