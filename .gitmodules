@@ -58,3 +58,6 @@
 [submodule "vim/bundle/vimproc.vim"]
 	path = vim/bundle/vimproc.vim
 	url = https://github.com/Shougo/vimproc.vim.git
+[submodule "vim/bundle/phpcomplete.vim"]
+	path = vim/bundle/phpcomplete.vim
+	url = git@github.com:shawncplus/phpcomplete.vim.git
