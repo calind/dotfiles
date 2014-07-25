@@ -62,6 +62,9 @@ set splitright
 " automatically set window title
 set title
 
+" Remap leader key to ,
+let mapleader=","
+
 " Set viertualenv statusline format
 let g:virtualenv_stl_format = '[%n]'
 
@@ -130,3 +133,39 @@ let g:snips_compary = $COMAPNY
 
 " add templates in templates/ using filetype as file name
 au BufNewFile * :silent! exec ":0r ".$HOME."/dotfiles/vim/templates/".&ft.".template"
+
+" folding
+nnoremap <Space> za
+
+" clear the search buffer when hitting return
+nnoremap <CR> :nohlsearch<CR>
+
+inoremap <expr><up> pumvisible() ? "\<up>" : ""
+inoremap <expr><down> pumvisible() ? "\<down>" : ""
+inoremap <left> <Nop>
+inoremap <right> <Nop>
+
+inoremap <expr><CR>  neocomplete#close_popup()
+if has('gui_running')
+    inoremap <C-space> <C-n>
+else
+    inoremap <nul> <C-n>
+endif
+
+nnoremap <Leader>w :KillWhitespace<CR>
+
+" / and ? in visual mode search in range
+function! RangeSearch(direction)
+  call inputsave()
+  let g:srchstr = input(a:direction)
+  call inputrestore()
+  if strlen(g:srchstr) > 0
+    let g:srchstr = g:srchstr.
+          \ '\%>'.(line("'<")-1).'l'.
+          \ '\%<'.(line("'>")+1).'l'
+  else
+    let g:srchstr = ''
+  endif
+endfunction
+vnoremap <silent> / :<C-U>call RangeSearch('/')<CR>:if strlen(g:srchstr) > 0\|exec '/'.g:srchstr\|endif<CR>
+vnoremap <silent> ? :<C-U>call RangeSearch('?')<CR>:if strlen(g:srchstr) > 0\|exec '?'.g:srchstr\|endif<CR>
