@@ -7,6 +7,9 @@ cd $DOTFILES_DIR
 echo "Updating git submodules..."
 git submodule update --init --recursive
 
+echo "Compiling vimproc"
+(cd $DOTFILES_DIR/vim/bundle/vimproc.vim ; make)
+
 echo "Installing dotfiles into '$HOME'..."
 
 ln -sf "$DOTFILES_DIR/bash/bashrc" "$HOME/.bashrc"
