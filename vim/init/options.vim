@@ -112,8 +112,12 @@ au BufReadPost * if &filetype !~ '^git\c' && line("'\"") > 0 && line("'\"") <= l
 " mark Jekyll YAML frontmatter as comment
 au BufNewFile,BufRead *.{md,markdown,html,xml} sy match Comment /\%^---\_.\{-}---$/
 
-" disable displaying function definition because F@#$! up with undo/redo
-" let g:jedi#show_function_definition = 0
+" disable displaying function definition because F@#$! up with undo/redo and
+" slows everything down
+let g:jedi#show_call_signatures = 0
+
+" we use buffers. tabs are are for whimps
+let g:jedi#use_tabs_not_buffers = 0
 
 au FileType css setlocal omnifunc=csscomplete#CompleteCSS
 au FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
