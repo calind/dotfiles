@@ -12,6 +12,6 @@ au FileType php let php_noShortTags=1
 au FileType php let php_folding=1
 
 let g:syntastic_php_checkers = ['php', 'phpcs']
-let g:syntastic_php_phpcs_args = "--standard=WordPress --report=csv"
+let g:syntastic_php_phpcs_args = "--standard=WordPress-Core --report=csv"
 
 " let g:syntastic_php_phpcs_quiet_messages = { "type":  "style", "regex": '\m\[C03\d\d\]' }
