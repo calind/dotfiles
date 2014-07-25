@@ -1,2 +1,6 @@
 alias pyc='find . -name "*.pyc" -exec rm -rf {} \;'
 alias pt='papertrail -d 0.6'
+alias g='git'
+alias gt='git tree'
+alias gco='git commit'
+alias gst='git status'
