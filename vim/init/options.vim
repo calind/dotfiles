@@ -179,6 +179,7 @@ let g:easytags_dynamic_files = 2
 let g:easytags_updatetime_min = 4000
 let g:easytags_updatetime_warn = 0
 let g:easytags_events = ['BufWritePost', 'CursorHold', 'CursorHoldI']
+let g:easytags_async = 1
 let g:easytags_languages = {
 \   'php': {
 \     'cmd': '/usr/local/bin/phpctags',
