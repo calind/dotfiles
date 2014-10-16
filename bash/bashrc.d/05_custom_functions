@@ -1,0 +1,8 @@
+#!/bin/bash
+function arole {
+    local name="$1"
+    for d in tasks vars defaults handlers files templates meta ; do
+        echo mkdir -p "roles/$name/$d"
+        mkdir -p "roles/$name/$d"
+    done
+}
