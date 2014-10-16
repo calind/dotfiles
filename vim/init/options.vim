@@ -77,7 +77,7 @@ if has("statusline") && !&cp
     set statusline+=\ %v[0x%B]    " current column [hex char]
 endif
 
-autocmd VimEnter * Rooter
+autocmd BufEnter * Rooter
 
 " Avoid showing trailing whitespace when in insert mode
 au InsertEnter * set listchars-=trail:•
