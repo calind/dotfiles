@@ -7,6 +7,9 @@ cd $DOTFILES_DIR
 echo "Updating git submodules..."
 git submodule update --init --recursive
 
+echo "Configuring git"
+git config --global core.excludesfile $DOTFILES_DIR/git/gitignore
+
 echo "Compiling vimproc"
 (cd $DOTFILES_DIR/vim/bundle/vimproc.vim ; make)
 
