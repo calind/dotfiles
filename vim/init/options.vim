@@ -192,3 +192,8 @@ let g:easytags_languages = {
 let g:rooter_use_lcd = 1
 let g:rooter_silent_chdir = 1
 let g:rooter_patterns = ['.project', '.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/']
+
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_error_symbol = "✗"
+let g:syntastic_warning_symbol = "⚠"
