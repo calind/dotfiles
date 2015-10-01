@@ -4,6 +4,9 @@ alias g='git'
 alias gt='git tree'
 alias gco='git commit'
 alias gst='git status'
+alias luarocks='luarocks-5.1'
+alias lua='lua-5.1'
+alias kmux='for pid in $(ps aux | grep ssh | grep mux | awk "{print $2}") ; do kill $pid ; done'
 
 # enable completion for shorthand commands
 complete -o default -o nospace -F _git g
