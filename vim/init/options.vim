@@ -77,7 +77,14 @@ if has("statusline") && !&cp
     set statusline+=\ %v[0x%B]    " current column [hex char]
 endif
 
+function s:project_vimrc()
+    if filereadable(glob("./.vimrc"))
+        silent source ./.vimrc
+    endif
+endfunction
+
 autocmd BufEnter * Rooter
+autocmd BufEnter * :call s:project_vimrc()
 
 " Avoid showing trailing whitespace when in insert mode
 au InsertEnter * set listchars-=trail:•
