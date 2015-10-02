@@ -1,7 +1,7 @@
 #!/bin/sh
-set -e
+#set -e
 
-DOTFILES_DIR="$(dirname "$(readlink -f "$0")")"
+DOTFILES_DIR="$(cd "$(dirname "$0")"; pwd)"
 cd $DOTFILES_DIR
 
 echo "Updating git submodules..."
