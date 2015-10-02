@@ -40,23 +40,24 @@ fi
 
 # enable color support of ls and also add handy aliases
 if [ -x $DIRCOLORS ]; then
-    test -r $HOME/dotfiles/dircolors && eval "$($DIRCOLORS -b $HOME/dotfiles/dircolors)" || eval "$($DIRCOLORS -b)"
-    alias ls='ls --color=auto'
-    if [ -x /usr/local/bin/gls ]; then
+    test -r $DOTFILES_DIR/dircolors && eval "$($DIRCOLORS -b $DOTFILES_DIR/dircolors)" || eval "$($DIRCOLORS -b)"
+    if [ ! -x /usr/local/bin/gls ]; then
+        alias ls='ls --color=auto'
+    else
         alias ls='gls --color=auto'
     fi
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
 
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
 fi
+
 # some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-if [ -x /usr/local/bin/gls ]; then
+if [ ! -x /usr/local/bin/gls ]; then
+    alias ll='ls -alF'
+    alias la='ls -A'
+    alias l='ls -CF'
+else
     alias ll='gls -alF'
     alias la='gls -A'
     alias l='gls -CF'
@@ -80,6 +81,9 @@ fi
 # sources /etc/bash.bashrc).
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
+fi
+if [ -f $(which brew) ] && [ -f $(brew --prefix)/etc/bash_completion  ]; then
+        . $(brew --prefix)/etc/bash_completion
 fi
 
 # run scripts from .bash/bashrc.d
