@@ -7,3 +7,5 @@
 	st = status
 	unstage = reset HEAD --
 	tree = log --oneline --graph --abbrev-commit --decorate --date=relative --all
+[push]
+	default = simple
