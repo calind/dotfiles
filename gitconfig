@@ -1,0 +1,9 @@
+[core]
+	excludesfile = ~/dotfiles/gitignore
+[alias]
+	co = checkout
+	br = branch
+	ci = commit
+	st = status
+	unstage = reset HEAD --
+	tree = log --oneline --graph --abbrev-commit --decorate --date=relative --all
