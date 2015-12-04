@@ -1,12 +1,14 @@
 alias pyc='find . -name "*.pyc" -exec rm -rf {} \;'
 alias pt='papertrail -d 0.6'
 alias g='git'
-alias gt='git tree'
-alias gco='git commit'
-alias gst='git status'
 alias luarocks='luarocks-5.1'
 alias lua='lua-5.1'
 alias kmux='for pid in $(ps aux | grep ssh | grep mux | awk "{print $2}") ; do kill $pid ; done'
+
+if hash hub 2>/dev/null ; then
+    alias git='hub'
+    alias g='hub'
+fi
 
 # enable completion for shorthand commands
 complete -o default -o nospace -F _git g
