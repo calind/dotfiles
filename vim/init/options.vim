@@ -78,7 +78,7 @@ if has("statusline") && !&cp
 endif
 
 function s:project_vimrc()
-    if filereadable(glob("./.vimrc"))
+    if filereadable(glob("./.vimrc")) && getcwd() != $HOME
         silent source ./.vimrc
     endif
 endfunction
