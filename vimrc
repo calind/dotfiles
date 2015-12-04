@@ -19,11 +19,10 @@
 
 set nocompatible
 set encoding=utf-8
-set runtimepath+=$HOME/dotfiles/vim
 
 runtime bundle/vim-pathogen/autoload/pathogen.vim
 let g:vitality_fix_focus = 0 " this has to be set before loading the vitality plugin. https://github.com/sjl/vitality.vim/issues/24
-execute pathogen#infect("$HOME/dotfiles/vim/bundle/{}")
+execute pathogen#infect("$HOME/.vim/bundle/{}")
 syntax on                       " Highlight known syntaxes
 filetype plugin indent on
 

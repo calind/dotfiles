@@ -1,5 +1,5 @@
 [core]
-	excludesfile = ~/dotfiles/gitignore
+	excludesfile = ~/.dotfiles/gitignore
 [alias]
 	co = checkout
 	br = branch

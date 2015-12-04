@@ -8,10 +8,6 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
-if [ -f "$HOME/.settings" ] ; then
-    . "$HOME/.settings"
-fi
-
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
@@ -20,8 +16,9 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-if [ "x$DOTFILES_DIR" != "x" ] && [ -d "$DOTFILES_DIR/bin" ] ; then
-    PATH="$DOTFILES_DIR/bin:$PATH"
+# Add dotfiles bin to PATH
+if [ -d "$HOME/.dotfiles/bin" ] ; then
+    PATH="$HOME/.dotfiles/bin:$PATH"
 fi
 
 # set PATH so it includes user's private bin if it exists

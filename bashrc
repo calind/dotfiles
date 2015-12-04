@@ -6,10 +6,6 @@
 
 [ -z "$PS1" ] && return
 
-if [ -f $HOME/.settings ] ; then
-    . $HOME/.settings
-fi
-
 # don't put duplicate lines in the history. See bash(1) for more options
 # ... or force ignoredups and ignorespace
 HISTCONTROL=ignoredups:ignorespace
@@ -40,7 +36,7 @@ fi
 
 # enable color support of ls and also add handy aliases
 if [ -x $DIRCOLORS ]; then
-    test -r $DOTFILES_DIR/dircolors && eval "$($DIRCOLORS -b $DOTFILES_DIR/dircolors)" || eval "$($DIRCOLORS -b)"
+    test -r $HOME/.dircolors && eval "$($DIRCOLORS -b $HOME/.dircolors)" || eval "$($DIRCOLORS -b)"
     if [ ! -x /usr/local/bin/gls ]; then
         alias ls='ls --color=auto'
     else
@@ -82,17 +78,17 @@ fi
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 fi
-if [ -f $(which brew) ] && [ -f $(brew --prefix)/etc/bash_completion  ]; then
-        . $(brew --prefix)/etc/bash_completion
+if [ -f "$(which brew)" ] && [ -f "$(brew --prefix)/etc/bash_completion" ]; then
+        . "$(brew --prefix)/etc/bash_completion"
+fi
+
+if [ -f "$HOME/.localrc" ] ; then
+    source $HOME/.localrc
 fi
 
 # run scripts from .bash/bashrc.d
-if [ -f "$HOME/.bashrc_local" ] ; then
-    source $HOME/.bashrc_local
-fi
-
-if [ -d $DOTFILES_DIR/bash/bashrc.d ] ; then
-    for part in $DOTFILES_DIR/bash/bashrc.d/* ; do
+if [ -d $HOME/.dotfiles/bashrc.d ] ; then
+    for part in $HOME/.dotfiles/bashrc.d/* ; do
         if [ -x "$part" ] ; then
             source $part
         fi
