@@ -1,4 +1,8 @@
 if [ -d "$DOTFILES_DIR/bin" ] ; then
     PATH="$DOTFILES_DIR/bin:$PATH"
 fi
+PYTHON_USER_BIN="$(python -c 'import site; print site.USER_BASE')/bin"
+if [ -d "$PYTHON_USER_BIN" ]; then
+    PATH="$PYTHON_USER_BIN:$PATH"
+fi
 PATH="$HOME/bin:$PATH"
