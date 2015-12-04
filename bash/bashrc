@@ -87,8 +87,8 @@ if [ -f $(which brew) ] && [ -f $(brew --prefix)/etc/bash_completion  ]; then
 fi
 
 # run scripts from .bash/bashrc.d
-if [ -x "$DOTFILES_DIR/exports.local" ] ; then
-    source $DOTFILES_DIR/exports.local
+if [ -f "$HOME/.bashrc_local" ] ; then
+    source $HOME/.bashrc_local
 fi
 
 if [ -d $DOTFILES_DIR/bash/bashrc.d ] ; then
