@@ -1,0 +1,37 @@
+# vim: ft=sh
+
+if [ -x /usr/local/bin/gls ]; then
+    alias ls='gls'
+fi
+
+DIRCOLORS=/usr/bin/dircolors
+if [ -x /usr/local/bin/gdircolors ]; then
+    alias dircolors='gdircolors'
+    DIRCOLORS=/usr/local/bin/gdircolors
+fi
+
+# enable color support of ls and also add handy aliases
+if [ -x $DIRCOLORS ]; then
+    test -r $HOME/.dircolors && eval "$($DIRCOLORS -b $HOME/.dircolors)" || eval "$($DIRCOLORS -b)"
+    if [ ! -x /usr/local/bin/gls ]; then
+        alias ls='ls --color=auto'
+    else
+        alias ls='gls --color=auto'
+    fi
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# some more ls aliases
+if [ ! -x /usr/local/bin/gls ]; then
+    alias ll='ls -alF'
+    alias la='ls -A'
+    alias l='ls -CF'
+else
+    alias ll='gls -alF'
+    alias la='gls -A'
+    alias l='gls -CF'
+fi
+

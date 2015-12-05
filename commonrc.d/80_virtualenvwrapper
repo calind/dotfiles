@@ -2,7 +2,7 @@ VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
 VIRTUALENVWRAPPER_SH=$(which virtualenvwrapper.sh)
 if [ -x "$VIRTUALENVWRAPPER_SH" ] ; then
     . "$VIRTUALENVWRAPPER_SH"
-    export VIRTUALENVWRAPPER_HOOK_DIR="$DOTFILES_DIR/virtualenv/hooks"
+    export VIRTUALENVWRAPPER_HOOK_DIR="$HOME/.dotfiles/virtualenv/hooks"
 fi
 
 export PROJECT_HOME="$HOME/work"

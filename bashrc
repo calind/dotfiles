@@ -24,69 +24,25 @@ shopt -s checkwinsize
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-if [ -x /usr/local/bin/gls ]; then
-    alias ls='gls'
-fi
 
-DIRCOLORS=/usr/bin/dircolors
-if [ -x /usr/local/bin/gdircolors ]; then
-    alias dircolors='gdircolors'
-    DIRCOLORS=/usr/local/bin/gdircolors
-fi
-
-# enable color support of ls and also add handy aliases
-if [ -x $DIRCOLORS ]; then
-    test -r $HOME/.dircolors && eval "$($DIRCOLORS -b $HOME/.dircolors)" || eval "$($DIRCOLORS -b)"
-    if [ ! -x /usr/local/bin/gls ]; then
-        alias ls='ls --color=auto'
-    else
-        alias ls='gls --color=auto'
-    fi
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
-
-# some more ls aliases
-if [ ! -x /usr/local/bin/gls ]; then
-    alias ll='ls -alF'
-    alias la='ls -A'
-    alias l='ls -CF'
-else
-    alias ll='gls -alF'
-    alias la='gls -A'
-    alias l='gls -CF'
-fi
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
-
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 fi
+
 if [ -f "$(which brew)" ] && [ -f "$(brew --prefix)/etc/bash_completion" ]; then
         . "$(brew --prefix)/etc/bash_completion"
 fi
 
-if [ -f "$HOME/.localrc" ] ; then
-    source $HOME/.localrc
+# run scripts from dotfiles/commonrc.d
+if [ -d $HOME/.dotfiles/commonrc.d ] ; then
+    for part in $HOME/.dotfiles/commonrc.d/* ; do
+        if [ -x "$part" ] ; then
+            source $part
+        fi
+    done
 fi
 
-# run scripts from .bash/bashrc.d
+# run scripts from dotfiles/bashrc.d
 if [ -d $HOME/.dotfiles/bashrc.d ] ; then
     for part in $HOME/.dotfiles/bashrc.d/* ; do
         if [ -x "$part" ] ; then

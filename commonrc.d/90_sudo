@@ -1,5 +1,5 @@
 sudo() {
-    if [ "$1" == "vim" ] && [ "x$2" != "x" ]; then
+    if [[ "$1" == "vim" ]] && [[ ! -z "$2" ]] ; then
         vim sudo:$2
     else
         /usr/bin/sudo $@

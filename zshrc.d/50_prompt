@@ -1,0 +1,13 @@
+autoload colors && colors
+# cheers, @ehrenmurdick
+# http://github.com/ehrenmurdick/config/blob/master/zsh/prompt.zsh
+
+precmd() {
+    local virtualenv=""
+    if [ ! -z "$VIRTUAL_ENV" ] ; then
+        local virtualenv="($(basename "$VIRTUAL_ENV")) "
+    fi
+    find_git_branch
+    print -Pn "\e]0;%~$git_prompt\a"
+    PROMPT="$virtualenv%n@%m:%~$git_prompt\$ "
+}
