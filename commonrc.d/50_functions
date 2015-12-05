@@ -7,29 +7,48 @@ function arole {
     done
 }
 
-find_git_branch() {
+git_prompt() {
     local dir=.
     local git_branch=''
+    local GIT_PROMPT_BEFORE="${GIT_PROMPT_BEFORE- (}"
+    local GIT_PROMPT_AFTER="${GIT_PROMPT_AFTER-) }"
+    local GIT_PROMPT_DIRTY_SYMBOL="${GIT_PROMPT_DIRTY-*}"
+    local GIT_PROMPT_DETACHED="${GIT_PROMPT_DETACHED-detached}"
+    local GIT_PROMPT_UNKNOWN="${GIT_PROMPT_UNKNOWN-unknown}"
     until [ "$dir" -ef / ]; do
         if [ -f "$dir/.git/HEAD" ]; then
             head=$(< "$dir/.git/HEAD")
             if [[ $head == ref:\ refs/heads/* ]]; then
                 git_branch="${head#*/*/}"
             elif [[ $head != '' ]]; then
-                git_branch='detached'
+                git_branch="$GIT_PROMPT_DETACHED"
             else
-                git_branch='unknown'
+                git_branch="$GIT_PROMPT_UNKNOWN"
             fi
             local git_status=$(git status --porcelain 2> /dev/null)
             if [[ "$git_status" != "" ]]; then
-                git_prompt=" ($git_branch*) "
+                git_prompt="$GIT_PROMPT_BEFORE$git_branch$GIT_PROMPT_DIRTY_SYMBOL$GIT_PROMPT_AFTER"
             else
-                git_prompt=" ($git_branch) "
+                git_prompt="$GIT_PROMPT_BEFORE$git_branch$GIT_PROMPT_AFTER"
             fi
             return
         fi
         dir="../$dir"
     done
     git_prompt=''
+}
+
+env_prompt() {
+    env_prompt=''
+    local env_name=''
+    local ENV_PROMPT_BEFORE="${ENV_PROMPT_BEFORE- (}"
+    local ENV_PROMPT_AFTER="${ENV_PROMPT_AFTER-) }"
+    if [ ! -z "$VIRTUAL_ENV" ] ; then
+        env_name="$(basename "$VIRTUAL_ENV")"
+    fi
+
+    if [ ! -z "$env_name" ] ; then
+        env_prompt="$ENV_PROMPT_BEFORE$env_name$ENV_PROMPT_AFTER"
+    fi
 }
 

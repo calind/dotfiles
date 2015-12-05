@@ -1,15 +1,19 @@
 #!/bin/bash
 case "$TERM" in
     xterm*|rxvt*)
-        TITLEBAR="\[\e]0;\w\$git_prompt\a\]"
+        TITLEBAR="\[\e]0;λ \w\$git_prompt\a\]"
         ;;
     *)
         TITLEBAR=""
         ;;
 esac
 
-PROMPT_COMMAND="find_git_branch; $PROMPT_COMMAND"
-PS1="\u@\h:\w\$git_prompt\$ "
+GIT_PROMPT_BEFORE=" ("
+GIT_PROMPT_AFTER=")"
+ENV_PROMPT_BEFORE=":"
+ENV_PROMPT_AFTER=""
+PROMPT_COMMAND="git_prompt; env_prompt; $PROMPT_COMMAND"
+PS1="\\e[0;33mλ\$env_prompt\\e[0m \w\$git_prompt ❯ "
 PS1="$TITLEBAR$PS1"
 
 unset TITLEBAR
