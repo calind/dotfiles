@@ -15,5 +15,6 @@ ENV_PROMPT_AFTER=""
 PROMPT_COMMAND="git_prompt; env_prompt; $PROMPT_COMMAND"
 PS1="\\e[0;33mλ\$env_prompt\\e[0m \w\$git_prompt ❯ "
 PS1="$TITLEBAR$PS1"
+PS2="  ❯ "
 
 unset TITLEBAR
