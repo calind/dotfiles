@@ -1,20 +1,15 @@
 #!/bin/bash
-case "$TERM" in
-    xterm*|rxvt*)
-        TITLEBAR="\[\e]0;λ \w\$git_prompt\a\]"
-        ;;
-    *)
-        TITLEBAR=""
-        ;;
-esac
+titlebar() {
+    echo -ne "\033]0;λ ${PWD/#$HOME/\~}$git_prompt\007"
+}
 
 GIT_PROMPT_BEFORE=" ("
 GIT_PROMPT_AFTER=")"
 ENV_PROMPT_BEFORE=":"
 ENV_PROMPT_AFTER=""
-PROMPT_COMMAND="git_prompt; env_prompt; $PROMPT_COMMAND"
-PS1="\\e[0;33mλ\$env_prompt\\e[0m \w\$git_prompt ❯ "
-PS1="$TITLEBAR$PS1"
-PS2="  ❯ "
+PROMPT_COMMAND="git_prompt; env_prompt; titlebar; $PROMPT_COMMAND"
+PS1="\[$(tput setaf 3)\]\[$(tput sc)\] \[$(tput rc)λ\]\[$(tput sgr0)\]\$env_prompt \w\$git_prompt \[$(tput sc)\] \[$(tput rc)❯\] \[$(tput sgr0)\]"
+PS1="\[$TITLEBAR\]$PS1"
+PS2="  \[$(tput sc)\] \[$(tput rc)❯\] "
 
 unset TITLEBAR
