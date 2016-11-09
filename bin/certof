@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+true | openssl s_client -servername $1 -connect $1:443 | openssl x509 -noout -text
