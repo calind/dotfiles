@@ -27,3 +27,5 @@
 	untracked = yellow bold
 [push]
 	default = simple
+[tag]
+	forceSignAnnotated = true
