@@ -75,6 +75,7 @@ if has("statusline") && !&cp
     set statusline+=\ %y          " filetype
     set statusline+=\ %l/%L[%p%%] " current line/total lines
     set statusline+=\ %v[0x%B]    " current column [hex char]
+    set statusline+=\ [%{&fileencoding?&fileencoding:&encoding}]
 endif
 
 function s:project_vimrc()
