@@ -1,5 +1,5 @@
 [core]
-	excludesfile = ~/.dotfiles/gitignore
+	excludesfile = ~/.gitignore
 [alias]
 	co = checkout
 	br = branch
@@ -29,3 +29,9 @@
 	default = simple
 [tag]
 	forceSignAnnotated = true
+[user]
+	name = Calin Don
+	email = calin.don@gmail.com
+	signingkey = 5E8F78F4
+[commit]
+	gpgsign = true

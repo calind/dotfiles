@@ -1,0 +1,9 @@
+PATH="/usr/local/sbin:$PATH"
+
+if [ "$(uname)" == "Darwin" ] ; then
+    PATH="$HOME/Library/Python/2.7/bin:$HOME/Library/Python/3.5/bin:$PATH"
+else
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
+PATH="$HOME/bin:$PATH"

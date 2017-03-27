@@ -3,7 +3,7 @@ VIRTUAL_ENV_DISABLE_PROMPT=1
 VIRTUALENVWRAPPER_SH=$(which virtualenvwrapper.sh)
 if [ -x "$VIRTUALENVWRAPPER_SH" ] ; then
     . "$VIRTUALENVWRAPPER_SH"
-    export VIRTUALENVWRAPPER_HOOK_DIR="$HOME/.dotfiles/virtualenv/hooks"
+    export VIRTUALENVWRAPPER_HOOK_DIR="$HOME/.hooks/virtualenv"
 fi
 
 export PROJECT_HOME="$HOME/work"
