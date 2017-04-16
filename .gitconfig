@@ -22,9 +22,9 @@
 	new = green
 	witespace = red reverse
 [color "status"]
-	added = yellow
+	added = yellow bold
 	changed = green
-	untracked = yellow bold
+	untracked = normal dim
 [push]
 	default = simple
 [tag]
@@ -32,6 +32,6 @@
 [user]
 	name = Calin Don
 	email = calin.don@gmail.com
-	signingkey = 5E8F78F4
+	signingkey = B34726BF
 [commit]
 	gpgsign = true
