@@ -12,6 +12,7 @@ set nowrap                      " don't wrap lines
 set tabstop=4 shiftwidth=4      " a tab is two spaces (or set this to 4)
 set expandtab                   " expand tab by default
 set backspace=indent,eol,start  " backspace through everything in insert mode
+set textwidth=80                " 80 columns by default
 
 "" Searching
 set hlsearch                    " highlight matches
@@ -40,16 +41,19 @@ set hidden                      " allow backgrounding unsaved buffers
 set autoread                    " auto-reload buffers when file changed on disk
 set nojoinspaces                " Use only 1 space after "." when joining lines, not 2
 let mapleader=","               " remap leader to ,
-set clipboard=unnamed           " use system clipboard
-set mouse=a                     " enable mouse selection
+" set clipboard=unnamed           " use system clipboard
+" set mouse=a                     " enable mouse selection
 " Remember last location in file, but not for commit messages.
 " see :help last-position-jump
 au BufReadPost * if &filetype !~ '^git\c' && line("'\"") > 0 && line("'\"") <= line("$")
             \| exe "normal! g`\"" | endif
 
 "" Backups, undos and other safeties
-set updatecount=0               " Disable swap files; systems don't crash that often these days
-set backupskip=/tmp/*,/private/tmp/* " Make Vim able to edit crontab files again.
+set backup
+set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+set backupskip=/tmp/*,/private/tmp/*
+set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+set writebackup
 
 "" Indicator chars
 set list
@@ -65,6 +69,8 @@ set splitright
 set title " automatically set window title
 set termguicolors
 colorscheme solarized8_dark
+set wildmenu " visual autocomplete for command menu
+set lazyredraw          " redraw only when we need to.
 
 " Configure status line "{{{
 " Set viertualenv statusline format
@@ -85,10 +91,12 @@ endif
 au BufRead,BufNewFile $HOME/bashrc.d/* setf sh
 au BufRead,BufNewFile Dockerfile* setf Dockerfile
 
+au FileType python set textwidth=100 colorcolumn=80
 au FileType make set noexpandtab
 au Filetype json set tabstop=2 shiftwidth=2
 au Filetype markdown setl wrap wrapmargin=2 textwidth=80
 au Filetype yaml setl shiftwidth=2 tabstop=2
+au FileType terraform setlocal commentstring=#%s textwidth=100 colorcolumn=80 tabstop=2 shiftwidth=2
 "}}}
 
 " Key mappings "{{{
@@ -99,13 +107,27 @@ nnoremap <Leader>w :KillWhitespace<CR>
 nnoremap <CR> :nohlsearch<CR>
 " close neocomplete popup with return key
 inoremap <expr><CR>  neocomplete#close_popup()
+" comment/uncomment using double backslash
+if maparg('\\','n') ==# '' && maparg('\','n') ==# '' && get(g:, 'commentary_map_backslash', 1)
+  xmap \\  <Plug>Commentary<CR>
+  nmap \\  <CR><Plug>Commentary
+  nmap \\\ <Plug>CommentaryLine<CR>
+  nmap \\u <Plug>CommentaryUndo<CR>
+endif
 " }}}
 
 " Configure vim-rooter "{{{
+function s:project_vimrc()
+    if filereadable(glob("./.vimrc")) && getcwd() != $HOME
+        silent source ./.vimrc
+    endif
+endfunction
+
 let g:rooter_use_lcd = 1
 let g:rooter_silent_chdir = 1
 let g:rooter_patterns = ['.project', '.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/']
 autocmd BufEnter * Rooter
+autocmd BufEnter * :call s:project_vimrc()
 " }}}
 
 " Configure jedi-vim "{{{
@@ -118,6 +140,26 @@ let g:jedi#completions_enabled = 0
 let g:jedi#auto_vim_configuration = 0
 let g:jedi#smart_auto_mappings = 0
 "}}}
+
+" Configure php "{{{
+
+au BufRead,BufNewFile *.phpt setf php
+au FileType php setl noet ci pi sts=0 sw=4 ts=4
+au FileType php setl nolist
+" }}}"
+
+" Configure go "{{{
+au FileType go setl nolist
+au FileType go nnoremap <Leader>d :GoDef<CR>
+
+let g:neomake_go_go_exe = 'env'
+let g:neomake_go_go_args = ['GOGC=off', 'go', 'test', '-i', '-installsuffix', 'test_vim', '-c', '-o', '/dev/null']
+" }}}"
+
+" Configure Dockerfile"{{{
+
+au FileType dockerfile setl textwidth=0 colorcolumn=80 " disable automatic line wrapping but show the gutter at column 80
+" }}}"
 
 " Configure neocomplete "{{{
 let g:neocomplete#enable_at_startup = 1
@@ -142,9 +184,6 @@ autocmd CmdwinEnter * let b:neocomplete_sources = ['vim']
 " }}}
 
 " Configure neomake "{{{
-" Run neomake each time a file is openes/saved
-autocmd BufWritePost,BufReadPost * Neomake
-
 " Prettify signs
 highlight SignColumn cterm=NONE gui=NONE ctermfg=NONE guifg=NONE ctermbg=0 guibg=#073642
 highlight NeomakeErrorSign ctermbg=0 ctermfg=red
@@ -160,6 +199,8 @@ let g:neomake_message_sign = {
             \   'text': '❯',
             \   'texthl': 'NeomakeMessageSign',
             \ }
+
+call neomake#configure#automake('nrw', 1000)
 "}}}
 
 " Configure ansible-vim "{{{
@@ -167,5 +208,4 @@ let g:ansible_attribute_highlight = "ad"
 let g:ansible_name_highlight = "b"
 let g:ansible_extra_keywords_highlight = 0
 " }}}
-
 " vim:foldmethod=marker:foldlevel=0
