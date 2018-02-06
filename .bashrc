@@ -31,10 +31,6 @@ if [ -f "$(which brew)" ] && [ -f "$(brew --prefix)/etc/bash_completion" ]; then
     source "$(brew --prefix)/etc/bash_completion"
 fi
 
-if [ -f "$HOME/.aliases" ]; then
-    source "$HOME/.aliases"
-fi
-
 # run scripts from dotfiles/bashrc.d
 if [ -d "$HOME/.bashrc.d" ] ; then
     for part in $HOME/.bashrc.d/* ; do
@@ -43,3 +39,8 @@ if [ -d "$HOME/.bashrc.d" ] ; then
         fi
     done
 fi
+
+if [ -f "$HOME/.aliases" ]; then
+    source "$HOME/.aliases"
+fi
+

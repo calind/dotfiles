@@ -1,3 +1,4 @@
+# vim: set ft=sh:
 alias pyc='find . -name "*.pyc" -exec rm -rf {} \; ; find . -name "__pycache__" -type d -print0 | xargs -0 rm -rf'
 
 # git aliases
@@ -16,7 +17,6 @@ if hash envchain 2>/dev/null ; then
     alias drone='envchain drone drone'
     alias doctl='envchain doctl doctl'
     alias docker-machine='envchain docker-machine docker-machine'
-    alias drone5='envchain drone5 drone5'
 fi
 
 if [ "$(uname)" == "Darwin" ] ; then
