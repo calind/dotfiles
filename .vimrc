@@ -72,9 +72,13 @@ colorscheme solarized8_dark
 set wildmenu " visual autocomplete for command menu
 set lazyredraw          " redraw only when we need to.
 
+"" Spell checking. I'm really bad at spelling
+set spellfile=~/.vim/spell/techspeak.utf-8.add
+set spell
+
 " Configure status line "{{{
 " Set viertualenv statusline format
-let g:virtualenv_stl_format = '[%n]'
+" let g:virtualenv_stl_format = '[%n]'
 
 if has("statusline") && !&cp
     set laststatus=2              " always show the status bar
@@ -151,9 +155,12 @@ au FileType php setl nolist
 " Configure go "{{{
 au FileType go setl nolist
 au FileType go nnoremap <Leader>d :GoDef<CR>
+au FileType go nnoremap <Leader>r :GoRename<CR>
+let g:go_fmt_fail_silently = 1
+let g:go_def_mapping_enabled = 1
 
-let g:neomake_go_go_exe = 'env'
-let g:neomake_go_go_args = ['GOGC=off', 'go', 'test', '-i', '-installsuffix', 'test_vim', '-c', '-o', '/dev/null']
+" let g:neomake_go_go_exe = 'env'
+" let g:neomake_go_go_args = ['GOGC=off', 'go', 'test', '-c', '-o', '/dev/null']
 " }}}"
 
 " Configure Dockerfile"{{{
@@ -183,24 +190,73 @@ let g:neocomplete#force_omni_input_patterns = {
 autocmd CmdwinEnter * let b:neocomplete_sources = ['vim']
 " }}}
 
-" Configure neomake "{{{
-" Prettify signs
+" Configure lightline "{{{
+
+" Disable mode showing since it's shown in lightline
+set noshowmode
+
+let g:lightline = {}
+let g:lightline.active = {}
+let g:lightline.component_function = {}
+
+let g:lightline.colorscheme = 'solarized'
+let g:lightline.active.left = [['mode', 'paste'], ['readonly', 'filename', 'modified'], ['virtualenv']]
+let g:lightline.active.right = [['lineinfo'], ['percent'], ['fileformat', 'fileencoding', 'filetype' ], ['linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok']]
+
+let g:lightline.component_function.virtualenv = 'virtualenv.statusline'
+
+let g:lightline.component_expand = {
+      \  'linter_checking': 'lightline#ale#checking',
+      \  'linter_warnings': 'lightline#ale#warnings',
+      \  'linter_errors': 'lightline#ale#errors',
+      \  'linter_ok': 'lightline#ale#ok',
+      \ }
+
+let g:lightline.component_type = {
+      \     'linter_checking': 'left',
+      \     'linter_warnings': 'warning',
+      \     'linter_errors': 'error',
+      \     'linter_ok': 'left',
+      \ }
+
+let g:lightline#ale#indicator_checking = '●●●'
+let g:lightline#ale#indicator_warnings = '⚠'
+let g:lightline#ale#indicator_errors = '✖'
+let g:lightline#ale#indicator_ok = ' ✔ '
+
+"}}}
+
+" Configure ale "{{{
+let g:ale_sign_column_always = 1
+let g:ale_sign_error = '✖'
+let g:ale_sign_warning = '❯'
+
 highlight SignColumn cterm=NONE gui=NONE ctermfg=NONE guifg=NONE ctermbg=0 guibg=#073642
-highlight NeomakeErrorSign ctermbg=0 ctermfg=red
-highlight NeomakeWarningSign ctermbg=0 ctermfg=2
-highlight NeomakeMessageSign ctermbg=0 ctermfg=4
-highlight NeomakeInfoSign ctermbg=0 ctermfg=4
+highlight ALEErrorSign ctermbg=0 ctermfg=red
+highlight ALEWarningSign ctermbg=0 ctermfg=2
 
-" show signs column by default
-autocmd BufEnter * sign define dummy
-autocmd BufEnter * execute 'sign place 9999 line=1 name=dummy buffer=' . bufnr('')
+" let g:ale_open_list = 1
+" let g:ale_keep_list_window_open = 1
+"}}}
 
-let g:neomake_message_sign = {
-            \   'text': '❯',
-            \   'texthl': 'NeomakeMessageSign',
-            \ }
+" Configure neomake "{{{
+" " Prettify signs
+" highlight SignColumn cterm=NONE gui=NONE ctermfg=NONE guifg=NONE ctermbg=0 guibg=#073642
+" highlight NeomakeErrorSign ctermbg=0 ctermfg=red
+" highlight NeomakeWarningSign ctermbg=0 ctermfg=2
+" highlight NeomakeMessageSign ctermbg=0 ctermfg=4
+" highlight NeomakeInfoSign ctermbg=0 ctermfg=4
 
-call neomake#configure#automake('nrw', 1000)
+" " show signs column by default
+" autocmd BufEnter * sign define dummy
+" autocmd BufEnter * execute 'sign place 9999 line=1 name=dummy buffer=' . bufnr('')
+
+" let g:neomake_message_sign = {
+"             \   'text': '❯',
+"             \   'texthl': 'NeomakeMessageSign',
+"             \ }
+
+" call neomake#configure#automake('rw', 1000)
 "}}}
 
 " Configure ansible-vim "{{{
