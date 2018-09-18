@@ -1,3 +1,9 @@
+" https://github.com/vim/vim/issues/3117 {{{
+if has('python3') && !has('patch-8.1.201')
+  silent! python3 1
+endif
+"}}}
+
 set nocompatible                " disable vi compatibility mode
 set encoding=utf-8              " use utf8 by default
 execute pathogen#infect()
@@ -36,7 +42,7 @@ set shell=bash                  " avoids munging PATH under zsh
 let g:is_bash=1                 " default shell syntax
 set history=200                 " remember more Ex commands
 set scrolloff=3                 " have some context around the current line always on screen
-set synmaxcol=1000              " don't try to highlight long lines
+set synmaxcol=500               " don't try to highlight long lines
 set hidden                      " allow backgrounding unsaved buffers
 set autoread                    " auto-reload buffers when file changed on disk
 set nojoinspaces                " Use only 1 space after "." when joining lines, not 2
@@ -91,83 +97,6 @@ if has("statusline") && !&cp
 endif
 "}}}
 
-" Configure filetypes "{{{
-au BufRead,BufNewFile $HOME/bashrc.d/* setf sh
-au BufRead,BufNewFile Dockerfile* setf Dockerfile
-
-au FileType python set textwidth=100 colorcolumn=80
-au FileType make set noexpandtab
-au Filetype json set tabstop=2 shiftwidth=2
-au Filetype markdown setl wrap wrapmargin=2 textwidth=80
-au Filetype yaml setl shiftwidth=2 tabstop=2
-au FileType terraform setlocal commentstring=#%s textwidth=100 colorcolumn=80 tabstop=2 shiftwidth=2
-"}}}
-
-" Key mappings "{{{
-" remove trailing whitespace with <leader>,
-command! KillWhitespace :normal :%s/ *$//g<cr><c-o><cr>
-nnoremap <Leader>w :KillWhitespace<CR>
-" clear the search buffer when hitting return
-nnoremap <CR> :nohlsearch<CR>
-" close neocomplete popup with return key
-inoremap <expr><CR>  neocomplete#close_popup()
-" comment/uncomment using double backslash
-if maparg('\\','n') ==# '' && maparg('\','n') ==# '' && get(g:, 'commentary_map_backslash', 1)
-  xmap \\  <Plug>Commentary<CR>
-  nmap \\  <CR><Plug>Commentary
-  nmap \\\ <Plug>CommentaryLine<CR>
-  nmap \\u <Plug>CommentaryUndo<CR>
-endif
-" }}}
-
-" Configure vim-rooter "{{{
-function s:project_vimrc()
-    if filereadable(glob("./.vimrc")) && getcwd() != $HOME
-        silent source ./.vimrc
-    endif
-endfunction
-
-let g:rooter_use_lcd = 1
-let g:rooter_silent_chdir = 1
-let g:rooter_patterns = ['.project', '.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/']
-autocmd BufEnter * Rooter
-autocmd BufEnter * :call s:project_vimrc()
-" }}}
-
-" Configure jedi-vim "{{{
-au FileType python setl omnifunc=jedi#completions
-au FileType python.django setl omnifunc=jedi#completions
-let g:jedi#show_call_signatures = 0 " disable function signatures since it slow everything down
-let g:jedi#use_tabs_not_buffers = 0 " we use buffers. tabs are are for whimps
-" make jedi-vim play nice with neocomplete
-let g:jedi#completions_enabled = 0
-let g:jedi#auto_vim_configuration = 0
-let g:jedi#smart_auto_mappings = 0
-"}}}
-
-" Configure php "{{{
-
-au BufRead,BufNewFile *.phpt setf php
-au FileType php setl noet ci pi sts=0 sw=4 ts=4
-au FileType php setl nolist
-" }}}"
-
-" Configure go "{{{
-au FileType go setl nolist
-au FileType go nnoremap <Leader>d :GoDef<CR>
-au FileType go nnoremap <Leader>r :GoRename<CR>
-let g:go_fmt_fail_silently = 1
-let g:go_def_mapping_enabled = 1
-
-" let g:neomake_go_go_exe = 'env'
-" let g:neomake_go_go_args = ['GOGC=off', 'go', 'test', '-c', '-o', '/dev/null']
-" }}}"
-
-" Configure Dockerfile"{{{
-
-au FileType dockerfile setl textwidth=0 colorcolumn=80 " disable automatic line wrapping but show the gutter at column 80
-" }}}"
-
 " Configure neocomplete "{{{
 let g:neocomplete#enable_at_startup = 1
 let g:neocomplete#enable_smart_case = 1
@@ -220,44 +149,116 @@ let g:lightline.component_type = {
       \ }
 
 let g:lightline#ale#indicator_checking = '●●●'
-let g:lightline#ale#indicator_warnings = '⚠'
-let g:lightline#ale#indicator_errors = '✖'
+let g:lightline#ale#indicator_warnings = '⚠ '
+let g:lightline#ale#indicator_errors = '✖ '
 let g:lightline#ale#indicator_ok = ' ✔ '
 
 "}}}
 
 " Configure ale "{{{
+let g:ale_linters = {}
+let g:ale_fixers = {}
 let g:ale_sign_column_always = 1
+let g:ale_fix_on_save = 1
 let g:ale_sign_error = '✖'
 let g:ale_sign_warning = '❯'
+let g:ale_lint_on_text_changed = 'never'
 
 highlight SignColumn cterm=NONE gui=NONE ctermfg=NONE guifg=NONE ctermbg=0 guibg=#073642
 highlight ALEErrorSign ctermbg=0 ctermfg=red
 highlight ALEWarningSign ctermbg=0 ctermfg=2
-
-" let g:ale_open_list = 1
-" let g:ale_keep_list_window_open = 1
 "}}}
 
-" Configure neomake "{{{
-" " Prettify signs
-" highlight SignColumn cterm=NONE gui=NONE ctermfg=NONE guifg=NONE ctermbg=0 guibg=#073642
-" highlight NeomakeErrorSign ctermbg=0 ctermfg=red
-" highlight NeomakeWarningSign ctermbg=0 ctermfg=2
-" highlight NeomakeMessageSign ctermbg=0 ctermfg=4
-" highlight NeomakeInfoSign ctermbg=0 ctermfg=4
+" Configure filetypes "{{{
+au BufRead,BufNewFile $HOME/bashrc.d/* setf sh
+au BufRead,BufNewFile Dockerfile* setf Dockerfile
+au BufRead,BufNewFile fluent.conf setf fluentd
 
-" " show signs column by default
-" autocmd BufEnter * sign define dummy
-" autocmd BufEnter * execute 'sign place 9999 line=1 name=dummy buffer=' . bufnr('')
-
-" let g:neomake_message_sign = {
-"             \   'text': '❯',
-"             \   'texthl': 'NeomakeMessageSign',
-"             \ }
-
-" call neomake#configure#automake('rw', 1000)
+au FileType fluentd setl commentstring=#%s
+au FileType python set textwidth=100 colorcolumn=80
+au FileType make set noexpandtab
+au Filetype json set tabstop=2 shiftwidth=2
+au Filetype markdown setl wrap wrapmargin=2 textwidth=80
+au Filetype yaml setl shiftwidth=2 tabstop=2
+au FileType terraform setlocal commentstring=#%s textwidth=100 colorcolumn=80 tabstop=2 shiftwidth=2
 "}}}
+
+" Key mappings "{{{
+
+" Write this in your vimrc file
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
+
+nmap <Leader>l <Plug>(qf_qf_toggle)
+" remove trailing whitespace with <leader>,
+command! KillWhitespace :normal :%s/ *$//g<cr><c-o><cr>
+nnoremap <Leader>w :KillWhitespace<CR>
+" clear the search buffer when hitting return
+nnoremap <CR> :nohlsearch<CR>
+" close neocomplete popup with return key
+inoremap <expr><CR>  neocomplete#close_popup()
+" comment/uncomment using double backslash
+if maparg('\\','n') ==# '' && maparg('\','n') ==# '' && get(g:, 'commentary_map_backslash', 1)
+  xmap \\  <Plug>Commentary<CR>
+  nmap \\  <CR><Plug>Commentary
+  nmap \\\ <Plug>CommentaryLine<CR>
+  nmap \\u <Plug>CommentaryUndo<CR>
+endif
+" }}}
+
+" Configure vim-rooter "{{{
+function s:project_vimrc()
+    if filereadable(glob("./.vimrc")) && getcwd() != $HOME
+        silent source ./.vimrc
+    endif
+endfunction
+
+let g:rooter_use_lcd = 1
+let g:rooter_silent_chdir = 1
+let g:rooter_patterns = ['.project', '.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/']
+autocmd BufEnter * Rooter
+autocmd BufEnter * :call s:project_vimrc()
+" }}}
+
+" Configure jedi-vim "{{{
+au FileType python setl omnifunc=jedi#completions
+au FileType python.django setl omnifunc=jedi#completions
+let g:jedi#show_call_signatures = 0 " disable function signatures since it slow everything down
+let g:jedi#use_tabs_not_buffers = 0 " we use buffers. tabs are are for whimps
+" make jedi-vim play nice with neocomplete
+let g:jedi#completions_enabled = 0
+let g:jedi#auto_vim_configuration = 0
+let g:jedi#smart_auto_mappings = 0
+"}}}
+
+" Configure php "{{{
+
+au BufRead,BufNewFile *.phpt setf php
+au FileType php setl textwidth=120
+
+" WordPress indents
+au BufRead,BufNewFile wp-*.php,class-*.php,wp-includes/*.php,wp-admin/*.php,object-cache.php,advanced-cache.php setf php.wp
+au FileType php.wp setl noet ci pi sts=0 sw=4 ts=4
+au FileType php.wp setl nolist
+
+" }}}"
+
+" Configure go "{{{
+au FileType go setl nolist
+au FileType go nnoremap <Leader>d :GoDef<CR>
+au FileType go nnoremap <Leader>r :GoRename<CR>
+let g:go_fmt_autosave = 0 " We use ale for gofmt and goimports
+let g:go_fmt_fail_silently = 1
+let g:go_fmt_command = "gofmt"
+let g:go_def_mapping_enabled = 1
+
+let g:ale_go_gofmt_options = '-s'
+let g:ale_go_goimports_options = '-local github.com/presslabs'
+let g:ale_fixers.go = ['gofmt', 'goimports', 'remove_trailing_lines', 'trim_whitespace']
+
+let g:ale_go_golangci_lint_options = '--fast'
+let g:ale_linters.go = ['golangci-lint', 'govet', 'gobuild']
+" }}}"
 
 " Configure ansible-vim "{{{
 let g:ansible_attribute_highlight = "ad"
