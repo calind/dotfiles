@@ -1,0 +1,4 @@
+#!/bin/sh
+if hash helm ; then
+    source <(helm completion bash)
+fi

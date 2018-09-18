@@ -1,7 +1,7 @@
-PATH="/usr/local/sbin:$PATH"
+PATH="/usr/local/sbin:/usr/local/kubebuilder/bin:/usr/local/android-platform-tools:$PATH"
 
 if [ "$(uname)" == "Darwin" ] ; then
-    PATH="$HOME/Library/Python/2.7/bin:$HOME/Library/Python/3.5/bin:$PATH"
+    PATH="$HOME/Library/Python/2.7/bin:$HOME/Library/Python/3.7/bin:$PATH"
 else
     PATH="$HOME/.local/bin:$PATH"
 fi

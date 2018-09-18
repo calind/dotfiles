@@ -1,1 +1,4 @@
-complete -C aws_completer aws
+#!/bin/bash
+if hash aws ; then
+    complete -C aws_completer aws
+fi
