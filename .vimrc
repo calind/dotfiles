@@ -30,7 +30,7 @@ set smartcase                   " ... unless they contain at least one capital l
 set autoindent
 set nonumber                    " don't show line numbers by default
 set ruler                       " show the cursor position all the time
-set cursorline                  " highlight the line of the cursor
+" set cursorline                  " highlight the line of the cursor
 set modeline                    " respect modeline
 set colorcolumn=+1              " show vertical line after textwidth
 
