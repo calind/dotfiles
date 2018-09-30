@@ -1,1 +1,0 @@
-../../vendor/github.com/Shougo/neocomplete.vim

@@ -1,0 +1,1 @@
+../../vendor/github.com/prabirshrestha/asyncomplete-necosyntax.vim

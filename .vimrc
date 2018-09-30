@@ -82,6 +82,37 @@ set lazyredraw          " redraw only when we need to.
 set spellfile=~/.vim/spell/techspeak.utf-8.add
 set spell
 
+" Key mappings "{{{
+" remove trailing whitespace with <leader>,
+command! KillWhitespace :normal :%s/ *$//g<cr><c-o><cr>
+nnoremap <Leader>w :KillWhitespace<CR>
+
+" clear the search buffer when hitting return
+nnoremap <CR> :nohlsearch<CR>
+
+" comment/uncomment using double backslash
+if maparg('\\','n') ==# '' && maparg('\','n') ==# '' && get(g:, 'commentary_map_backslash', 1)
+  xmap \\  <Plug>Commentary<CR>
+  nmap \\  <CR><Plug>Commentary
+  nmap \\\ <Plug>CommentaryLine<CR>
+  nmap \\u <Plug>CommentaryUndo<CR>
+endif
+" }}}
+
+" Configure filetypes "{{{
+au BufRead,BufNewFile $HOME/bashrc.d/* setf sh
+au BufRead,BufNewFile Dockerfile* setf Dockerfile
+au BufRead,BufNewFile fluent.conf setf fluentd
+
+au FileType fluentd setl commentstring=#%s
+au FileType python set textwidth=100 colorcolumn=80
+au FileType make set noexpandtab
+au Filetype json set tabstop=2 shiftwidth=2
+au Filetype markdown setl wrap wrapmargin=2 textwidth=80
+au Filetype yaml setl shiftwidth=2 tabstop=2
+au FileType terraform setlocal commentstring=#%s textwidth=100 colorcolumn=80 tabstop=2 shiftwidth=2
+"}}}
+
 " Configure status line "{{{
 " Set viertualenv statusline format
 " let g:virtualenv_stl_format = '[%n]'
@@ -97,26 +128,73 @@ if has("statusline") && !&cp
 endif
 "}}}
 
-" Configure neocomplete "{{{
-let g:neocomplete#enable_at_startup = 1
-let g:neocomplete#enable_smart_case = 1
-let g:neocomplete#sources#syntax#min_keyword_length = 3
+" Configure ale "{{{
+let g:ale_linters = {}
+let g:ale_fixers = {}
+let g:ale_sign_column_always = 1
+let g:ale_fix_on_save = 1
+let g:ale_sign_error = '✖'
+let g:ale_sign_warning = '❯'
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
 
-" Define dictionary.
-let g:neocomplete#sources#dictionary#dictionaries = {
-            \ 'default' : '',
-            \ 'vimshell' : $HOME.'/.vimshell_hist',
-            \ }
+highlight SignColumn cterm=NONE gui=NONE ctermfg=NONE guifg=NONE ctermbg=0 guibg=#073642
+highlight ALEErrorSign ctermbg=0 ctermfg=red
+highlight ALEWarningSign ctermbg=0 ctermfg=2
+"}}}
 
-let g:neocomplete#keyword_patterns = {
-            \ 'default': '\h\w*'
-            \ }
+" Configure asyncomplete "{{{
+let g:asyncomplete_remove_duplicates = 1
+let g:asyncomplete_smart_completion = 1
+let g:asyncomplete_auto_popup = 1
 
-let g:neocomplete#force_omni_input_patterns = {
-            \ 'python': '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
-            \ }
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
 
-autocmd CmdwinEnter * let b:neocomplete_sources = ['vim']
+" set completeopt+=preview
+" set completeopt+=menuone
+" set completeopt+=noinsert
+
+call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
+    \ 'name': 'buffer',
+    \ 'whitelist': ['*'],
+    \ 'blacklist': ['go'],
+    \ 'completor': function('asyncomplete#sources#buffer#completor'),
+    \ }))
+
+au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#emoji#get_source_options({
+    \ 'name': 'emoji',
+    \ 'whitelist': ['*'],
+    \ 'completor': function('asyncomplete#sources#emoji#completor'),
+    \ }))
+
+au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#file#get_source_options({
+    \ 'name': 'file',
+    \ 'whitelist': ['*'],
+    \ 'priority': 10,
+    \ 'completor': function('asyncomplete#sources#file#completor')
+    \ }))
+
+call asyncomplete#register_source(asyncomplete#sources#gocode#get_source_options({
+    \ 'name': 'gocode',
+    \ 'whitelist': ['go'],
+    \ 'completor': function('asyncomplete#sources#gocode#completor'),
+    \ 'config': {
+    \    'gocode_path': expand('~/work/bin/gocode')
+    \  },
+    \ }))
+
+au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necosyntax#get_source_options({
+    \ 'name': 'necosyntax',
+    \ 'whitelist': ['*'],
+    \ 'completor': function('asyncomplete#sources#necosyntax#completor'),
+    \ }))
+
+au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necovim#get_source_options({
+    \ 'name': 'necovim',
+    \ 'whitelist': ['vim'],
+    \ 'completor': function('asyncomplete#sources#necovim#completor'),
+    \ }))
 " }}}
 
 " Configure lightline "{{{
@@ -155,57 +233,6 @@ let g:lightline#ale#indicator_ok = ' ✔ '
 
 "}}}
 
-" Configure ale "{{{
-let g:ale_linters = {}
-let g:ale_fixers = {}
-let g:ale_sign_column_always = 1
-let g:ale_fix_on_save = 1
-let g:ale_sign_error = '✖'
-let g:ale_sign_warning = '❯'
-let g:ale_lint_on_text_changed = 'never'
-
-highlight SignColumn cterm=NONE gui=NONE ctermfg=NONE guifg=NONE ctermbg=0 guibg=#073642
-highlight ALEErrorSign ctermbg=0 ctermfg=red
-highlight ALEWarningSign ctermbg=0 ctermfg=2
-"}}}
-
-" Configure filetypes "{{{
-au BufRead,BufNewFile $HOME/bashrc.d/* setf sh
-au BufRead,BufNewFile Dockerfile* setf Dockerfile
-au BufRead,BufNewFile fluent.conf setf fluentd
-
-au FileType fluentd setl commentstring=#%s
-au FileType python set textwidth=100 colorcolumn=80
-au FileType make set noexpandtab
-au Filetype json set tabstop=2 shiftwidth=2
-au Filetype markdown setl wrap wrapmargin=2 textwidth=80
-au Filetype yaml setl shiftwidth=2 tabstop=2
-au FileType terraform setlocal commentstring=#%s textwidth=100 colorcolumn=80 tabstop=2 shiftwidth=2
-"}}}
-
-" Key mappings "{{{
-
-" Write this in your vimrc file
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
-
-nmap <Leader>l <Plug>(qf_qf_toggle)
-" remove trailing whitespace with <leader>,
-command! KillWhitespace :normal :%s/ *$//g<cr><c-o><cr>
-nnoremap <Leader>w :KillWhitespace<CR>
-" clear the search buffer when hitting return
-nnoremap <CR> :nohlsearch<CR>
-" close neocomplete popup with return key
-inoremap <expr><CR>  neocomplete#close_popup()
-" comment/uncomment using double backslash
-if maparg('\\','n') ==# '' && maparg('\','n') ==# '' && get(g:, 'commentary_map_backslash', 1)
-  xmap \\  <Plug>Commentary<CR>
-  nmap \\  <CR><Plug>Commentary
-  nmap \\\ <Plug>CommentaryLine<CR>
-  nmap \\u <Plug>CommentaryUndo<CR>
-endif
-" }}}
-
 " Configure vim-rooter "{{{
 function s:project_vimrc()
     if filereadable(glob("./.vimrc")) && getcwd() != $HOME
@@ -219,17 +246,6 @@ let g:rooter_patterns = ['.project', '.git', '.git/', '_darcs/', '.hg/', '.bzr/'
 autocmd BufEnter * Rooter
 autocmd BufEnter * :call s:project_vimrc()
 " }}}
-
-" Configure jedi-vim "{{{
-au FileType python setl omnifunc=jedi#completions
-au FileType python.django setl omnifunc=jedi#completions
-let g:jedi#show_call_signatures = 0 " disable function signatures since it slow everything down
-let g:jedi#use_tabs_not_buffers = 0 " we use buffers. tabs are are for whimps
-" make jedi-vim play nice with neocomplete
-let g:jedi#completions_enabled = 0
-let g:jedi#auto_vim_configuration = 0
-let g:jedi#smart_auto_mappings = 0
-"}}}
 
 " Configure php "{{{
 
