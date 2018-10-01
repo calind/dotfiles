@@ -128,6 +128,27 @@ if has("statusline") && !&cp
 endif
 "}}}
 
+" Configure qf - tame the quickfix "{{{
+let g:qf_mapping_ack_style = 1
+"}}}
+
+" Configure vim-lsp "{{{
+let g:lsp_signs_enabled = 0           " we use w0rp/ale for linting
+let g:lsp_diagnostics_echo_cursor = 0 " we use w0rp/ale for linting
+
+nnoremap <Leader>d :LspDefinition<CR>
+nnoremap <Leader>r :LspRename<CR>
+nnoremap <Leader>s :LspWorkspaceSymbol<CR>
+
+if executable('go-langserver')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'go-langserver',
+        \ 'cmd': {server_info->['go-langserver', '-mode', 'stdio']},
+        \ 'whitelist': ['go'],
+        \ })
+endif
+"}}}
+
 " Configure ale "{{{
 let g:ale_linters = {}
 let g:ale_fixers = {}
@@ -136,8 +157,8 @@ let g:ale_fix_on_save = 1
 let g:ale_sign_error = '✖'
 let g:ale_sign_warning = '❯'
 let g:ale_lint_on_text_changed = 'never'
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
+let g:ale_set_loclist = 1
+let g:ale_set_quickfix = 0
 
 highlight SignColumn cterm=NONE gui=NONE ctermfg=NONE guifg=NONE ctermbg=0 guibg=#073642
 highlight ALEErrorSign ctermbg=0 ctermfg=red
@@ -261,13 +282,6 @@ au FileType php.wp setl nolist
 
 " Configure go "{{{
 au FileType go setl nolist
-au FileType go nnoremap <Leader>d :GoDef<CR>
-au FileType go nnoremap <Leader>r :GoRename<CR>
-let g:go_fmt_autosave = 0 " We use ale for gofmt and goimports
-let g:go_fmt_fail_silently = 1
-let g:go_fmt_command = "gofmt"
-let g:go_def_mapping_enabled = 1
-
 let g:ale_go_gofmt_options = '-s'
 let g:ale_go_goimports_options = '-local github.com/presslabs'
 let g:ale_fixers.go = ['gofmt', 'goimports', 'remove_trailing_lines', 'trim_whitespace']
