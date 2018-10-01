@@ -174,20 +174,17 @@ highlight ALEWarningSign ctermbg=0 ctermfg=2
 "}}}
 
 " Configure asyncomplete "{{{
+
+imap <c-space> <Plug>(asyncomplete_force_refresh)
+
 let g:asyncomplete_remove_duplicates = 1
 let g:asyncomplete_smart_completion = 1
 let g:asyncomplete_auto_popup = 1
 
-autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
-
-" set completeopt+=preview
-" set completeopt+=menuone
-" set completeopt+=noinsert
-
 call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
     \ 'name': 'buffer',
     \ 'whitelist': ['*'],
-    \ 'blacklist': ['go'],
+    \ 'blacklist': ['go', 'php'],
     \ 'completor': function('asyncomplete#sources#buffer#completor'),
     \ }))
 
