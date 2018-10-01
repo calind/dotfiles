@@ -147,6 +147,14 @@ if executable('go-langserver')
         \ 'whitelist': ['go'],
         \ })
 endif
+
+if filereadable('/usr/local/php-language-server/vendor/bin/php-language-server.php')
+    au User lsp_setup call lsp#register_server({
+         \ 'name': 'php-language-server',
+         \ 'cmd': {server_info->['php', '/usr/local/php-language-server/vendor/bin/php-language-server.php']},
+         \ 'whitelist': ['php'],
+         \ })
+endif
 "}}}
 
 " Configure ale "{{{
