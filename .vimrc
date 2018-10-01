@@ -206,7 +206,7 @@ call asyncomplete#register_source(asyncomplete#sources#gocode#get_source_options
     \ 'whitelist': ['go'],
     \ 'completor': function('asyncomplete#sources#gocode#completor'),
     \ 'config': {
-    \    'gocode_path': expand('~/work/bin/gocode')
+    \    'gocode_path': expand('$GOPATH/bin/gocode')
     \  },
     \ }))
 
