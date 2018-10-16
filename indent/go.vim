@@ -5,6 +5,7 @@
 " indent/go.vim: Vim indent file for Go.
 "
 " TODO:
+" - function invocations split across lines
 " - general line splits (line ends in an operator)
 
 if exists("b:did_indent")
@@ -23,20 +24,7 @@ if exists("*GoIndent")
   finish
 endif
 
-function! s:is_string_comment(lnum, col)
-  if !has('syntax_items')
-    return 0
-  endif
-
-  for id in synstack(a:lnum, a:col)
-    let synname = synIDattr(id, "name")
-    if synname == "goComment" || synname == "goString" || synname == "goRawString"
-      return 1
-    endif
-  endfor
-endfunction
-
-function! GoIndent(lnum)
+function! GoIndent(lnum) abort
   let prevlnum = prevnonblank(a:lnum-1)
   if prevlnum == 0
     " top of file
@@ -50,16 +38,20 @@ function! GoIndent(lnum)
 
   let ind = previ
 
-  if prevl =~ ' = `[^`]*$'
-    " previous line started a multi-line raw string
-    return 0
-  endif
-  call cursor(a:lnum, 1)
-  let openline = searchpair('{\|(', '', '}\|)', 'nbW',
-    \ 's:is_string_comment(line("."), col("."))')
-  if openline != 0
-    " We're inside of a block so we indent one level
-    let ind = indent(openline) + shiftwidth()
+  for synid in synstack(a:lnum, 1)
+    if synIDattr(synid, 'name') == 'goRawString'
+      if prevl =~ '\%(\%(:\?=\)\|(\|,\)\s*`[^`]*$'
+        " previous line started a multi-line raw string
+        return 0
+      endif
+      " return -1 to keep the current indent.
+      return -1
+    endif
+  endfor
+
+  if prevl =~ '[({]\s*$'
+    " previous line opened a block
+    let ind += shiftwidth()
   endif
   if prevl =~# '^\s*\(case .*\|default\):$'
     " previous line is part of a switch statement
