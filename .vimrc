@@ -130,6 +130,9 @@ endif
 
 " Configure qf - tame the quickfix "{{{
 let g:qf_mapping_ack_style = 1
+nmap <Leader>q <Plug>(qf_qf_toggle_stay)
+au! FileType qf nmap <buffer> q <Plug>(qf_qf_toggle)
+
 "}}}
 
 " Configure vim-lsp "{{{
@@ -213,6 +216,7 @@ call asyncomplete#register_source(asyncomplete#sources#gocode#get_source_options
 au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necosyntax#get_source_options({
     \ 'name': 'necosyntax',
     \ 'whitelist': ['*'],
+    \ 'blacklist': ['go'],
     \ 'completor': function('asyncomplete#sources#necosyntax#completor'),
     \ }))
 
@@ -221,6 +225,7 @@ au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#source
     \ 'whitelist': ['vim'],
     \ 'completor': function('asyncomplete#sources#necovim#completor'),
     \ }))
+
 " }}}
 
 " Configure lightline "{{{
