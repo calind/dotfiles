@@ -7,3 +7,5 @@ curl -Lks https://raw.githubusercontent.com/calind/dotfiles/master/bin/install-d
 # Console font
 
 [inconsolata-dz](http://nodnod.net/2009/feb/12/adding-straight-single-and-double-quotes-inconsola/)
+
+Test
