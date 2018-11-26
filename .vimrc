@@ -290,6 +290,11 @@ au FileType php.wp setl nolist
 
 " }}}"
 
+" Configure protocol buffer "{{
+au FileType proto setl sw=2 ts=2
+let g:ale_linters.proto = ['prototool']
+" }}}"
+
 " Configure go "{{{
 au FileType go setl nolist
 let g:ale_go_gofmt_options = '-s'
