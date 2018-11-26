@@ -1,4 +1,4 @@
 #!/bin/bash
-if hash aws ; then
+if hash aws 2>/dev/null ; then
     complete -C aws_completer aws
 fi
