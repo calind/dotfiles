@@ -27,11 +27,14 @@ else
     echom 'job failed to start'
 endif
 
+" If you want to get the process id of the job
+let pid = async#job#pid(jobid)
+
 " If you want to wait the job:
-call async#job#wait([job], 5000)  " timeout: 5 sec
+call async#job#wait([jobid], 5000)  " timeout: 5 sec
 
 " If you want to stop the job:
-call async#job#stop(job)
+call async#job#stop(jobid)
 ```
 
 ## APIs
@@ -43,6 +46,7 @@ APIs are based on neovim's job control APIs.
 * [jobstart()](https://neovim.io/doc/user/eval.html#jobstart%28%29)
 * [jobstop()](https://neovim.io/doc/user/eval.html#jobstop%28%29)
 * [jobwait()](https://neovim.io/doc/user/eval.html#jobwait%28%29)
+* [jobpid()](https://neovim.io/doc/user/eval.html#jobpid%28%29)
 
 ## Embedding
 

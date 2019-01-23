@@ -193,14 +193,15 @@ function! s:flush_vim_sendraw(jobid, timer) abort
     " https://github.com/vim/vim/issues/2548
     " https://github.com/natebosch/vim-lsc/issues/67#issuecomment-357469091
     let l:jobinfo = s:jobs[a:jobid]
-    if len(l:jobinfo.buffer) <= 1024
+    sleep 1m
+    if len(l:jobinfo.buffer) <= 4096
         call ch_sendraw(l:jobinfo.channel, l:jobinfo.buffer)
         let l:jobinfo.buffer = ''
     else
-        let l:to_send = l:jobinfo.buffer[:1023]
-        let l:jobinfo.buffer = l:jobinfo.buffer[1024:]
+        let l:to_send = l:jobinfo.buffer[:4095]
+        let l:jobinfo.buffer = l:jobinfo.buffer[4096:]
         call ch_sendraw(l:jobinfo.channel, l:to_send)
-        call timer_start(0, function('s:flush_vim_sendraw', [a:jobid]))
+        call timer_start(1, function('s:flush_vim_sendraw', [a:jobid]))
     endif
 endfunction
 
@@ -245,6 +246,23 @@ function! s:job_wait(jobids, timeout) abort
     return l:ret
 endfunction
 
+function! s:job_pid(jobid) abort
+    if !has_key(s:jobs, a:jobid)
+        return 0
+    endif
+
+    let l:jobinfo = s:jobs[a:jobid]
+    if l:jobinfo.type == s:job_type_nvimjob
+        return jobpid(a:jobid)
+    elseif l:jobinfo.type == s:job_type_vimjob
+        let l:vimjobinfo = job_info(a:jobid)
+        if type(l:vimjobinfo) == type({}) && has_key(l:vimjobinfo, 'process')
+            return l:vimjobinfo['process']
+        endif
+    endif
+    return 0
+endfunction
+
 " public apis {{{
 function! async#job#start(cmd, opts) abort
     return s:job_start(a:cmd, a:opts)
@@ -261,5 +279,9 @@ endfunction
 function! async#job#wait(jobids, ...) abort
     let l:timeout = get(a:000, 0, -1)
     return s:job_wait(a:jobids, l:timeout)
+endfunction
+
+function! async#job#pid(jobid) abort
+    return s:job_pid(a:jobid)
 endfunction
 " }}}
