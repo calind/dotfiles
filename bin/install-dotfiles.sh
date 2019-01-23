@@ -24,4 +24,3 @@ else
 fi
 
 config checkout ; config submodule update --init --recursive
-config config --local status.showUntrackedFiles no
