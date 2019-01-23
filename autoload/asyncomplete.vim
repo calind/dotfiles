@@ -51,7 +51,7 @@ function! asyncomplete#enable_for_buffer() abort
 
     let b:asyncomplete_enable = 1
     if exists('##TextChangedP')
-        augroup ayncomplete
+        augroup asyncomplete
             autocmd! * <buffer>
             autocmd InsertEnter <buffer> call s:remote_insert_enter()
             autocmd InsertLeave <buffer> call s:remote_insert_leave()
@@ -60,7 +60,7 @@ function! asyncomplete#enable_for_buffer() abort
             autocmd FileType <buffer> call s:file_type_changed()
         augroup END
     else
-        augroup ayncomplete
+        augroup asyncomplete
             autocmd! * <buffer>
             autocmd InsertEnter <buffer> call s:remote_insert_enter()
             autocmd InsertLeave <buffer> call s:remote_insert_leave()
@@ -253,7 +253,7 @@ function! s:get_refresh_pattern(source) abort
 endfunction
 
 function! s:remote_refresh(ctx, force) abort
-    let l:has_popped_up = 0
+    let s:has_popped_up = 0
     if a:force
         call s:notify_sources_to_refresh(s:get_active_sources_for_buffer(), a:ctx)
         return
@@ -482,11 +482,8 @@ function! s:core_complete(ctx, startcol, matches, allmatches) abort
         return 0
     endif
 
-    setlocal completeopt-=longest
-    setlocal completeopt+=menuone
-    setlocal completeopt-=menu
-    if &completeopt !~# 'noinsert\|noselect'
-        setlocal completeopt+=noselect
+    if (g:asyncomplete_auto_completeopt == 1)
+        setl completeopt=menuone,noinsert,noselect
     endif
 
     call asyncomplete#log('core', 's:core_complete')
