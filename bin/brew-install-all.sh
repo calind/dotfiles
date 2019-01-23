@@ -8,6 +8,8 @@ brew install vim
 brew install coreutils
 brew install bash
 brew install bash-completion
+brew install docker-completion
+brew install docker-compose-completion
 brew install git
 brew install hub
 brew install envchain
@@ -24,6 +26,7 @@ brew tap homebrew/cask-versions
 
 brew cask install iterm2
 brew cask install firefox-beta
+brew cask install enpass
 brew cask install docker-edge
 brew cask install slack
 brew cask install front
