@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if hash skaffold 2>/dev/null ; then
+    source <(skaffold completion bash)
+fi
