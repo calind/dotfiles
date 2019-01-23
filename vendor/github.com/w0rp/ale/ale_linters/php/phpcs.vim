@@ -45,6 +45,7 @@ endfunction
 call ale#linter#Define('php', {
 \   'name': 'phpcs',
 \   'executable_callback': ale#node#FindExecutableFunc('php_phpcs', [
+\       'src/vendor/bin/phpcs',
 \       'vendor/bin/phpcs',
 \       'phpcs'
 \   ]),
