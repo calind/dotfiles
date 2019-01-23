@@ -1,0 +1,7 @@
+#!/bin/bash
+if hash defaults >&2 ; then
+    LANG="$(defaults read -g AppleLocale)"
+    export LANG="${LANG/en_RO/en_US}.UTF-8"
+    export LC_COLLATE=C
+    export LC_CTYPE=C
+fi
