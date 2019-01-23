@@ -52,6 +52,31 @@ function! lsp#ui#vim#type_definition() abort
     echo 'Retrieving type definition ...'
 endfunction
 
+function! lsp#ui#vim#declaration() abort
+    let l:servers = filter(lsp#get_whitelisted_servers(), 'lsp#capabilities#has_declaration_provider(v:val)')
+    let s:last_req_id = s:last_req_id + 1
+    call setqflist([])
+
+    if len(l:servers) == 0
+        call s:not_supported('Retrieving declaration')
+        return
+    endif
+
+    let l:ctx = { 'counter': len(l:servers), 'list':[], 'last_req_id': s:last_req_id, 'jump_if_one': 1 }
+    for l:server in l:servers
+        call lsp#send_request(l:server, {
+            \ 'method': 'textDocument/declaration',
+            \ 'params': {
+            \   'textDocument': lsp#get_text_document_identifier(),
+            \   'position': lsp#get_position(),
+            \ },
+            \ 'on_notification': function('s:handle_location', [l:ctx, l:server, 'declaration']),
+            \ })
+    endfor
+
+    echo 'Retrieving declaration ...'
+endfunction
+
 function! lsp#ui#vim#definition() abort
     let l:servers = filter(lsp#get_whitelisted_servers(), 'lsp#capabilities#has_definition_provider(v:val)')
     let s:last_req_id = s:last_req_id + 1
@@ -136,7 +161,7 @@ function! lsp#ui#vim#rename() abort
     echo ' ... Renaming ...'
 endfunction
 
-function! lsp#ui#vim#document_format() abort
+function! s:document_format(sync) abort
     let l:servers = filter(lsp#get_whitelisted_servers(), 'lsp#capabilities#has_document_formatting_provider(v:val)')
     let s:last_req_id = s:last_req_id + 1
 
@@ -156,10 +181,19 @@ function! lsp#ui#vim#document_format() abort
         \       'insertSpaces': getbufvar(bufnr('%'), '&expandtab') ? v:true : v:false,
         \   },
         \ },
+        \ 'sync': a:sync,
         \ 'on_notification': function('s:handle_text_edit', [l:server, s:last_req_id, 'document format']),
         \ })
 
     echo 'Formatting document ...'
+endfunction
+
+function! lsp#ui#vim#document_format_sync() abort
+    return s:document_format(1)
+endfunction
+
+function! lsp#ui#vim#document_format() abort
+    return s:document_format(0)
 endfunction
 
 function! s:get_visual_selection_pos() abort
@@ -298,7 +332,7 @@ function! s:handle_symbol(server, last_req_id, type, data) abort
     endif
 
     if lsp#client#is_error(a:data['response'])
-        call lsp#utils#error('Failed to retrieve '. a:type . ' for ' . a:server)
+        call lsp#utils#error('Failed to retrieve '. a:type . ' for ' . a:server . ': ' . lsp#client#error_message(a:data['response']))
         return
     endif
 
@@ -322,7 +356,7 @@ function! s:handle_location(ctx, server, type, data) abort "ctx = {counter, list
     let a:ctx['counter'] = a:ctx['counter'] - 1
 
     if lsp#client#is_error(a:data['response'])
-        call lsp#utils#error('Failed to retrieve '. a:type . ' for ' . a:server)
+        call lsp#utils#error('Failed to retrieve '. a:type . ' for ' . a:server . ': ' . lsp#client#error_message(a:data['response']))
     else
         let a:ctx['list'] = a:ctx['list'] + lsp#ui#vim#utils#locations_to_loc_list(a:data)
     endif
@@ -337,6 +371,7 @@ function! s:handle_location(ctx, server, type, data) abort "ctx = {counter, list
                 let l:buffer = bufnr(l:loc['filename'])
                 let l:cmd = l:buffer !=# -1 ? 'b ' . l:buffer : 'edit ' . l:loc['filename']
                 execute l:cmd . ' | call cursor('.l:loc['lnum'].','.l:loc['col'].')'
+                echo 'Retrieved ' . a:type
                 redraw
             else
                 call setqflist(a:ctx['list'])
@@ -352,8 +387,8 @@ function! s:handle_workspace_edit(server, last_req_id, type, data) abort
         return
     endif
 
-    if lsp#client#is_error(a:data)
-        call lsp#utils#error('Failed to retrieve '. a:type . ' for ' . a:server)
+    if lsp#client#is_error(a:data['response'])
+        call lsp#utils#error('Failed to retrieve '. a:type . ' for ' . a:server . ': ' . lsp#client#error_message(a:data['response']))
         return
     endif
 
@@ -368,7 +403,7 @@ function! s:handle_text_edit(server, last_req_id, type, data) abort
     endif
 
     if lsp#client#is_error(a:data['response'])
-        call lsp#utils#error('Failed to '. a:type . ' for ' . a:server)
+        call lsp#utils#error('Failed to '. a:type . ' for ' . a:server . ': ' . lsp#client#error_message(a:data['response']))
         return
     endif
 
@@ -472,7 +507,7 @@ function! s:apply_text_edits(uri, text_edits) abort
     " Example:
     " Initial text:  "abcdef"
     " Edits:
-    " ((0,0), (0, 1), "") - remove first character 'a'
+    " ((0, 0), (0, 1), "") - remove first character 'a'
     " ((0, 4), (0, 5), "") - remove fifth character 'e'
     " ((0, 2), (0, 3), "") - remove third character 'c'
     let l:text_edits = sort(deepcopy(a:text_edits), '<SID>sort_text_edit_desc')
@@ -484,10 +519,20 @@ function! s:apply_text_edits(uri, text_edits) abort
 
         try
             let l:was_paste = &paste
+            let l:was_selection = &selection
+            let l:was_virtualedit = &virtualedit
+            let l:was_view = winsaveview()
+
             set paste
+            set selection=exclusive
+            set virtualedit=onemore
+
             execute l:cmd
         finally
             let &paste = l:was_paste
+            let &selection = l:was_selection
+            let &virtualedit = l:was_virtualedit
+            call winrestview(l:was_view)
         endtry
 
         let l:i = l:merged_text_edit['end_index']
@@ -577,7 +622,7 @@ function! s:generate_sub_cmd_insert(text_edit) abort
     let l:new_text = s:parse(a:text_edit['newText'])
 
     let l:sub_cmd = s:preprocess_cmd(a:text_edit['range'])
-    let l:sub_cmd .= s:generate_move_cmd(l:start_line, l:start_character)
+    let l:sub_cmd .= s:generate_move_start_cmd(l:start_line, l:start_character)
 
     if len(l:new_text) == 0
         let l:sub_cmd .= 'x'
@@ -599,27 +644,12 @@ function! s:generate_sub_cmd_replace(text_edit) abort
     let l:start_character = a:text_edit['range']['start']['character']
     let l:end_line = a:text_edit['range']['end']['line']
     let l:end_character = a:text_edit['range']['end']['character']
-    let l:new_text = a:text_edit['newText']
-
-    " This is necessary since you are removing lines, because when in normal
-    " mode it cannot grab the last character + 1 (\n).
-    if l:start_character >= len(getline(l:start_line)) && l:end_character == 0
-        let l:start_line += 1
-        let l:start_character = 0
-
-    endif
-
-    " Since the columns in vim is one-based index, this validation is necessary as
-    " well
-    if l:end_character == 0
-        let l:end_line -= 1
-        let l:end_character = len(getline(l:end_line))
-    endif
+    let l:new_text = substitute(a:text_edit['newText'], '\n$', '', '')
 
     let l:sub_cmd = s:preprocess_cmd(a:text_edit['range'])
-    let l:sub_cmd .= s:generate_move_cmd(l:start_line, l:start_character) " move to the first position
+    let l:sub_cmd .= s:generate_move_start_cmd(l:start_line, l:start_character) " move to the first position
     let l:sub_cmd .= 'v'
-    let l:sub_cmd .= s:generate_move_cmd(l:end_line, l:end_character) " move to the last position
+    let l:sub_cmd .= s:generate_move_end_cmd(l:end_line, l:end_character) " move to the last position
 
     if len(l:new_text) == 0
         let l:sub_cmd .= 'x'
@@ -631,10 +661,20 @@ function! s:generate_sub_cmd_replace(text_edit) abort
     return l:sub_cmd
 endfunction
 
-function! s:generate_move_cmd(line_pos, character_pos) abort
+function! s:generate_move_start_cmd(line_pos, character_pos) abort
     let l:result = printf('%dG0', a:line_pos) " move the line and set to the cursor at the beginning
     if a:character_pos > 0
         let l:result .= printf('%dl', a:character_pos) " move right until the character
+    endif
+    return l:result
+endfunction
+
+function! s:generate_move_end_cmd(line_pos, character_pos) abort
+    let l:result = printf('%dG0', a:line_pos) " move the line and set to the cursor at the beginning
+    if a:character_pos > 0
+        let l:result .= printf('%dl', a:character_pos) " move right until the character
+    else
+        let l:result = printf('%dG$', a:line_pos - 1) " move most right
     endif
     return l:result
 endfunction
