@@ -111,6 +111,7 @@ au Filetype json set tabstop=2 shiftwidth=2
 au Filetype markdown setl wrap wrapmargin=2 textwidth=80
 au Filetype yaml setl shiftwidth=2 tabstop=2
 au FileType terraform setlocal commentstring=#%s textwidth=100 colorcolumn=80 tabstop=2 shiftwidth=2
+au FileType Dockerfile setlocal textwidth=120 colorcolumn=80
 "}}}
 
 " Configure status line "{{{
