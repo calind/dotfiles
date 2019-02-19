@@ -300,6 +300,12 @@ let g:ale_linters.proto = ['prototool']
 
 " Configure go "{{{
 au FileType go setl nolist
+
+let g:go_fmt_autosave = 0 " We use ale for gofmt and goimports
+let g:go_fmt_fail_silently = 1
+let g:go_fmt_command = "gofmt"
+let g:go_def_mapping_enabled = 0
+
 let g:ale_go_gofmt_options = '-s'
 let g:ale_go_goimports_options = '-local github.com/presslabs'
 let g:ale_fixers.go = ['gofmt', 'goimports', 'remove_trailing_lines', 'trim_whitespace']
