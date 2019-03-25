@@ -48,8 +48,10 @@ function! lsp#enable() abort
         let s:already_setup = 1
     endif
     let s:enabled = 1
-    if g:lsp_diagnostics_enabled && g:lsp_signs_enabled
-        call lsp#ui#vim#signs#enable()
+    if g:lsp_diagnostics_enabled
+        if g:lsp_signs_enabled | call lsp#ui#vim#signs#enable() | endif
+        if g:lsp_virtual_text_enabled | call lsp#ui#vim#virtual#enable() | endif
+        if g:lsp_highlights_enabled | call lsp#ui#vim#highlights#enable() | endif
     endif
     call s:register_events()
 endfunction
@@ -168,27 +170,32 @@ endfunction
 
 function! s:on_text_document_did_open() abort
     let l:buf = bufnr('%')
+    if getbufvar(l:buf, '&buftype') ==# 'terminal' | return | endif
     call lsp#log('s:on_text_document_did_open()', l:buf, &filetype, getcwd(), lsp#utils#get_buffer_uri(l:buf))
-    for l:server_name in lsp#get_whitelisted_servers()
+    for l:server_name in lsp#get_whitelisted_servers(l:buf)
         call s:ensure_flush(l:buf, l:server_name, function('s:Noop'))
     endfor
 endfunction
 
 function! s:on_text_document_did_save() abort
     let l:buf = bufnr('%')
+    if getbufvar(l:buf, '&buftype') ==# 'terminal' | return | endif
     call lsp#log('s:on_text_document_did_save()', l:buf)
-    for l:server_name in lsp#get_whitelisted_servers()
+    for l:server_name in lsp#get_whitelisted_servers(l:buf)
         call s:ensure_flush(l:buf, l:server_name, {result->s:call_did_save(l:buf, l:server_name, result, function('s:Noop'))})
     endfor
 endfunction
 
 function! s:on_text_document_did_change() abort
     let l:buf = bufnr('%')
+    if getbufvar(l:buf, '&buftype') ==# 'terminal' | return | endif
     call lsp#log('s:on_text_document_did_change()', l:buf)
     call s:add_didchange_queue(l:buf)
 endfunction
 
 function! s:on_cursor_moved() abort
+    let l:buf = bufnr('%')
+    if getbufvar(l:buf, '&buftype') ==# 'terminal' | return | endif
     call lsp#ui#vim#diagnostics#echo#cursor_moved()
 endfunction
 
@@ -208,17 +215,17 @@ function! s:call_did_save(buf, server_name, result, cb) abort
         return
     endif
 
-    call s:update_file_content(a:server_name, a:buf, getbufline(a:buf, 1, '$'))
+    call s:update_file_content(a:buf, a:server_name, lsp#utils#buffer#_get_lines(a:buf))
 
     let l:buffers = l:server['buffers']
     let l:buffer_info = l:buffers[l:path]
 
     let l:params = {
-        \ 'textDocument': s:get_text_document_identifier(a:buf, l:buffer_info),
+        \ 'textDocument': s:get_text_document_identifier(a:buf),
         \ }
 
     if l:did_save_options['includeText']
-        let l:params['text'] = s:get_text_document_text(a:buf, a:server_name)
+        let l:params['text'] = s:get_text_document_text(a:buf)
     endif
     call s:send_notification(a:server_name, {
         \ 'method': 'textDocument/didSave',
@@ -232,6 +239,7 @@ endfunction
 
 function! s:on_text_document_did_close() abort
     let l:buf = bufnr('%')
+    if getbufvar(l:buf, '&buftype') ==# 'terminal' | return | endif
     call lsp#log('s:on_text_document_did_close()', l:buf)
 endfunction
 
@@ -396,29 +404,29 @@ function! s:ensure_init(buf, server_name, cb) abort
     else
         let l:capabilities = {
         \   'workspace': {
-        \       'applyEdit ': v:true
+        \       'applyEdit': v:true
         \   }
         \ }
     endif
 
+    let l:request = {
+    \   'method': 'initialize',
+    \   'params': {
+    \     'processId': getpid(),
+    \     'capabilities': l:capabilities,
+    \     'rootUri': l:root_uri,
+    \     'rootPath': lsp#utils#uri_to_path(l:root_uri),
+    \     'trace': 'off',
+    \   },
+    \ }
+
     if has_key(l:server_info, 'initialization_options')
-        let l:initialization_options = l:server_info['initialization_options']
-    else
-        let l:initialization_options = {}
+        let l:request.params['initializationOptions'] = l:server_info['initialization_options']
     endif
 
     let l:server['init_callbacks'] = [a:cb]
 
-    call s:send_request(a:server_name, {
-        \ 'method': 'initialize',
-        \ 'params': {
-        \   'capabilities': l:capabilities,
-        \   'rootUri': l:root_uri,
-        \   'rootPath': lsp#utils#uri_to_path(l:root_uri),
-        \   'trace': 'off',
-        \   'initializationOptions': l:initialization_options,
-        \ },
-        \ })
+    call s:send_request(a:server_name, l:request)
 endfunction
 
 function! s:ensure_conf(buf, server_name, cb) abort
@@ -450,16 +458,16 @@ function! s:text_changes(buf, server_name) abort
     if l:sync_kind == 2 && has_key(s:file_content, a:buf)
         " compute diff
         let l:old_content = s:get_last_file_content(a:buf, a:server_name)
-        let l:new_content = getbufline(a:buf, 1, '$')
+        let l:new_content = lsp#utils#buffer#_get_lines(a:buf)
         let l:changes = lsp#utils#diff#compute(l:old_content, l:new_content)
-        if empty(l:changes.text)
+        if empty(l:changes.text) && l:changes.rangeLength ==# 0
             return []
         endif
         call s:update_file_content(a:buf, a:server_name, l:new_content)
         return [l:changes]
     endif
 
-    let l:new_content = getbufline(a:buf, 1, '$')
+    let l:new_content = lsp#utils#buffer#_get_lines(a:buf)
     let l:changes = {'text': join(l:new_content, "\n")}
     call s:update_file_content(a:buf, a:server_name, l:new_content)
     return [l:changes]
@@ -487,7 +495,7 @@ function! s:ensure_changed(buf, server_name, cb) abort
     call s:send_notification(a:server_name, {
         \ 'method': 'textDocument/didChange',
         \ 'params': {
-        \   'textDocument': s:get_text_document_identifier(a:buf, l:buffer_info),
+        \   'textDocument': s:get_versioned_text_document_identifier(a:buf, l:buffer_info),
         \   'contentChanges': s:text_changes(a:buf, a:server_name),
         \ }
         \ })
@@ -517,7 +525,7 @@ function! s:ensure_open(buf, server_name, cb) abort
         return
     endif
 
-    call s:update_file_content(a:server_name, a:buf, getbufline(a:buf, 1, '$'))
+    call s:update_file_content(a:buf, a:server_name, lsp#utils#buffer#_get_lines(a:buf))
 
     let l:buffer_info = { 'changed_tick': getbufvar(a:buf, 'changedtick'), 'version': 1, 'uri': l:path }
     let l:buffers[l:path] = l:buffer_info
@@ -606,9 +614,11 @@ function! s:handle_initialize(server_name, data) abort
     if !lsp#client#is_error(l:response)
         let l:server['init_result'] = l:response
     else
-      let l:server['failed'] = l:response['error']
-      call lsp#utils#error('Failed to initialize ' . a:server_name . ' with error ' . l:response['error']['code'] . ': ' . l:response['error']['message'])
+        let l:server['failed'] = l:response['error']
+        call lsp#utils#error('Failed to initialize ' . a:server_name . ' with error ' . l:response['error']['code'] . ': ' . l:response['error']['message'])
     endif
+
+    call s:send_notification(a:server_name, { 'method': 'initialized', 'params': {} })
 
     for l:Init_callback in l:init_callbacks
         call l:Init_callback(a:data)
@@ -618,7 +628,7 @@ function! s:handle_initialize(server_name, data) abort
 endfunction
 
 " call lsp#get_whitelisted_servers()
-" call lsp#get_whitelisted_servers(bufnr('%))
+" call lsp#get_whitelisted_servers(bufnr('%'))
 " call lsp#get_whitelisted_servers('typescript')
 function! lsp#get_whitelisted_servers(...) abort
     if a:0 == 0
@@ -665,7 +675,7 @@ function! lsp#get_whitelisted_servers(...) abort
 endfunction
 
 function! s:get_text_document_text(buf, server_name) abort
-    return join(s:get_last_file_content(a:server_name, a:buf), "\n")
+    return join(s:get_last_file_content(a:buf, a:server_name), "\n")
 endfunction
 
 function! s:get_text_document(buf, server_name, buffer_info) abort
@@ -686,7 +696,11 @@ function! lsp#get_position(...) abort
     return { 'line': line('.') - 1, 'character': col('.') -1 }
 endfunction
 
-function! s:get_text_document_identifier(buf, buffer_info) abort
+function! s:get_text_document_identifier(buf) abort
+    return { 'uri': lsp#utils#get_buffer_uri(a:buf) }
+endfunction
+
+function! s:get_versioned_text_document_identifier(buf, buffer_info) abort
     return {
         \ 'uri': lsp#utils#get_buffer_uri(a:buf),
         \ 'version': a:buffer_info['version'],
@@ -713,7 +727,7 @@ let s:didchange_timer = -1
 
 function! s:add_didchange_queue(buf) abort
     if g:lsp_use_event_queue == 0
-        for l:server_name in lsp#get_whitelisted_servers()
+        for l:server_name in lsp#get_whitelisted_servers(a:buf)
             call s:ensure_flush(a:buf, l:server_name, function('s:Noop'))
         endfor
         return
@@ -734,7 +748,7 @@ function! s:send_didchange_queue(...) abort
         if !bufexists(l:buf)
             continue
         endif
-        for l:server_name in lsp#get_whitelisted_servers()
+        for l:server_name in lsp#get_whitelisted_servers(l:buf)
             call s:ensure_flush(l:buf, l:server_name, function('s:Noop'))
         endfor
     endfor
