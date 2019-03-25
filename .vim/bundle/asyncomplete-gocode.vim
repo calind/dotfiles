@@ -1,1 +1,0 @@
-../../vendor/github.com/prabirshrestha/asyncomplete-gocode.vim
