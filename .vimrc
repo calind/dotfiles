@@ -144,7 +144,13 @@ nnoremap <Leader>d :LspDefinition<CR>
 nnoremap <Leader>r :LspRename<CR>
 nnoremap <Leader>s :LspWorkspaceSymbol<CR>
 
-if executable('go-langserver')
+if executable('bingo')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'bingo',
+        \ 'cmd': {server_info->['bingo', '-mode', 'stdio', '-enhance-signature-help', '-goimports-prefix', 'github.com/presslabs']},
+        \ 'whitelist': ['go'],
+        \ })
+elseif executable('go-langserver')
     au User lsp_setup call lsp#register_server({
         \ 'name': 'go-langserver',
         \ 'cmd': {server_info->['go-langserver', '-mode', 'stdio']},
@@ -203,15 +209,6 @@ au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#source
     \ 'whitelist': ['*'],
     \ 'priority': 10,
     \ 'completor': function('asyncomplete#sources#file#completor')
-    \ }))
-
-call asyncomplete#register_source(asyncomplete#sources#gocode#get_source_options({
-    \ 'name': 'gocode',
-    \ 'whitelist': ['go'],
-    \ 'completor': function('asyncomplete#sources#gocode#completor'),
-    \ 'config': {
-    \    'gocode_path': expand('$GOPATH/bin/gocode')
-    \  },
     \ }))
 
 au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necosyntax#get_source_options({
