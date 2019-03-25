@@ -1,5 +1,7 @@
 let s:words = {}
 let s:last_word = ''
+let g:asyncomplete_buffer_clear_cache = get(g:, 'asyncomplete_buffer_clear_cache', 1)
+
 function! asyncomplete#sources#buffer#completor(opt, ctx)
     if empty(s:words)
         return
@@ -28,10 +30,10 @@ function! asyncomplete#sources#buffer#completor(opt, ctx)
 endfunction
 
 function! asyncomplete#sources#buffer#get_source_options(opts)
-    return extend(extend({}, a:opts), {
+    return extend({
                 \ 'events': ['CursorHold','CursorHoldI','BufWinEnter','BufWritePost','TextChangedI'],
                 \ 'on_event': function('s:on_event'),
-                \ })
+                \}, a:opts)
 endfunction
 
 let s:last_ctx = {}
@@ -48,6 +50,9 @@ function! s:on_event(opt, ctx, event) abort
 endfunction
 
 function! s:refresh_keywords() abort
+    if g:asyncomplete_buffer_clear_cache
+        let s:words = {}
+    endif
     let l:text = join(getline(1, '$'), "\n")
     for l:word in split(l:text, '\W\+')
         if len(l:word) > 1
