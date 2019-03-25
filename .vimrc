@@ -190,6 +190,7 @@ imap <c-space> <Plug>(asyncomplete_force_refresh)
 let g:asyncomplete_remove_duplicates = 1
 let g:asyncomplete_smart_completion = 1
 let g:asyncomplete_auto_popup = 1
+let g:asyncomplete_buffer_clear_cache = 1
 
 call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
     \ 'name': 'buffer',
@@ -309,6 +310,10 @@ let g:ale_fixers.go = ['gofmt', 'goimports', 'remove_trailing_lines', 'trim_whit
 
 let g:ale_go_golangci_lint_options = '--fast'
 let g:ale_linters.go = ['golangci-lint', 'govet', 'gobuild']
+" }}}"
+
+" Configure terrafrom "{{{
+let g:ale_fixers.terraform = ['terraform', 'remove_trailing_lines', 'trim_whitespace']
 " }}}"
 
 " Configure ansible-vim "{{{
