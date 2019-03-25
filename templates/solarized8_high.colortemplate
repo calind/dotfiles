@@ -51,7 +51,7 @@ if !has('gui_running') && get(g:, '@optionprefix_termtrans', 0)
 endverbatim
 
   # Transparent background
-  Normal             base0             none
+  Normal             base1             none
   FoldColumn         fg                none
   Folded             fg                none             bold s=base03
   LineNr             base01            none
@@ -63,7 +63,7 @@ else
 endverbatim
 
   # Opaque background
-  Normal            base0             back
+  Normal            base1             back
   FoldColumn        base0             base02
   Folded            base0             base02            bold s=base03
   LineNr            base01            base02
@@ -165,10 +165,10 @@ IncSearch            orange            none              standout
 MatchParen           base3             base02            bold
 ModeMsg              blue              none
 MoreMsg              blue              none
-Pmenu                base0             base02            reverse
-PmenuSbar            base2             base0             reverse
-PmenuSel             base01            base2             reverse
-PmenuThumb           base0             base03            reverse
+Pmenu                base1             base02
+PmenuSbar            none              base0
+PmenuSel             base2             base01
+PmenuThumb           none              base01
 Question             cyan              none              bold
 QuickFixLine     ->  Search
 Search               yellow            none              reverse
@@ -181,6 +181,16 @@ StatusLineNC         base01            base02            reverse
 TabLine              base01            base02            reverse
 TabLineFill          base01            base02            reverse
 TabLineSel           base0             base3             reverse
+VertSplit            base02            base01
+verbatim
+elseif get(g:, "@optionprefix_statusline", "") == "flat"
+endverbatim
+StatusLine           base02            base2             reverse
+StatusLineNC         base02            base1             reverse
+TabLineSel           base2             base02
+TabLine              base01            base02
+TabLineFill          base01            base02
+VertSplit            base01            base02
 verbatim
 else
 endverbatim
@@ -189,12 +199,12 @@ StatusLineNC         base01            base02            reverse
 TabLine              base01            base02            reverse
 TabLineFill          base01            base02            reverse
 TabLineSel           base0             base02            reverse
+VertSplit            base02            base01
 verbatim
 endif
 endverbatim
 StatusLineTerm    -> StatusLine
 StatusLineTermNC  -> StatusLineNC
-VertSplit            base02            base01
 Visual               base01            base03            reverse
 VisualNOS            none              base02            reverse
 WarningMsg           orange            none              bold
@@ -291,7 +301,7 @@ if !has('gui_running') && get(g:, '@optionprefix_termtrans', 0)
 endverbatim
 
   # Transparent background
-  Normal             base0             none
+  Normal             base1             none
   FoldColumn         base0             none
   Folded             base0             none              bold s=base03
   LineNr             base01            none
@@ -303,7 +313,7 @@ else
 endverbatim
 
   # Opaque background
-  Normal            base0             back
+  Normal            base1             back
   FoldColumn        base0             base02
   Folded            base0             base02            bold s=base03
   LineNr            base01            base02
@@ -422,10 +432,10 @@ ErrorMsg             red               base03            reverse
 IncSearch            orange            none              standout
 ModeMsg              blue              none
 MoreMsg              blue              none
-Pmenu                base0             base02            reverse
-PmenuSbar            base2             base0             reverse
-PmenuSel             base01            base2             reverse
-PmenuThumb           base0             base03            reverse
+Pmenu                base1             base02
+PmenuSbar            none              base1
+PmenuSel             base2             base01
+PmenuThumb           none              base00
 Question             cyan              none              bold
 QuickFixLine     ->  Search
 Search               yellow            none              reverse
@@ -438,6 +448,18 @@ StatusLineNC         base01            base1             reverse
 TabLine              base01            base1             reverse
 TabLineFill          base01            base1             reverse
 TabLineSel           base1             base03            reverse
+VertSplit            base1             base01
+WildMenu             base1             base03            reverse
+verbatim
+elseif get(g:, "@optionprefix_statusline", "") == "flat"
+endverbatim
+StatusLine           base02            base2             reverse
+StatusLineNC         base02            base1             reverse
+TabLineSel           base2             base02
+TabLine              base01            base02
+TabLineFill          base01            base02
+VertSplit            base01            base02
+WildMenu             base0             base03            reverse
 verbatim
 else
 endverbatim
@@ -446,16 +468,16 @@ StatusLineNC         base00            base02            reverse
 TabLine              base00            base02            reverse
 TabLineFill          base00            base02            reverse
 TabLineSel           base1             base02            reverse
+VertSplit            base1             base01
+WildMenu             base00            base03            reverse
 verbatim
 endif
 endverbatim
 StatusLineTerm    -> StatusLine
 StatusLineTermNC  -> StatusLineNC
-VertSplit            base1             base01
 Visual               base01            base03            reverse
 VisualNOS            none              base02            reverse
 WarningMsg           orange            none              bold
-WildMenu             base2             base02            reverse
 # Other conventional group names (see `:help group-name`)
 Boolean           -> Constant
 Character         -> Constant
