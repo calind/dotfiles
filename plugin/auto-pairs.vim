@@ -1,7 +1,7 @@
 " Insert or delete brackets, parens, quotes in pairs.
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
 " Contributor: camthompson
-" Last Change:  2019-01-15
+" Last Change:  2019-02-02
 " Version: 2.0.0
 " Homepage: http://www.vim.org/scripts/script.php?script_id=3599
 " Repository: https://github.com/jiangmiao/auto-pairs
@@ -13,8 +13,30 @@ end
 let g:AutoPairsLoaded = 1
 
 if !exists('g:AutoPairs')
-  let g:AutoPairs = {'(':')', '[':']', '{':'}',"'":"'",'"':'"', '```':'```', '"""':'"""', "'''":"'''"}
+  let g:AutoPairs = {'(':')', '[':']', '{':'}',"'":"'",'"':'"', '```':'```', '"""':'"""', "'''":"'''", "`":"`"}
 end
+
+" default pairs base on filetype
+func! AutoPairsDefaultPairs()
+  if exists('b:autopairs_defaultpairs')
+    return b:autopairs_defaultpairs
+  end
+  let r = copy(g:AutoPairs)
+  let allPairs = {
+        \ 'vim': {'\v^\s*\zs"': ''},
+        \ 'rust': {'\w\zs<': '>', '&\zs''': ''},
+        \ 'php': {'<?': '?>//k]', '<?php': '?>//k]'}
+        \ }
+  for [filetype, pairs] in items(allPairs)
+    if &filetype == filetype
+      for [open, close] in items(pairs)
+        let r[open] = close
+      endfor
+    end
+  endfor
+  let b:autopairs_defaultpairs = r
+  return r
+endf
 
 if !exists('g:AutoPairsMapBS')
   let g:AutoPairsMapBS = 1
@@ -30,7 +52,7 @@ if !exists('g:AutoPairsMapCR')
 end
 
 if !exists('g:AutoPairsWildClosedPair')
-  let g:AutoPairsWildClosedPair = ']'
+  let g:AutoPairsWildClosedPair = ''
 end
 
 if !exists('g:AutoPairsMapSpace')
@@ -161,7 +183,7 @@ endf
 "   au FileType html let b:AutoPairs = AutoPairsDefine({'<!--' : '-->'}, ['{'])
 "   add <!-- --> pair and remove '{' for html file
 func! AutoPairsDefine(pairs, ...)
-  let r = copy(g:AutoPairs)
+  let r = AutoPairsDefaultPairs()
   if a:0 > 0
     for open in a:1
       unlet r[open]
@@ -187,40 +209,10 @@ func! AutoPairsInsert(key)
     return a:key
   end
 
-  " check close pairs
-  for [open, close, opt] in b:AutoPairsList
-    if close == ''
-      continue
-    end
-    if a:key == g:AutoPairsWildClosedPair || opt['mapclose'] && close[0] == a:key
-      " the close pair is in the same line
-      let m = matchstr(afterline, '^\v\s*\V'.close)
-      if m != ''
-        if before =~ '\V'.open.'\v\s*$' && m[0] =~ '\v\s'
-          " remove the space we inserted if the text in pairs is blank
-          return "\<DEL>".s:right(m[1:])
-        else
-          return s:right(m)
-        end
-      end
-      let m = matchstr(after, '^\v\s*\zs\V'.close)
-      if m != ''
-        if a:key == g:AutoPairsWildClosedPair || opt['multiline']
-          if b:autopairs_return_pos == line('.') && getline('.') =~ '\v^\s*$'
-            normal! ddk$
-          end
-          call search(m, 'We')
-          return "\<Right>"
-        else
-          break
-        end
-      end
-    end
-  endfor
-
   " check open pairs
   for [open, close, opt] in b:AutoPairsList
     let ms = s:matchend(before.a:key, open)
+    let m = matchstr(afterline, '^\v\s*\zs\V'.close)
     if len(ms) > 0
       " process the open pair
       
@@ -229,9 +221,12 @@ func! AutoPairsInsert(key)
       " when <!-- is detected the inserted pair < > should be clean up 
       let target = ms[1]
       let openPair = ms[2]
+      if len(openPair) == 1 && m == openPair
+        break
+      end
       let bs = ''
       let del = ''
-      while len(before) > len(target) && target != before
+      while len(before) > len(target)
         let found = 0
         " delete pair
         for [o, c, opt] in b:AutoPairsList
@@ -262,6 +257,38 @@ func! AutoPairsInsert(key)
       return bs.del.openPair.close.s:left(close)
     end
   endfor
+
+  " check close pairs
+  for [open, close, opt] in b:AutoPairsList
+    if close == ''
+      continue
+    end
+    if a:key == g:AutoPairsWildClosedPair || opt['mapclose'] && opt['key'] == a:key
+      " the close pair is in the same line
+      let m = matchstr(afterline, '^\v\s*\V'.close)
+      if m != ''
+        if before =~ '\V'.open.'\v\s*$' && m[0] =~ '\v\s'
+          " remove the space we inserted if the text in pairs is blank
+          return "\<DEL>".s:right(m[1:])
+        else
+          return s:right(m)
+        end
+      end
+      let m = matchstr(after, '^\v\s*\zs\V'.close)
+      if m != ''
+        if a:key == g:AutoPairsWildClosedPair || opt['multiline']
+          if b:autopairs_return_pos == line('.') && getline('.') =~ '\v^\s*$'
+            normal! ddk$
+          end
+          call search(m, 'We')
+          return "\<Right>"
+        else
+          break
+        end
+      end
+    end
+  endfor
+
 
   " Fly Mode, and the key is closed-pairs, search closed-pair and jump
   if g:AutoPairsFlyMode &&  a:key =~ '\v[\}\]\)]'
@@ -405,7 +432,11 @@ func! AutoPairsSpace()
       continue
     end
     if before =~ '\V'.open.'\v$' && after =~ '^\V'.close
-      return "\<SPACE>\<SPACE>".s:Left
+      if close =~ '\v^[''"`]$'
+        return "\<SPACE>"
+      else
+        return "\<SPACE>\<SPACE>".s:Left
+      end
     end
   endfor
   return "\<SPACE>"
@@ -444,9 +475,8 @@ func! AutoPairsInit()
   end
 
   if !exists('b:AutoPairs')
-    let b:AutoPairs = g:AutoPairs
+    let b:AutoPairs = AutoPairsDefaultPairs()
   end
-
 
   if !exists('b:AutoPairsMoveCharacter')
     let b:AutoPairsMoveCharacter = g:AutoPairsMoveCharacter
@@ -464,6 +494,7 @@ func! AutoPairsInit()
     let o = open[-1:-1]
     let c = close[0]
     let opt = {'mapclose': 1, 'multiline':1}
+    let opt['key'] = c
     if o == c
       let opt['multiline'] = 0
     end
@@ -477,6 +508,11 @@ func! AutoPairsInit()
       end
       if m[2] =~ 's'
         let opt['multiline'] = 0
+      end
+      let ks = matchlist(m[2], '\vk(.)')
+      if len(ks) > 0
+        let opt['key'] = ks[1]
+        let c = opt['key']
       end
       let close = m[1]
     end
@@ -560,6 +596,7 @@ endf
 func! s:ExpandMap(map)
   let map = a:map
   let map = substitute(map, '\(<Plug>\w\+\)', '\=maparg(submatch(1), "i")', 'g')
+  let map = substitute(map, '\(<Plug>([^)]*)\)', '\=maparg(submatch(1), "i")', 'g')
   return map
 endf
 
