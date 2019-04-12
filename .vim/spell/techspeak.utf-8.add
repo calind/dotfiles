@@ -38,3 +38,5 @@ OpenID
 unregister
 flakey
 backend
+vendored
+kubeconfig
