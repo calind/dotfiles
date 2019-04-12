@@ -1,0 +1,5 @@
+#!/bin/sh
+if hash composer 2>/dev/null && test -f "$(composer config home --global)/vendor/stecman/composer-bash-completion-plugin/hooks/bash-completion";
+then
+    source "$(composer config home --global)/vendor/stecman/composer-bash-completion-plugin/hooks/bash-completion"
+fi
