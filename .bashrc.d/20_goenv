@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-if hash goenv 2>/dev/null ; then
-    eval "$(goenv init -)"
-fi

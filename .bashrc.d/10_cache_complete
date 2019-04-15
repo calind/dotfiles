@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+COMPLETE_CACHE_DIR="$HOME/.bashrc.d/.complete_cache"
+mkdir -p "$COMPLETE_CACHE_DIR"
+
+__cachecomplete_readlink() {
+    if [ "$(uname -s)" == "Darwin" ] ; then
+        greadlink "$@"
+    else
+        readlink "$@"
+    fi
+}
+
+cachecomplete() {
+    local cmd="$1" fullpath cache st_mtime cmd_mtime cache_mtime
+
+    hash "$cmd" > /dev/null 2>&1
+
+    fullpath="$(__cachecomplete_readlink -f "$(hash -t "$cmd" 2>/dev/null)")"
+    cache="$COMPLETE_CACHE_DIR/$cmd.sh"
+
+    if [ -z "$fullpath" ]; then
+        return 0
+    fi
+
+    eval "$(stat -s "$fullpath")"
+    cmd_mtime="$st_mtime"
+
+    if [ -f "$cache" ]; then
+        eval "$(stat -s "$cache")"
+        cache_mtime="$st_mtime"
+    fi
+
+    if [ "$cmd_mtime" != "$cache_mtime" ]; then
+        echo "Update completion cache for $cmd" >&2
+        "$@" > "$cache"
+        touch -m -r "$fullpath" "$cache"
+    fi
+    echo "$cache"
+}
