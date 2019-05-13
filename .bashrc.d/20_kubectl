@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+if type -t kubectl &> /dev/null; then
+    function kubectl() {
+        unset -f kubectl > /dev/null 2>&1
+        source <(kubectl completion bash)
+        kubectl "$@"
+    }
+fi
