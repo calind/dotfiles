@@ -4,7 +4,6 @@
 call ale#Set('go_golangci_lint_options', '--enable-all')
 call ale#Set('go_golangci_lint_executable', 'golangci-lint')
 call ale#Set('go_golangci_lint_package', 0)
-call ale#Set('go_golangci_lint_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#go#golangci_lint#GetCommand(buffer) abort
     let l:filename = expand('#' . a:buffer . ':t')
@@ -50,11 +49,8 @@ endfunction
 
 call ale#linter#Define('go', {
 \   'name': 'golangci-lint',
-\   'executable_callback': ale#node#FindExecutableFunc('go_golangci_lint', [
-\       'bin/golangci-lint',
-\       'golangci-lint'
-\   ]),
-\   'command_callback': 'ale_linters#go#golangci_lint#GetCommand',
+\   'executable': {b -> ale#Var(b, 'go_golangci_lint_executable')},
+\   'command': function('ale_linters#go#golangci_lint#GetCommand'),
 \   'callback': 'ale_linters#go#golangci_lint#Handler',
 \   'lint_file': 1,
 \})
