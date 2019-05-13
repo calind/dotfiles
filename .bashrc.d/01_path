@@ -1,4 +1,4 @@
-PATH="/usr/local/sbin:/usr/local/kubebuilder/bin:$PATH"
+PATH="/usr/local/sbin:$PATH:/usr/local/kubebuilder/bin"
 
 if [ "$(uname)" == "Darwin" ] ; then
     # use brewed getopt
