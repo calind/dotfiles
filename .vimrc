@@ -18,7 +18,7 @@ set nowrap                      " don't wrap lines
 set tabstop=4 shiftwidth=4      " a tab is two spaces (or set this to 4)
 set expandtab                   " expand tab by default
 set backspace=indent,eol,start  " backspace through everything in insert mode
-set textwidth=80                " 80 columns by default
+set textwidth=120               " 120 columns by default
 
 "" Searching
 set hlsearch                    " highlight matches
