@@ -193,6 +193,7 @@ function! lsp#omni#get_vim_completion_item(item, ...) abort
                 \ 'info': '',
                 \ 'icase': 1,
                 \ 'dup': 1,
+                \ 'empty': 1,
                 \ 'kind': l:kind}
 
     " check support user_data.
@@ -222,7 +223,7 @@ function! lsp#omni#get_vim_completion_item(item, ...) abort
     endif
 
     if has_key(a:item, 'detail') && !empty(a:item['detail'])
-        let l:completion['menu'] = a:item['detail']
+        let l:completion['menu'] = substitute(a:item['detail'], '[ \t\n\r]\+', ' ', 'g')
     endif
 
     if has_key(a:item, 'documentation')
@@ -254,7 +255,7 @@ function! s:apply_text_edit() abort
     endif
 
     " completion faild or not select complete item
-    if empty(v:completed_item) || v:completed_item['word'] ==# ''
+    if empty(v:completed_item)
         return
     endif
 
@@ -283,7 +284,6 @@ function! s:apply_text_edit() abort
     call lsp#utils#text_edit#apply_text_edits(expand('%:p'), [l:expanded_text_edit])
 
     " move to end of newText
-    " TODO: add user definition cursor position mechanism
     let l:start = l:text_edit['range']['start']
     let l:line = l:start['line'] + 1
     let l:col = l:start['character']
