@@ -40,3 +40,6 @@ flakey
 backend
 vendored
 kubeconfig
+memcached
+apiserver
+gcloud
