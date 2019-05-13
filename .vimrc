@@ -316,8 +316,9 @@ let g:ale_go_gofmt_options = '-s'
 let g:ale_go_goimports_options = '-local github.com/presslabs'
 let g:ale_fixers.go = ['gofmt', 'goimports', 'remove_trailing_lines', 'trim_whitespace']
 
-let g:ale_go_golangci_lint_options = '--fast'
-let g:ale_linters.go = ['golangci-lint', 'govet', 'gobuild']
+let g:ale_go_golangci_lint_package = 1
+let g:ale_go_golangci_lint_options = ''
+let g:ale_linters.go = ['gobuild', 'golangci-lint']
 " }}}"
 
 " Configure terrafrom "{{{
