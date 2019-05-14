@@ -144,12 +144,20 @@ nnoremap <Leader>d :LspDefinition<CR>
 nnoremap <Leader>r :LspRename<CR>
 nnoremap <Leader>s :LspWorkspaceSymbol<CR>
 
-if executable('bingo')
+if executable('gopls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'gopls',
+        \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
+        \ 'whitelist': ['go'],
+        \ })
+    autocmd FileType go setlocal omnifunc=lsp#complete
+elseif executable('bingo')
     au User lsp_setup call lsp#register_server({
         \ 'name': 'bingo',
         \ 'cmd': {server_info->['bingo', '-mode', 'stdio', '-enhance-signature-help', '-goimports-prefix', 'github.com/presslabs']},
         \ 'whitelist': ['go'],
         \ })
+    autocmd FileType go setlocal omnifunc=lsp#complete
 elseif executable('go-langserver')
     au User lsp_setup call lsp#register_server({
         \ 'name': 'go-langserver',
