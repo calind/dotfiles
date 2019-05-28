@@ -326,6 +326,7 @@ au FileType php.wp setl nolist
 
 au FileType proto setl sw=2 ts=2
 let g:ale_linters.proto = ['prototool']
+let g:ale_proto_prototool_command = "lint"
 
 " }}}"
 
