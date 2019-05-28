@@ -140,24 +140,34 @@ au! FileType qf nmap <buffer> q <Plug>(qf_qf_toggle)
 let g:lsp_signs_enabled = 0           " we use w0rp/ale for linting
 let g:lsp_diagnostics_echo_cursor = 0 " we use w0rp/ale for linting
 
+let g:lsp_text_edit_enabled = 0
+
 nnoremap <Leader>d :LspDefinition<CR>
 nnoremap <Leader>r :LspRename<CR>
 nnoremap <Leader>s :LspWorkspaceSymbol<CR>
 
-if executable('gopls')
+" let g:lsp_log_verbose = 1
+" let g:lsp_log_file = expand('~/vim-lsp.log')
+
+
+if executable('gopls-bingo')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'gopls-bingo',
+        \ 'cmd': {server_info->['gopls-bingo', '-mode', 'stdio']},
+        \ 'whitelist': ['go'],
+        \ })
+elseif executable('gopls')
     au User lsp_setup call lsp#register_server({
         \ 'name': 'gopls',
         \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
         \ 'whitelist': ['go'],
         \ })
-    autocmd FileType go setlocal omnifunc=lsp#complete
 elseif executable('bingo')
     au User lsp_setup call lsp#register_server({
         \ 'name': 'bingo',
         \ 'cmd': {server_info->['bingo', '-mode', 'stdio', '-enhance-signature-help', '-goimports-prefix', 'github.com/presslabs']},
         \ 'whitelist': ['go'],
         \ })
-    autocmd FileType go setlocal omnifunc=lsp#complete
 elseif executable('go-langserver')
     au User lsp_setup call lsp#register_server({
         \ 'name': 'go-langserver',
