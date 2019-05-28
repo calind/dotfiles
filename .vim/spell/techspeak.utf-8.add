@@ -43,3 +43,7 @@ kubeconfig
 memcached
 apiserver
 gcloud
+auth
+oidc
+gRPC
+idP
