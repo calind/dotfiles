@@ -97,6 +97,9 @@ if maparg('\\','n') ==# '' && maparg('\','n') ==# '' && get(g:, 'commentary_map_
   nmap \\\ <Plug>CommentaryLine<CR>
   nmap \\u <Plug>CommentaryUndo<CR>
 endif
+
+nmap <Leader>a <Plug>(EasyAlign)
+xmap <Leader>a <Plug>(EasyAlign)
 " }}}
 
 " Configure filetypes "{{{
@@ -309,6 +312,10 @@ let g:rooter_patterns = ['.project', '.git', '.git/', '_darcs/', '.hg/', '.bzr/'
 autocmd BufEnter * Rooter
 autocmd BufEnter * :call s:project_vimrc()
 " }}}
+
+" Configure markdown "{{{
+au FileType markdown vmap <Leader>a :EasyAlign*<Bar><Enter>
+" }}}"
 
 " Configure php "{{{
 
