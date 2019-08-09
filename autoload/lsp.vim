@@ -25,6 +25,9 @@ augroup _lsp_silent_
     autocmd User lsp_unregister_server silent
     autocmd User lsp_server_init silent
     autocmd User lsp_server_exit silent
+    autocmd User lsp_complete_done silent
+    autocmd User lsp_float_opened silent
+    autocmd User lsp_float_closed silent
 augroup END
 
 function! lsp#log_verbose(...) abort
@@ -52,6 +55,7 @@ function! lsp#enable() abort
         if g:lsp_signs_enabled | call lsp#ui#vim#signs#enable() | endif
         if g:lsp_virtual_text_enabled | call lsp#ui#vim#virtual#enable() | endif
         if g:lsp_highlights_enabled | call lsp#ui#vim#highlights#enable() | endif
+        if g:lsp_textprop_enabled | call lsp#ui#vim#diagnostics#textprop#enable() | endif
     endif
     call s:register_events()
 endfunction
@@ -61,6 +65,9 @@ function! lsp#disable() abort
         return
     endif
     call lsp#ui#vim#signs#disable()
+    call lsp#ui#vim#virtual#disable()
+    call lsp#ui#vim#highlights#disable()
+    call lsp#ui#vim#diagnostics#textprop#disable()
     call s:unregister_events()
     let s:enabled = 0
 endfunction
@@ -158,7 +165,7 @@ function! s:register_events() abort
         endif
         autocmd CursorMoved * call s:on_cursor_moved()
         autocmd BufWinEnter,BufWinLeave,InsertEnter * call lsp#ui#vim#references#clean_references()
-        autocmd CursorMoved * call lsp#ui#vim#references#highlight(v:false)
+        autocmd CursorMoved * if g:lsp_highlight_references_enabled | call lsp#ui#vim#references#highlight(v:false) | endif
     augroup END
     call s:on_text_document_did_open()
 endfunction
@@ -368,6 +375,15 @@ function! s:ensure_start(buf, server_name, cb) abort
     endif
 endfunction
 
+function! lsp#default_get_supported_capabilities(server_info) abort
+    return {
+    \   'workspace': {
+    \       'applyEdit': v:true,
+    \       'configuration': v:true
+    \   }
+    \ }
+endfunction
+
 function! s:ensure_init(buf, server_name, cb) abort
     let l:server = s:servers[a:server_name]
 
@@ -405,11 +421,7 @@ function! s:ensure_init(buf, server_name, cb) abort
     if has_key(l:server_info, 'capabilities')
         let l:capabilities = l:server_info['capabilities']
     else
-        let l:capabilities = {
-        \   'workspace': {
-        \       'applyEdit': v:true
-        \   }
-        \ }
+        let l:capabilities = call(g:lsp_get_supported_capabilities[0], [server_info])
     endif
 
     let l:request = {
@@ -619,6 +631,9 @@ function! s:on_request(server_name, id, request) abort
     if a:request['method'] ==# 'workspace/applyEdit'
         call lsp#utils#workspace_edit#apply_workspace_edit(a:request['params']['edit'])
         call s:send_response(a:server_name, { 'id': a:request['id'], 'result': { 'applied': v:true } })
+    elseif a:request['method'] ==# 'workspace/configuration'
+        let l:response_items = map(a:request['params']['items'], { key, val -> lsp#utils#workspace_config#get_value(a:server_name, val) })
+        call s:send_response(a:server_name, { 'id': a:request['id'], 'result': l:response_items })
     else
         " Error returned according to json-rpc specification.
         call s:send_response(a:server_name, { 'id': a:request['id'], 'error': { 'code': -32601, 'message': 'Method not found' } })
@@ -774,4 +789,15 @@ function! s:send_didchange_queue(...) abort
         endfor
     endfor
     let s:didchange_queue = []
+endfunction
+
+" Return dict with diagnostic counts for current buffer
+" { 'error': 1, 'warning': 0, 'information': 0, 'hint': 0 }
+function! lsp#get_buffer_diagnostics_counts() abort
+    return lsp#ui#vim#diagnostics#get_buffer_diagnostics_counts()
+endfunction
+
+" Return first error line or v:null if there are no errors
+function! lsp#get_buffer_first_error_line() abort
+    return lsp#ui#vim#diagnostics#get_buffer_first_error_line()
 endfunction

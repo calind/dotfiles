@@ -57,10 +57,20 @@ function! lsp#utils#text_edit#apply_text_edits(uri, text_edits) abort
             let l:was_view = winsaveview()
 
             set paste
-            set selection=exclusive
+
+            let l:start_line = l:merged_text_edit['merged']['range']['start']['line']
+            let l:end_line = l:merged_text_edit['merged']['range']['end']['line']
+            let l:end_character = l:merged_text_edit['merged']['range']['end']['character']
+            if l:start_line < l:end_line && l:end_character <= 0
+                " set inclusive if end position was newline character.
+                set selection=inclusive
+            else
+                set selection=exclusive
+            endif
+
             set virtualedit=onemore
 
-            execute l:cmd
+            silent execute l:cmd
         finally
             let &paste = l:was_paste
             let &selection = l:was_selection
@@ -157,17 +167,11 @@ function! s:generate_sub_cmd_insert(text_edit) abort
     let l:sub_cmd = s:preprocess_cmd(a:text_edit['range'])
     let l:sub_cmd .= s:generate_move_start_cmd(l:start_line, l:start_character)
 
-    if len(l:new_text) == 0
-        let l:sub_cmd .= 'x'
+    if l:start_character >= len(getline(l:start_line))
+        let l:sub_cmd .= "\"=l:merged_text_edit['merged']['newText']\<CR>p"
     else
-        if l:start_character >= len(getline(l:start_line))
-            let l:sub_cmd .= 'a'
-        else
-            let l:sub_cmd .= 'i'
-        endif
+        let l:sub_cmd .= "\"=l:merged_text_edit['merged']['newText']\<CR>P"
     endif
-
-    let l:sub_cmd .= printf('%s', l:new_text)
 
     return l:sub_cmd
 endfunction
@@ -181,14 +185,22 @@ function! s:generate_sub_cmd_replace(text_edit) abort
 
     let l:sub_cmd = s:preprocess_cmd(a:text_edit['range'])
     let l:sub_cmd .= s:generate_move_start_cmd(l:start_line, l:start_character) " move to the first position
-    let l:sub_cmd .= 'v'
+
+    " If start and end position are 0, we are selecting a range of lines.
+    " Thus, we can use linewise-visual mode, which avoids some inconsistencies
+    " when applying text edits.
+    if l:start_character == 0 && l:end_character == 0
+        let l:sub_cmd .= 'V'
+    else
+        let l:sub_cmd .= 'v'
+    endif
+
     let l:sub_cmd .= s:generate_move_end_cmd(l:end_line, l:end_character) " move to the last position
 
     if len(l:new_text) == 0
         let l:sub_cmd .= 'x'
     else
-        let l:sub_cmd .= 'c'
-        let l:sub_cmd .= printf('%s', l:new_text) " change text
+        let l:sub_cmd .= "\"=l:merged_text_edit['merged']['newText']\<CR>p"
     endif
 
     return l:sub_cmd

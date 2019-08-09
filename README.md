@@ -45,6 +45,14 @@ vim-lsp supports incremental changes of Language Server Protocol.
 
 Refer to docs on configuring omnifunc or [asyncomplete.vim](https://github.com/prabirshrestha/asyncomplete.vim).
 
+## Snippets
+vim-lsp does not support snippets by default. If you want snippet integration, you will first have to install a third-party snippet plugin and a plugin that integrates it in vim-lsp.
+At the moment, you have two options:
+1. [UltiSnips](https://github.com/SirVer/ultisnips) together with [vim-lsp-ultisnips](https://github.com/thomasfaingnaert/vim-lsp-ultisnips)
+2. [neosnippet.vim](https://github.com/Shougo/neosnippet.vim) together with [vim-lsp-neosnippet](https://github.com/thomasfaingnaert/vim-lsp-neosnippet)
+
+For more information, refer to the readme and documentation of the respective plugins.
+
 ## Supported commands
 
 **Note:**
@@ -54,22 +62,26 @@ Refer to docs on configuring omnifunc or [asyncomplete.vim](https://github.com/p
 | Command | Description|
 |--|--|
 |`:LspCodeAction`| Gets a list of possible commands that can be applied to a file so it can be fixed (quick fix) |
-|`:LspDeclaration`| Go to declaration |
-|`:LspDefinition`| Go to definition |
+|`:LspDeclaration`| Go to the declaration of the word under the cursor, and open in the current window |
+|`:LspDefinition`| Go to the definition of the word under the cursor, and open in the current window |
 |`:LspDocumentDiagnostics`| Get current document diagnostics information |
 |`:LspDocumentFormat`| Format entire document |
 |`:LspDocumentRangeFormat`| Format document selection |
 |`:LspDocumentSymbol`| Show document symbols |
 |`:LspHover`| Show hover information |
-|`:LspImplementation` | Show implementation of interface |
+|`:LspImplementation` | Show implementation of interface in the current window |
 |`:LspNextError`| jump to next error |
 |`:LspNextReference`| jump to next reference to the symbol under cursor |
+|`:LspPeekDeclaration`| Go to the declaration of the word under the cursor, but open in preview window |
+|`:LspPeekDefinition`| Go to the definition of the word under the cursor, but open in preview window |
+|`:LspPeekImplementation`| Go to the implementation of an interface, but open in preview window |
+|`:LspPeekTypeDefinition`| Go to the type definition of the word under the cursor, but open in preview window |
 |`:LspPreviousError`| jump to previous error |
 |`:LspPreviousReference`| jump to previous reference to the symbol under cursor |
 |`:LspReferences`| Find references |
 |`:LspRename`| Rename symbol |
 |`:LspStatus` | Show the status of the language server |
-|`:LspTypeDefinition`| Go to type definition |
+|`:LspTypeDefinition`| Go to the type definition of the word under the cursor, and open in the current window |
 |`:LspWorkspaceSymbol`| Search/Show workspace symbol |
 
 ### Diagnostics
@@ -106,7 +118,20 @@ highlight link LspErrorText GruvboxRedSign " requires gruvbox
 highlight clear LspWarningLine
 ```
 
-### Virtual text
+#### Highlights
+
+Highlighting diagnostics requires either NeoVim 0.3+ or Vim with patch 8.1.0579.
+They are enabled by default when supported, but can be turned off respectively by
+
+```viml
+let g:lsp_highlights_enabled = 0
+let g:lsp_textprop_enabled = 0
+```
+
+Can be customized by setting or linking `LspErrorHighlight`, `LspWarningHighlight`,
+`LspInformationHighlight` and `LspHintHighlight` highlight groups.
+
+#### Virtual text
 
 In NeoVim 0.3 or newer you can use virtual text feature (enabled by default).
 You can disable it by adding
