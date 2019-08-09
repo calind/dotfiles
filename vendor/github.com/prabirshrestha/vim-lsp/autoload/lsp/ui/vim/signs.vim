@@ -1,7 +1,7 @@
 " TODO: handle !has('signs')
 " TODO: handle signs clearing when server exits
 " https://github.com/vim/vim/pull/3652
-let s:supports_signs = has('signs') && has('patch-8.1.0772') && exists('*sign_define')
+let s:supports_signs = exists('*sign_define') && (has('nvim') || has('patch-8.1.0772'))
 let s:enabled = 0
 let s:signs = {} " { server_name: { path: {} } }
 let s:severity_sign_names_mapping = {
@@ -65,11 +65,19 @@ endfunction
 
 function! lsp#ui#vim#signs#disable() abort
     if s:enabled
-        " TODO: clear all vim_lsp signs
+        call s:clear_all_signs()
         call s:undefine_signs()
         let s:enabled = 0
         call lsp#log('vim-lsp signs disabled')
     endif
+endfunction
+
+function! s:clear_all_signs() abort
+    if !s:supports_signs | return | endif
+    for l:server_name in lsp#get_server_names()
+        let l:sign_group = s:get_sign_group(l:server_name)
+        call sign_unplace(l:sign_group)
+    endfor
 endfunction
 
 function! s:undefine_signs() abort
