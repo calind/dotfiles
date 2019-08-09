@@ -192,13 +192,13 @@ if executable('/usr/local/opt/intelephense/node_modules/.bin/intelephense')
          \ 'name': 'intelephense',
          \ 'cmd': {server_info->['/usr/local/opt/intelephense/node_modules/.bin/intelephense', '--stdio']},
          \ 'initialization_options': {"storagePath": "/tmp/intelephense"},
-         \ 'whitelist': ['php'],
+         \ 'whitelist': ['php', 'php.wp'],
          \ })
 elseif filereadable('/usr/local/php-language-server/vendor/bin/php-language-server.php')
     au User lsp_setup call lsp#register_server({
          \ 'name': 'php-language-server',
          \ 'cmd': {server_info->['php', '/usr/local/php-language-server/vendor/bin/php-language-server.php']},
-         \ 'whitelist': ['php'],
+         \ 'whitelist': ['php', 'php.wp'],
          \ })
 endif
 "}}}
