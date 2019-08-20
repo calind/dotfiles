@@ -136,14 +136,14 @@ endif
 let g:qf_mapping_ack_style = 1
 nmap <Leader>q <Plug>(qf_qf_toggle_stay)
 au! FileType qf nmap <buffer> q <Plug>(qf_qf_toggle)
-
 "}}}
 
 " Configure vim-lsp "{{{
+let g:lsp_diagnostics_enabled = 0     " we use w0rp/ale for linting
 let g:lsp_signs_enabled = 0           " we use w0rp/ale for linting
 let g:lsp_diagnostics_echo_cursor = 0 " we use w0rp/ale for linting
 
-let g:lsp_text_edit_enabled = 0
+" let g:lsp_text_edit_enabled = 0
 
 nnoremap <Leader>d :LspDefinition<CR>
 nnoremap <Leader>r :LspRename<CR>
