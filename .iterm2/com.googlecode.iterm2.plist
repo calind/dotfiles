@@ -1043,10 +1043,26 @@
 	</dict>
 	<key>Default Bookmark Guid</key>
 	<string>DC78D7F0-82F1-4D3D-940E-9E5B7A8A206C</string>
+	<key>DisableFullscreenTransparency</key>
+	<false/>
+	<key>EnableAPIServer</key>
+	<true/>
+	<key>EnableDivisionView</key>
+	<false/>
+	<key>EnableProxyIcon</key>
+	<false/>
 	<key>HapticFeedbackForEsc</key>
 	<false/>
-	<key>HideTab</key>
+	<key>HideActivityIndicator</key>
 	<false/>
+	<key>HideMenuBarInFullscreen</key>
+	<true/>
+	<key>HideScrollbar</key>
+	<false/>
+	<key>HideTab</key>
+	<true/>
+	<key>HideTabNumber</key>
+	<true/>
 	<key>HotkeyMigratedFromSingleToMulti</key>
 	<true/>
 	<key>LoadPrefsFromCustomFolder</key>
@@ -1097,7 +1113,7 @@
 		<integer>1</integer>
 	</dict>
 	<key>NSWindow Frame NSFontPanel</key>
-	<string>745 231 445 77 0 0 1440 877 </string>
+	<string>1104 245 445 77 0 0 1920 1057 </string>
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>410 363 620 392 0 0 1440 877 </string>
 	<key>NSWindow Frame SessionsPreferences</key>
@@ -1410,6 +1426,8 @@
 			<real>1</real>
 			<key>Idle Code</key>
 			<integer>0</integer>
+			<key>Initial Use Transparency</key>
+			<false/>
 			<key>Jobs to Ignore</key>
 			<array>
 				<string>rlogin</string>
@@ -1919,6 +1937,19 @@
 			</dict>
 			<key>Sync Title</key>
 			<false/>
+			<key>Tab Color</key>
+			<dict>
+				<key>Alpha Component</key>
+				<real>1</real>
+				<key>Blue Component</key>
+				<real>0.16078431372549021</real>
+				<key>Color Space</key>
+				<string>sRGB</string>
+				<key>Green Component</key>
+				<real>0.12156862745098039</real>
+				<key>Red Component</key>
+				<real>0.0</real>
+			</dict>
 			<key>Tags</key>
 			<array/>
 			<key>Terminal Type</key>
@@ -1938,6 +1969,10 @@
 			<key>Use Italic Font</key>
 			<true/>
 			<key>Use Non-ASCII Font</key>
+			<false/>
+			<key>Use Tab Color</key>
+			<false/>
+			<key>Use Underline Color</key>
 			<false/>
 			<key>Vertical Spacing</key>
 			<real>1</real>
@@ -2595,6 +2630,7 @@
 	<array>
 		<string>3.2.9</string>
 		<string>3.3.0</string>
+		<string>3.3.2</string>
 	</array>
 	<key>NoSyncCommandHistoryHasEverBeenUsed</key>
 	<true/>
@@ -2614,7 +2650,7 @@
 	<key>NoSyncLastTipTime</key>
 	<real>586381085.33260703</real>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>1</integer>
+	<integer>5</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -2975,6 +3011,14 @@
 				<key>isTerminal</key>
 				<true/>
 				<key>name</key>
+				<string>currentTab.currentSession.termid</string>
+				<key>nonterminalContext</key>
+				<integer>0</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
+				<true/>
+				<key>name</key>
 				<string>currentTab.currentSession.terminalWindowName</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
@@ -3056,6 +3100,14 @@
 				<true/>
 				<key>name</key>
 				<string>currentTab.currentSession.path</string>
+				<key>nonterminalContext</key>
+				<integer>0</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
+				<true/>
+				<key>name</key>
+				<string>number</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
 			</dict>
@@ -3333,16 +3385,16 @@
 	</dict>
 	<key>NoSyncSearchHistory</key>
 	<array>
+		<string>overri</string>
+		<string>Unut</string>
+		<string>'Test Un</string>
+		<string>solar</string>
+		<string>import</string>
+		<string>build</string>
+		<string>drone</string>
 		<string>max-time</string>
 		<string>yarn</string>
 		<string>shut</string>
-		<string>string</string>
-		<string>Exceptions</string>
-		<string>BlobStore</string>
-		<string>Blog</string>
-		<string>memca</string>
-		<string>60f1305</string>
-		<string>BUILD_N</string>
 	</array>
 	<key>NoSyncTimeOfFirstLaunchOfVersionWithTip</key>
 	<real>564936642.54610896</real>
@@ -3350,8 +3402,12 @@
 	<array>
 		<string>000</string>
 	</array>
+	<key>OpenTmuxWindowsIn</key>
+	<integer>0</integer>
 	<key>PasteTabToStringTabStopSize</key>
 	<integer>1</integer>
+	<key>PerPaneBackgroundImage</key>
+	<true/>
 	<key>PointerActions</key>
 	<dict>
 		<key>Button,1,1,,</key>
@@ -3387,6 +3443,8 @@
 	</dict>
 	<key>PrefsCustomFolder</key>
 	<string>/Users/calin/.iterm2</string>
+	<key>QuitWhenAllWindowsClosed</key>
+	<true/>
 	<key>SGTRecentFileSearches</key>
 	<array>
 		<dict>
@@ -3441,8 +3499,10 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-08-20T08:37:41Z</date>
+	<date>2019-08-27T11:35:12Z</date>
 	<key>SUSendProfileInfo</key>
+	<false/>
+	<key>SUUpdateRelaunchingMarker</key>
 	<false/>
 	<key>ShowBookmarkName</key>
 	<false/>
@@ -3454,15 +3514,29 @@
 	<false/>
 	<key>StatusBarPosition</key>
 	<integer>1</integer>
+	<key>StretchTabsToFillBar</key>
+	<true/>
 	<key>TabStyle</key>
 	<integer>1</integer>
 	<key>TabStyleWithAutomaticOption</key>
-	<integer>6</integer>
+	<integer>5</integer>
+	<key>TabViewType</key>
+	<integer>0</integer>
+	<key>TabsHaveCloseButton</key>
+	<false/>
+	<key>TerminalMargin</key>
+	<integer>20</integer>
+	<key>TerminalVMargin</key>
+	<integer>20</integer>
+	<key>UseBorder</key>
+	<false/>
 	<key>UseExperimentalFontMetrics</key>
 	<false/>
 	<key>UseMetal</key>
 	<true/>
 	<key>VisualIndicatorForEsc</key>
+	<false/>
+	<key>WindowNumber</key>
 	<false/>
 	<key>WordCharacters</key>
 	<string>/-+\~_.</string>
@@ -3475,7 +3549,7 @@
 	<key>findRegex_iTerm</key>
 	<false/>
 	<key>iTerm Version</key>
-	<string>3.3.0</string>
+	<string>3.3.2</string>
 	<key>kCPFavoritesUserDefaultsKey</key>
 	<array>
 		<data>
