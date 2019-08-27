@@ -75,6 +75,7 @@ set splitright
 set title " automatically set window title
 set termguicolors
 colorscheme solarized8
+let g:solarized_extra_hi_groups=1 " enable Solarized filetype-specific syntax highlighting groups
 set wildmenu " visual autocomplete for command menu
 set lazyredraw          " redraw only when we need to.
 
