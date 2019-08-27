@@ -1,4 +1,10 @@
-VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
+# vim: set ft=sh:
+if [ -x "/usr/local/bin/python" ] ; then
+    VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python
+else
+    VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
+fi
+
 VIRTUAL_ENV_DISABLE_PROMPT=1
 VIRTUALENVWRAPPER_SH=$(which virtualenvwrapper.sh)
 if [ -x "$VIRTUALENVWRAPPER_SH" ] ; then
