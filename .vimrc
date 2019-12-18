@@ -324,7 +324,7 @@ au BufRead,BufNewFile *.phpt setf php
 au FileType php setl textwidth=120
 
 " WordPress indents
-au BufRead,BufNewFile wp-*.php,class-*.php,wp-includes/*.php,wp-admin/*.php,wp-content/*.php,object-cache.php,advanced-cache.php set filetype=php.wp
+au BufRead,BufNewFile wp-*.php,class-*.php,interface-*.php,wp-includes/*.php,wp-admin/*.php,wp-content/*.php,object-cache.php,advanced-cache.php set filetype=php.wp
 au FileType php.wp setl noet ci pi sts=0 sw=4 ts=4
 au FileType php.wp setl nolist
 
