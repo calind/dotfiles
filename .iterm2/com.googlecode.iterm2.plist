@@ -1043,6 +1043,10 @@
 	</dict>
 	<key>Default Bookmark Guid</key>
 	<string>DC78D7F0-82F1-4D3D-940E-9E5B7A8A206C</string>
+	<key>DimInactiveSplitPanes</key>
+	<true/>
+	<key>DimOnlyText</key>
+	<true/>
 	<key>DisableFullscreenTransparency</key>
 	<false/>
 	<key>EnableAPIServer</key>
@@ -1062,7 +1066,7 @@
 	<key>HideTab</key>
 	<true/>
 	<key>HideTabNumber</key>
-	<true/>
+	<false/>
 	<key>HotkeyMigratedFromSingleToMulti</key>
 	<true/>
 	<key>LoadPrefsFromCustomFolder</key>
@@ -1123,7 +1127,7 @@
 	<key>NSWindow Frame iTerm Window 0</key>
 	<string>0 0 1920 1057 0 0 1920 1057 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>0 352 650 525 0 0 1440 877 </string>
+	<string>0 0 1920 1057 0 0 1920 1057 </string>
 	<key>New Bookmarks</key>
 	<array>
 		<dict>
@@ -2628,9 +2632,13 @@
 	</array>
 	<key>NoSyncAllAppVersions</key>
 	<array>
-		<string>3.2.9</string>
-		<string>3.3.0</string>
 		<string>3.3.2</string>
+		<string>3.2.9</string>
+		<string>3.3.5</string>
+		<string>3.3.4</string>
+		<string>3.3.0</string>
+		<string>3.3.3</string>
+		<string>3.3.6</string>
 	</array>
 	<key>NoSyncCommandHistoryHasEverBeenUsed</key>
 	<true/>
@@ -2650,7 +2658,7 @@
 	<key>NoSyncLastTipTime</key>
 	<real>586381085.33260703</real>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>5</integer>
+	<integer>17</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -3188,9 +3196,25 @@
 			</dict>
 			<dict>
 				<key>isTerminal</key>
+				<false/>
+				<key>name</key>
+				<string>title</string>
+				<key>nonterminalContext</key>
+				<integer>1</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
 				<true/>
 				<key>name</key>
 				<string>tmuxWindowTitle</string>
+				<key>nonterminalContext</key>
+				<integer>0</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
+				<true/>
+				<key>name</key>
+				<string>title</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
 			</dict>
@@ -3396,6 +3420,19 @@
 		<string>yarn</string>
 		<string>shut</string>
 	</array>
+	<key>NoSyncSearchHistory2</key>
+	<array>
+		<string>35.192.209.116</string>
+		<string>build docker imagesn</string>
+		<string>build docker build docker imagesn</string>
+		<string>coolist</string>
+		<string>cools</string>
+		<string>2019</string>
+		<string>Necktie-cocktail-attire-for-men</string>
+		<string>create data</string>
+		<string>drop data</string>
+		<string>dropd</string>
+	</array>
 	<key>NoSyncTimeOfFirstLaunchOfVersionWithTip</key>
 	<real>564936642.54610896</real>
 	<key>NoSyncTipsToNotShow</key>
@@ -3404,6 +3441,8 @@
 	</array>
 	<key>OpenTmuxWindowsIn</key>
 	<integer>0</integer>
+	<key>PMPrintingExpandedStateForPrint2</key>
+	<false/>
 	<key>PasteTabToStringTabStopSize</key>
 	<integer>1</integer>
 	<key>PerPaneBackgroundImage</key>
@@ -3443,6 +3482,8 @@
 	</dict>
 	<key>PrefsCustomFolder</key>
 	<string>/Users/calin/.iterm2</string>
+	<key>Print In Black And White</key>
+	<true/>
 	<key>QuitWhenAllWindowsClosed</key>
 	<true/>
 	<key>SGTRecentFileSearches</key>
@@ -3499,7 +3540,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-08-27T11:35:12Z</date>
+	<date>2019-10-29T09:10:50Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>
@@ -3507,7 +3548,7 @@
 	<key>ShowBookmarkName</key>
 	<false/>
 	<key>ShowFullScreenTabBar</key>
-	<false/>
+	<true/>
 	<key>ShowMetalFPSmeter</key>
 	<true/>
 	<key>SoundForEsc</key>
@@ -3523,11 +3564,11 @@
 	<key>TabViewType</key>
 	<integer>0</integer>
 	<key>TabsHaveCloseButton</key>
-	<false/>
+	<true/>
 	<key>TerminalMargin</key>
-	<integer>20</integer>
+	<integer>5</integer>
 	<key>TerminalVMargin</key>
-	<integer>20</integer>
+	<integer>5</integer>
 	<key>UseBorder</key>
 	<false/>
 	<key>UseExperimentalFontMetrics</key>
@@ -3549,7 +3590,7 @@
 	<key>findRegex_iTerm</key>
 	<false/>
 	<key>iTerm Version</key>
-	<string>3.3.2</string>
+	<string>3.3.6</string>
 	<key>kCPFavoritesUserDefaultsKey</key>
 	<array>
 		<data>
