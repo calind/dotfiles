@@ -93,6 +93,9 @@ function! s:on_exit(jobid, status, event) abort
         if has_key(l:jobinfo.opts, 'on_exit')
             call l:jobinfo.opts.on_exit(a:jobid, a:status, a:event)
         endif
+        if has_key(s:jobs, a:jobid)
+            call remove(s:jobs, a:jobid)
+        endif
     endif
 endfunction
 
@@ -173,12 +176,16 @@ function! s:job_stop(jobid) abort
     if has_key(s:jobs, a:jobid)
         let l:jobinfo = s:jobs[a:jobid]
         if l:jobinfo.type == s:job_type_nvimjob
-            call jobstop(a:jobid)
+            " See: vital-Whisky/System.Job
+            try
+              call jobstop(a:jobid)
+            catch /^Vim\%((\a\+)\)\=:E900/
+              " NOTE:
+              " Vim does not raise exception even the job has already closed so fail
+              " silently for 'E900: Invalid job id' exception
+            endtry
         elseif l:jobinfo.type == s:job_type_vimjob
             call job_stop(s:jobs[a:jobid].job)
-        endif
-        if has_key(s:jobs, a:jobid)
-            call remove(s:jobs, a:jobid)
         endif
     endif
 endfunction
