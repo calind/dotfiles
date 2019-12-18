@@ -85,11 +85,11 @@ function! s:handle_completion(server_name, opt, ctx, data) abort
         let l:incomplete = 0
     endif
 
-    call map(l:items, 'lsp#omni#get_vim_completion_item(v:val)')
+    call map(l:items, 'lsp#omni#get_vim_completion_item(v:val, a:server_name)')
 
     let l:col = a:ctx['col']
     let l:typed = a:ctx['typed']
-    let l:kw = matchstr(l:typed, '\w\+$')
+    let l:kw = matchstr(l:typed, '\k\+$')
     let l:kwlen = len(l:kw)
     let l:startcol = l:col - l:kwlen
 
