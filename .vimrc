@@ -144,6 +144,8 @@ let g:lsp_diagnostics_enabled = 0     " we use w0rp/ale for linting
 let g:lsp_signs_enabled = 0           " we use w0rp/ale for linting
 let g:lsp_diagnostics_echo_cursor = 0 " we use w0rp/ale for linting
 
+let g:lsp_highlight_references_enabled = 1
+
 " let g:lsp_text_edit_enabled = 0
 
 nnoremap <Leader>d :LspDefinition<CR>
