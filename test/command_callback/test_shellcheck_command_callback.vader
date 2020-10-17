@@ -2,7 +2,7 @@ Before:
   call ale#assert#SetUpLinterTest('sh', 'shellcheck')
   call ale#test#SetFilename('test.sh')
 
-  let b:prefix = ale#path#CdString(ale#path#Simplify(g:dir))
+  let b:prefix = ale#path#BufferCdString(bufnr(''))
   let b:suffix = ' -f gcc -'
 
 After:
@@ -13,6 +13,11 @@ After:
 
 Execute(The default shellcheck command should be correct):
   AssertLinter 'shellcheck', b:prefix . ale#Escape('shellcheck') . b:suffix
+
+Execute(The option disabling changing directories should work):
+  let g:ale_sh_shellcheck_change_directory = 0
+
+  AssertLinter 'shellcheck', ale#Escape('shellcheck') . b:suffix
 
 Execute(The shellcheck command should accept options):
   let b:ale_sh_shellcheck_options = '--foobar'
