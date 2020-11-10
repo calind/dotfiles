@@ -357,8 +357,8 @@ au FileType php.wp setl nolist
 " Configure protocol buffer "{{{
 
 au FileType proto setl sw=2 ts=2
-let g:ale_linters.proto = ['prototool']
-let g:ale_proto_prototool_command = "lint"
+let g:ale_linters.proto = ['prototool-lint']
+let g:ale_fixers.proto = ['remove_trailing_lines', 'trim_whitespace']
 
 " }}}"
 
