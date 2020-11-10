@@ -232,8 +232,7 @@ let g:asyncomplete_buffer_clear_cache = 1
 
 call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
     \ 'name': 'buffer',
-    \ 'whitelist': ['*'],
-    \ 'blacklist': ['go', 'php'],
+    \ 'whitelist': ['markdown', 'text'],
     \ 'completor': function('asyncomplete#sources#buffer#completor'),
     \ }))
 
