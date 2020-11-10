@@ -172,6 +172,29 @@ if executable('bash-language-server')
         \ })
 endif
 
+if executable('pyls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'pyls',
+        \ 'cmd': {server_info->['pyls']},
+        \ 'whitelist': ['python'],
+        \ })
+endif
+
+if executable('typescript-language-server')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'javascript support using typescript-language-server',
+        \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+        \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'package.json'))},
+        \ 'whitelist': ['javascript', 'javascript.jsx', 'javascriptreact'],
+        \ })
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'typescript-language-server',
+        \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+        \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
+        \ 'whitelist': ['typescript', 'typescript.tsx', 'typescriptreact'],
+        \ })
+endif
+
 if executable('/usr/local/opt/intelephense/node_modules/.bin/intelephense')
     au User lsp_setup call lsp#register_server({
          \ 'name': 'intelephense',
@@ -294,6 +317,29 @@ autocmd BufEnter * :call s:project_vimrc()
 
 " Configure markdown "{{{
 au FileType markdown vmap <Leader>a :EasyAlign*<Bar><Enter>
+" }}}"
+
+" Configure python "{{{
+
+let g:ale_fixers.python = ['black',  'isort', 'remove_trailing_lines', 'trim_whitespace']
+
+" }}}"
+
+" Configure JavaScript/TypeScript/React/CSS "{{{
+
+au FileType javacript setl sw=2 ts=2 sts=2
+au FileType javacriptreact setl sw=2 ts=2 sts=2
+au FileType typescript setl sw=2 ts=2 sts=2
+au FileType typescriptreact setl sw=2 ts=2 sts=2
+
+let g:ale_fixers.javascript = ['eslint', 'prettier', 'remove_trailing_lines', 'trim_whitespace']
+let g:ale_fixers.javascriptreact = ['eslint', 'prettier', 'remove_trailing_lines', 'trim_whitespace']
+
+let g:ale_fixers.typescript = ['eslint', 'prettier', 'remove_trailing_lines', 'trim_whitespace']
+let g:ale_fixers.typescriptreact = ['eslint', 'prettier', 'remove_trailing_lines', 'trim_whitespace']
+
+let g:ale_fixers.css = ['prettier', 'remove_trailing_lines', 'trim_whitespace']
+
 " }}}"
 
 " Configure php "{{{
