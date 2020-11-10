@@ -3,7 +3,7 @@ function! lsp#utils#is_file_uri(uri) abort
 endfunction
 
 function! lsp#utils#is_remote_uri(uri) abort
-    return a:uri =~# '^\w\+::' || a:uri =~# '^\w\+://'
+    return a:uri =~# '^\w\+::' || a:uri =~# '^[a-z][a-z0-9+.-]*://'
 endfunction
 
 function! s:decode_uri(uri) abort
@@ -42,7 +42,7 @@ endfunction
 
 if has('win32') || has('win64')
     function! lsp#utils#path_to_uri(path) abort
-        if empty(a:path)
+        if empty(a:path) || lsp#utils#is_remote_uri(a:path)
             return a:path
         else
             " You must not encode the volume information on the path if
@@ -58,7 +58,7 @@ if has('win32') || has('win64')
     endfunction
 else
     function! lsp#utils#path_to_uri(path) abort
-        if empty(a:path)
+        if empty(a:path) || lsp#utils#is_remote_uri(a:path)
             return a:path
         else
             return s:encode_uri(a:path, 0, 'file://')
@@ -110,6 +110,28 @@ function! lsp#utils#find_nearest_parent_file(path, filename) abort
     endif
 endfunction
 
+function! lsp#utils#_compare_nearest_path(matches, lhs, rhs) abort
+  let l:llhs = len(a:lhs)
+  let l:lrhs = len(a:rhs)
+  if l:llhs ># l:lrhs
+    return -1
+  elseif l:llhs <# l:lrhs
+    return 1
+  endif
+  if a:matches[a:lhs] ># a:matches[a:rhs]
+    return -1
+  elseif a:matches[a:lhs] <# a:matches[a:rhs]
+    return 1
+  endif
+  return 0
+endfunction
+
+function! lsp#utils#_nearest_path(matches) abort
+  return empty(a:matches) ?
+              \ '' :
+              \ sort(keys(a:matches), function('lsp#utils#_compare_nearest_path', [a:matches]))[0]
+endfunction
+
 " Find a nearest to a `path` parent filename `filename` by traversing the filesystem upwards
 " The filename ending with '/' or '\' will be regarded as directory name,
 " otherwith as file name
@@ -127,10 +149,8 @@ function! lsp#utils#find_nearest_parent_file_directory(path, filename) abort
                 endif
             endif
         endfor
-        return empty(l:matched_paths) ?
-                    \ '' :
-                    \ keys(l:matched_paths)[index(values(l:matched_paths), max(values(l:matched_paths)))]
 
+        return lsp#utils#_nearest_path(l:matched_paths)
     elseif type(a:filename) == 1
         if a:filename[-1:] ==# '/' || a:filename[-1:] ==# '\'
             let l:modify_str = ':p:h:h'
@@ -329,3 +349,52 @@ function! lsp#utils#_split_by_eol(text) abort
     return split(a:text, '\r\n\|\r\|\n', v:true)
 endfunction
 
+" parse command options like "-key" or "-key=value"
+function! lsp#utils#parse_command_options(params) abort
+    let l:result = {}
+    for l:param in a:params
+        let l:match = matchlist(l:param, '-\{1,2}\zs\([^=]*\)\(=\(.*\)\)\?\m')
+        let l:result[l:match[1]] = l:match[3]
+    endfor
+    return l:result
+endfunction
+
+" polyfill for the neovim wait function
+if exists('*wait')
+    function! lsp#utils#_wait(timeout, condition, ...) abort
+        if type(a:timeout) != type(0)
+            return -3
+        endif
+        if type(get(a:000, 0, 0)) != type(0)
+            return -3
+        endif
+        while 1
+            let l:result=call('wait', extend([a:timeout, a:condition], a:000))
+            if l:result != -3 " ignore spurious errors
+                return l:result
+            endif
+        endwhile
+    endfunction
+else
+    function! lsp#utils#_wait(timeout, condition, ...) abort
+        try
+            let l:timeout = a:timeout / 1000.0
+            let l:interval = get(a:000, 0, 200)
+            let l:Condition = a:condition
+            if type(l:Condition) != type(function('eval'))
+                let l:Condition = function('eval', l:Condition)
+            endif
+            let l:start = reltime()
+            while l:timeout < 0 || reltimefloat(reltime(l:start)) < l:timeout
+                if l:Condition()
+                    return 0
+                endif
+
+                execute 'sleep ' . l:interval . 'm'
+            endwhile
+            return -1
+        catch /^Vim:Interrupt$/
+            return -2
+        endtry
+    endfunction
+endif
