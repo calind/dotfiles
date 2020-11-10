@@ -156,28 +156,10 @@ nnoremap <Leader>s :LspWorkspaceSymbol<CR>
 " let g:lsp_log_file = expand('~/vim-lsp.log')
 
 
-if executable('gopls-bingo')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'gopls-bingo',
-        \ 'cmd': {server_info->['gopls-bingo', '-mode', 'stdio']},
-        \ 'whitelist': ['go'],
-        \ })
-elseif executable('gopls')
+if executable('gopls')
     au User lsp_setup call lsp#register_server({
         \ 'name': 'gopls',
         \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
-        \ 'whitelist': ['go'],
-        \ })
-elseif executable('bingo')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'bingo',
-        \ 'cmd': {server_info->['bingo', '-mode', 'stdio', '-enhance-signature-help', '-goimports-prefix', 'github.com/presslabs']},
-        \ 'whitelist': ['go'],
-        \ })
-elseif executable('go-langserver')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'go-langserver',
-        \ 'cmd': {server_info->['go-langserver', '-mode', 'stdio']},
         \ 'whitelist': ['go'],
         \ })
 endif
