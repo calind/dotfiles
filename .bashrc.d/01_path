@@ -1,6 +1,6 @@
 PATH="/usr/local/sbin:$PATH:/usr/local/kubebuilder/bin"
 
-if [ "$(uname)" == "Darwin" ] ; then
+if [ "$(uname -s)" == "Darwin" ] ; then
     # use brewed getopt
     PATH="/usr/local/opt/gnu-getopt/bin:$PATH"
     PATH="$HOME/Library/Python/2.7/bin:$HOME/Library/Python/3.7/bin:$PATH"
