@@ -23,6 +23,21 @@ shopt -s checkwinsize
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
+# Uncomment for bashrc tracing
+# TRACE=1
+
+# make gdate compatible across Linux/MacOS
+if ! hash gdate > /dev/null 2>&1 ; then
+    if [ "$(uname -s)" = "Darwin" ] ; then
+        alias gdate=true
+        if [ -n "$TRACE" ] ; then
+            echo "You must install homebrewed coreutils" >&2
+        fi
+    else
+        alias gdate=date
+    fi
+fi
+
 if [ -f "/etc/bash_completion" ] && ! shopt -oq posix; then
     START=$(gdate +%s.%N)
     source "/etc/bash_completion"
