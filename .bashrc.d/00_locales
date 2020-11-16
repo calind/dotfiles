@@ -1,5 +1,5 @@
 #!/bin/bash
-if hash defaults >&2 ; then
+if hash defaults > /dev/null 2>&1 ; then
     LANG="$(defaults read -g AppleLocale)"
     export LANG="${LANG/en_RO/en_US}.UTF-8"
     export LC_COLLATE=C
