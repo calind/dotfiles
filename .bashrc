@@ -20,6 +20,21 @@ HISTFILESIZE=2000
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
+# setup XDG Base Directory layout
+if [ -z "$HOME" ] ; then
+    echo "\$HOME not set. This might cause lots of errors" >&2
+else
+    if [ -z "$XDG_CONFIG_HOME" ] ; then
+        XDG_CONFIG_HOME="$HOME/.config"
+    fi
+    if [ -z "$XDG_CACHE_HOME" ] ; then
+        XDG_CACHE_HOME="$HOME/.cache"
+    fi
+    if [ -z "$XDG_DATA_HOME" ] ; then
+        XDG_DATA_HOME="$HOME/.local/share"
+    fi
+fi
+
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
