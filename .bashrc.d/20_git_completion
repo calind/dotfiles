@@ -1,1 +1,3 @@
-complete -o default -o nospace -F _git g
+#!/bin/bash
+
+__git_complete g __git_main
