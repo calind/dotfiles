@@ -371,7 +371,7 @@ let g:go_fmt_command = "gofmt"
 let g:go_def_mapping_enabled = 0
 
 let g:ale_go_gofmt_options = '-s'
-let g:ale_go_goimports_options = '-local github.com/presslabs'
+let g:ale_go_goimports_options = '-local github.com/bitpoke'
 let g:ale_fixers.go = ['gofmt', 'goimports', 'remove_trailing_lines', 'trim_whitespace']
 
 let g:ale_go_golangci_lint_package = 1
