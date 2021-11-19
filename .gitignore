@@ -9,6 +9,8 @@ Movies/*
 Public/*
 Documents/*
 VirtualBox VMs/*
+Scans/*
+Local Sites/*
 
 *.xdb
 key.*
