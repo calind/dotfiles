@@ -6,7 +6,10 @@ set cpo&vim
 " compile the tests instead of running them (useful to catch errors in the
 " test files). Any other argument is appended to the final `go test` command.
 function! go#test#Test(bang, compile, ...) abort
-  let args = ["test", '-tags', go#config#BuildTags()]
+  let args = ["test"]
+  if len(go#config#BuildTags()) > 0
+    call extend(args, ["-tags", go#config#BuildTags()])
+  endif
 
   " don't run the test, only compile it. Useful to capture and fix errors.
   if a:compile
@@ -32,6 +35,7 @@ function! go#test#Test(bang, compile, ...) abort
 
   if go#config#TermEnabled()
     call go#term#new(a:bang, ["go"] + args, s:errorformat())
+    return
   endif
 
   if go#util#has_job()
@@ -70,13 +74,11 @@ function! go#test#Test(bang, compile, ...) abort
 
   let l:listtype = go#list#Type("GoTest")
 
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
-  let dir = getcwd()
-  execute cd fnameescape(expand("%:p:h"))
+  let l:dir = go#util#Chdir(expand("%:p:h"))
 
   if l:err != 0
     let l:winid = win_getid(winnr())
-    call go#list#ParseFormat(l:listtype, s:errorformat(), split(out, '\n'), l:cmd)
+    call go#list#ParseFormat(l:listtype, s:errorformat(), split(out, '\n'), l:cmd, 0)
     let errors = go#list#Get(l:listtype)
     call go#list#Window(l:listtype, len(errors))
     if empty(errors)
@@ -96,30 +98,18 @@ function! go#test#Test(bang, compile, ...) abort
       call go#util#EchoSuccess("[test] PASS")
     endif
   endif
-  execute cd . fnameescape(dir)
+  call go#util#Chdir(l:dir)
 endfunction
 
 " Testfunc runs a single test that surrounds the current cursor position.
 " Arguments are passed to the `go test` command.
 function! go#test#Func(bang, ...) abort
-  " search flags legend (used only)
-  " 'b' search backward instead of forward
-  " 'c' accept a match at the cursor position
-  " 'n' do Not move the cursor
-  " 'W' don't wrap around the end of the file
-  "
-  " for the full list
-  " :help search
-  let test = search('func \(Test\|Example\)', "bcnW")
-
-  if test == 0
-    echo "vim-go: [test] no test found immediate to cursor"
+  let l:test = go#util#TestName()
+  if l:test is ''
+    call go#util#EchoWarning("[test] no test found immediate to cursor")
     return
-  end
-
-  let line = getline(test)
-  let name = split(split(line, " ")[1], "(")[0]
-  let args = [a:bang, 0, "-run", name . "$"]
+  endif
+  let args = [a:bang, 0, "-run", l:test . "$"]
 
   if a:0
     call extend(args, a:000)
@@ -166,9 +156,17 @@ function! s:errorformat() abort
   let format .= ",%-G" . indent . "%#--- PASS: %.%#"
 
   " Match failure lines.
-  "
+
+  " Example failures start with '--- FAIL: ', followed by the example name
+  " followed by a space , followed by the duration of the example in
+  " parantheses. They aren't nested, though, so don't check for indentation.
+  " The errors from them also aren't indented and don't report file location
+  " or line numbers, so those won't show up. This will at least let the user
+  " know which example failed, though.
+  let format .= ',%G--- FAIL: %\\%(Example%\\)%\\@=%m (%.%#)'
+
   " Test failures start with '--- FAIL: ', followed by the test name followed
-  " by a space the duration of the test in parentheses
+  " by a space, followed by the duration of the test in parentheses.
   "
   " e.g.:
   "   '--- FAIL: TestSomething (0.00s)'
@@ -205,6 +203,14 @@ function! s:errorformat() abort
   " get concatenated in the quickfix list, which is not what users typically
   " want when writing a newline into their test output.
   let format .= ",%G" . indent . "%#%\\t%\\{2}%m"
+  " }}}1
+
+  " Go 1.14 test verbose output {{{1
+  " Match test output lines similarly to Go 1.11 test output lines, but they
+  " have the test name followed by a colon before the filename when run with
+  " the -v flag.
+  let format .= ",%A" . indent . "%\\+%[%^:]%\\+: %f:%l: %m"
+  let format .= ",%A" . indent . "%\\+%[%^:]%\\+: %f:%l: "
   " }}}1
 
   " Go 1.11 test output {{{1

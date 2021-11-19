@@ -18,19 +18,33 @@ function! s:issuebody() abort
   for l in lines
     let body = add(body, l)
 
-    if l =~ '^\* Vim version'
-      redir => out
-        silent version
-      redir END
+    if l =~ '^<!-- :version'
+      let out = execute('version')
       let body = extend(body, split(out, "\n")[0:2])
-    elseif l =~ '^\* Go version'
+    elseif l =~ '^<!-- go version -->'
       let [out, err] = go#util#Exec(['go', 'version'])
       let body = add(body, substitute(l:out, rtrimpat, '', ''))
-    elseif l =~ '^\* Go environment'
-      let [out, err] = go#util#Exec(['go', 'env'])
+    elseif l =~ '^<!-- go env -->'
+      let [out, err] = go#util#ExecInDir(['go', 'env'])
+      let body = add(body, substitute(l:out, rtrimpat, '', ''))
+    elseif l=~ '^<!-- gopls version -->'
+      let [out, err] = go#util#Exec(['gopls', 'version'])
       let body = add(body, substitute(l:out, rtrimpat, '', ''))
     endif
   endfor
+
+  let body = add(body, "\n#### vim-go configuration:\n<details><summary>vim-go configuration</summary><br><pre>")
+
+  for k in keys(g:)
+    if k =~ '^go_'
+      let body = add(body, 'g:' . k . ' = ' . string(get(g:, k)))
+    endif
+  endfor
+
+  let body = add(body, '</pre></details>')
+
+  let body = add(body, printf("\n#### filetype detection configuration:\n<details><summary>filetype detection</summary><br><pre>%s", execute('filetype')))
+  let body = add(body, '</pre></details>')
 
   return join(body, "\n")
 endfunction
