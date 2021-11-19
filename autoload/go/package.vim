@@ -39,7 +39,7 @@ function! s:paths() abort
     if executable('go')
       let s:goroot = go#util#env("goroot")
       if go#util#ShellError() != 0
-        echomsg '''go env GOROOT'' failed'
+        call go#util#EchoError('`go env GOROOT` failed')
       endif
     else
       let s:goroot = $GOROOT
@@ -82,6 +82,10 @@ function! s:vendordirs() abort
     if l:err != 0
       return []
     endif
+    if empty(l:root)
+      return []
+    endif
+
     let l:root = split(l:root, '\n')[0] . go#util#PathSep() . 'src'
 
     let [l:dir, l:err] = go#util#ExecInDir(['go', 'list', '-f', '{{.Dir}}'])
@@ -111,55 +115,103 @@ function! s:vendordirs() abort
 endfunction
 
 let s:import_paths = {}
-" ImportPath returns the import path of the package for current buffer.
+" ImportPath returns the import path of the package for current buffer. It
+" returns -1 if the import path cannot be determined.
 function! go#package#ImportPath() abort
-  let dir = expand("%:p:h")
+  let l:dir = expand("%:p:h")
   if has_key(s:import_paths, dir)
-    return s:import_paths[dir]
+    return s:import_paths[l:dir]
   endif
 
-  let [l:out, l:err] = go#util#ExecInDir(['go', 'list'])
-  if l:err != 0
+  let l:importpath = go#package#FromPath(l:dir)
+  if type(l:importpath) == type(0)
     return -1
   endif
 
-  let l:importpath = split(out, '\n')[0]
-
-  " go list returns '_CURRENTDIRECTORY' if the directory is not inside GOPATH.
-  " Check it and retun an error if that is the case
-  if l:importpath[0] ==# '_'
-    return -1
-  endif
-
-  let s:import_paths[dir] = l:importpath
+  let s:import_paths[l:dir] = l:importpath
 
   return l:importpath
 endfunction
 
+let s:in_gopath = {}
+" InGOPATH returns TRUE when the package of the current buffer is within
+" GOPATH.
+function! go#package#InGOPATH() abort
+  let l:dir = expand("%:p:h")
+  if has_key(s:in_gopath, dir)
+    return s:in_gopath[l:dir][0] !=#  '_'
+  endif
 
-" FromPath returns the import path of arg.
+  try
+    " turn off module support so that `go list` will report the package name
+    " with a leading '_' when the current buffer is not within GOPATH.
+    let Restore_modules = go#util#SetEnv('GO111MODULE', 'off')
+    let [l:out, l:err] = go#util#ExecInDir(['go', 'list'])
+    if l:err != 0
+      return 0
+    endif
+
+    let l:importpath = split(l:out, '\n')[0]
+    if len(l:importpath) > 0
+      let s:in_gopath[l:dir] = l:importpath
+    endif
+  finally
+    call call(Restore_modules, [])
+  endtry
+
+  return len(l:importpath) > 0 && l:importpath[0] !=# '_'
+endfunction
+
+" go#package#FromPath returns the import path of arg. -1 is returned when arg
+" does not specify a package. -2 is returned when arg is a relative path
+" outside of GOPATH, not in a module, and not below the current working
+" directory. A relative path is returned when in a null module at or below the
+" current working directory..
 function! go#package#FromPath(arg) abort
-  let l:cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
-  let l:dir = getcwd()
-
-  let l:path = a:arg
+  let l:path = fnamemodify(a:arg, ':p')
   if !isdirectory(l:path)
     let l:path = fnamemodify(l:path, ':h')
   endif
 
-  execute l:cd fnameescape(l:path)
-  let [l:out, l:err] = go#util#Exec(['go', 'list'])
-  execute l:cd fnameescape(l:dir)
-  if l:err != 0
-    return -1
-  endif
+  let l:dir = go#util#Chdir(l:path)
+  try
+    if glob("*.go") == ""
+      " There's no Go code in this directory. We might be in a module directory
+      " which doesn't have any code at this level. To avoid `go list` making a
+      " bunch of HTTP requests to fetch dependencies, short-circuit `go list`
+      " and return -1 immediately.
+      if !empty(s:module())
+        return -1
+      endif
+    endif
+    let [l:out, l:err] = go#util#Exec(['go', 'list'])
+    if l:err != 0
+      return -1
+    endif
 
-  let l:importpath = split(l:out, '\n')[0]
+    let l:importpath = split(l:out, '\n')[0]
+  finally
+    call go#util#Chdir(l:dir)
+  endtry
 
-  " go list returns '_CURRENTDIRECTORY' if the directory is not inside GOPATH.
-  " Check it and retun an error if that is the case
+  " go list returns '_CURRENTDIRECTORY' if the directory is in a null module
+  " (i.e. neither in GOPATH nor in a module). Return a relative import path
+  " if possible or an error if that is the case.
   if l:importpath[0] ==# '_'
-    return -1
+    let l:relativeimportpath = fnamemodify(l:importpath[1:], ':.')
+    if go#util#IsWin()
+      let l:relativeimportpath = substitute(l:relativeimportpath, '\\', '/', 'g')
+    endif
+
+    if l:relativeimportpath == l:importpath[1:]
+      return '.'
+    endif
+
+    if l:relativeimportpath[0] == '/'
+      return -2
+    endif
+
+    let l:importpath= printf('./%s', l:relativeimportpath)
   endif
 
   return l:importpath
@@ -206,10 +258,17 @@ function! go#package#Complete(ArgLead, CmdLine, CursorPos) abort
 
   let vendordirs = s:vendordirs()
 
+  let l:modcache = go#util#env('gomodcache')
+
   let ret = {}
   for dir in dirs
     " this may expand to multiple lines
     let root = split(expand(dir . '/pkg/' . s:goos . '_' . s:goarch), "\n")
+    if l:modcache != ''
+      let root = add(root, l:modcache)
+    else
+      let root = add(root, expand(dir . '/pkg/mod'))
+    endif
     let root = add(root, expand(dir . '/src'), )
     let root = extend(root, vendordirs)
     let root = add(root, module)
@@ -234,9 +293,8 @@ function! go#package#Complete(ArgLead, CmdLine, CursorPos) abort
             let glob = module.dir
           endif
         elseif stridx(module.path, a:ArgLead) == 0 && stridx(module.path, '/', len(a:ArgLead)) < 0
-          " use the module directory when a:ArgLead is contained in
-          " module.path and module.path does not have any path segments after
-          " a:ArgLead.
+          " use the module directory when module.path begins wih a:ArgLead and
+          " module.path does not have any path segments after a:ArgLead.
           let glob = module.dir
         else
           continue
@@ -250,6 +308,11 @@ function! go#package#Complete(ArgLead, CmdLine, CursorPos) abort
           " directories manually?
           if fnamemodify(candidate, ':t') == 'vendor'
             continue
+          endif
+          " if path contains version info, strip it out
+          let vidx = strridx(candidate, '@')
+          if vidx >= 0
+            let candidate = strpart(candidate, 0, vidx)
           endif
           let candidate .= '/'
         elseif candidate !~ '\.a$'

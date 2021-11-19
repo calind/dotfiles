@@ -82,12 +82,16 @@ endfunction
 
 function! go#tool#Info(showstatus) abort
   let l:mode = go#config#InfoMode()
-  if l:mode == 'gocode'
-    call go#complete#Info(a:showstatus)
-  elseif l:mode == 'guru'
+  if l:mode == 'guru'
     call go#guru#DescribeInfo(a:showstatus)
+  elseif l:mode == 'gopls'
+    if !go#config#GoplsEnabled()
+      call go#util#EchoError("go_info_mode is 'gopls', but gopls is disabled")
+      return
+    endif
+    call go#lsp#Info(a:showstatus)
   else
-    call go#util#EchoError('go_info_mode value: '. l:mode .' is not valid. Valid values are: [gocode, guru]')
+    call go#util#EchoError('go_info_mode value: '. l:mode .' is not valid. Valid values are: [guru, gopls]')
   endif
 endfunction
 
@@ -113,17 +117,29 @@ endfunction
 
 function! go#tool#DescribeBalloon()
   let l:fname = fnamemodify(bufname(v:beval_bufnr), ':p')
-  call go#lsp#Hover(l:fname, v:beval_lnum, v:beval_col, funcref('s:balloon', []))
+
+  let l:winid = win_getid()
+
+  call win_gotoid(bufwinid(v:beval_bufnr))
+
+  let [l:line, l:col] = go#lsp#lsp#Position(v:beval_lnum, v:beval_col)
+  call go#lsp#Hover(l:fname, l:line, l:col, funcref('s:balloon', []))
+
+  call win_gotoid(l:winid)
   return ''
 endfunction
 
 function! s:balloon(msg)
+  let l:msg = a:msg
   if has('balloon_eval')
-    call balloon_show(a:msg)
-    return
+    if has('balloon_multiline')
+      let l:msg = join(a:msg, "\n")
+    else
+      let l:msg = substitute(join(map(deepcopy(a:msg), 'substitute(v:val, "\t", "", "")'), '; '), '{;', '{', '')
+    endif
   endif
 
-  call balloon_show(balloon_split(a:msg))
+  call balloon_show(l:msg)
 endfunction
 
 " restore Vi compatibility settings
