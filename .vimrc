@@ -75,7 +75,7 @@ set splitright
 set title " automatically set window title
 set termguicolors
 set background=dark " 99.99% my terminal is dark
-colorscheme solarized8
+colorscheme solarized8_flat
 let g:solarized_extra_hi_groups=1 " enable Solarized filetype-specific syntax highlighting groups
 set wildmenu " visual autocomplete for command menu
 set lazyredraw          " redraw only when we need to.
