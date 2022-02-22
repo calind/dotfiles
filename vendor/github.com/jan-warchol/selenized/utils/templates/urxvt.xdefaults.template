@@ -1,0 +1,55 @@
+!---------------------------------------------------------------------------
+! !!COL!{name}! color palette for urxvt and X Window System
+!
+#define    bg_0        !!COL!{bg_0.srgb}!
+#define    bg_1        !!COL!{bg_1.srgb}!
+#define    bg_2        !!COL!{bg_2.srgb}!
+#define    dim_0       !!COL!{dim_0.srgb}!
+#define    fg_0        !!COL!{fg_0.srgb}!
+#define    fg_1        !!COL!{fg_1.srgb}!
+
+#define    red         !!COL!{red.srgb}!
+#define    green       !!COL!{green.srgb}!
+#define    yellow      !!COL!{yellow.srgb}!
+#define    blue        !!COL!{blue.srgb}!
+#define    magenta     !!COL!{magenta.srgb}!
+#define    cyan        !!COL!{cyan.srgb}!
+#define    orange      !!COL!{orange.srgb}!
+#define    violet      !!COL!{violet.srgb}!
+
+#define    br_red      !!COL!{br_red.srgb}!
+#define    br_green    !!COL!{br_green.srgb}!
+#define    br_yellow   !!COL!{br_yellow.srgb}!
+#define    br_blue     !!COL!{br_blue.srgb}!
+#define    br_magenta  !!COL!{br_magenta.srgb}!
+#define    br_cyan     !!COL!{br_cyan.srgb}!
+#define    br_orange   !!COL!{br_orange.srgb}!
+#define    br_violet   !!COL!{br_violet.srgb}!
+
+*background:              bg_0
+*foreground:              fg_0
+*fading:                  40
+*fadeColor:               bg_0
+*cursorColor:             fg_1
+*pointerColorBackground:  bg_2
+*pointerColorForeground:  fg_1
+
+! normal colors: "black", red, green, yellow, blue, magenta, cyan, "white"
+*color0:     bg_1
+*color1:     red
+*color2:     green
+*color3:     yellow
+*color4:     blue
+*color5:     magenta
+*color6:     cyan
+*color7:     dim_0
+
+! bright/bold versions of colors (in the same order)
+*color8:     bg_2
+*color9:     br_red
+*color10:    br_green
+*color11:    br_yellow
+*color12:    br_blue
+*color13:    br_magenta
+*color14:    br_cyan
+*color15:    fg_1
