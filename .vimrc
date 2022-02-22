@@ -75,7 +75,7 @@ set splitright
 set title " automatically set window title
 set termguicolors
 set background=dark " 99.99% my terminal is dark
-colorscheme solarized8_flat
+colorscheme selenized
 let g:solarized_extra_hi_groups=1 " enable Solarized filetype-specific syntax highlighting groups
 set wildmenu " visual autocomplete for command menu
 set lazyredraw          " redraw only when we need to.
@@ -217,7 +217,7 @@ let g:ale_lint_on_text_changed = 'never'
 let g:ale_set_loclist = 1
 let g:ale_set_quickfix = 0
 
-highlight SignColumn cterm=NONE gui=NONE ctermfg=NONE guifg=NONE ctermbg=0 guibg=#073642
+highlight SignColumn cterm=NONE gui=NONE ctermfg=NONE guifg=NONE ctermbg=0 guibg=#103c48
 highlight ALEErrorSign ctermbg=0 ctermfg=red
 highlight ALEWarningSign ctermbg=0 ctermfg=2
 "}}}
@@ -274,7 +274,7 @@ let g:lightline = {}
 let g:lightline.active = {}
 let g:lightline.component_function = {}
 
-let g:lightline.colorscheme = 'solarized'
+let g:lightline.colorscheme = 'selenized_dark'
 let g:lightline.active.left = [['mode', 'paste'], ['readonly', 'filename', 'modified'], ['virtualenv']]
 let g:lightline.active.right = [['lineinfo'], ['percent'], ['fileformat', 'fileencoding', 'filetype' ], ['linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok']]
 
