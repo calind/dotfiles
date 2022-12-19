@@ -47,6 +47,7 @@ set hidden                      " allow backgrounding unsaved buffers
 set autoread                    " auto-reload buffers when file changed on disk
 set nojoinspaces                " Use only 1 space after "." when joining lines, not 2
 let mapleader=","               " remap leader to ,
+set wildmenu                    " visual autocomplete for command menu
 " set clipboard=unnamed           " use system clipboard
 " set mouse=a                     " enable mouse selection
 " Remember last location in file, but not for commit messages.
@@ -72,12 +73,38 @@ au InsertLeave * set listchars+=trail:•
 
 "" Colors and UI
 set splitright
-set title " automatically set window title
-set termguicolors
+
+if has ("title")
+    " add missing control sequences for t_ST and t_RT if the terminal is tmux
+    if &term == "tmux" || &term == "tmux-256color"
+        let &t_ST = "\<Esc>[22;2t"
+        let &t_RT = "\<Esc>[23;2t"
+    " fix t_ts for iTerm.app
+    elseif $TERM_PROGRAM == "iTerm.app"
+        let &t_ts = "\033];"
+    endif
+
+    " enable setting the title only if vim can read the old one
+    if &t_ST != ""
+        set title
+    endif
+endif
+
+" Enable true-color for tmux. See :h xterm-true-color
+if &term == "tmux" || &term == "tmux-256color"
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
+
+if !empty(&t_8f) && !empty(&t_8b)
+    set termguicolors
+endif
+
 set background=dark " 99.99% my terminal is dark
 colorscheme selenized
-let g:solarized_extra_hi_groups=1 " enable Solarized filetype-specific syntax highlighting groups
-set wildmenu " visual autocomplete for command menu
+
+"" Performance improvements
+set ttyfast             " speedup scrolling in Vim
 set lazyredraw          " redraw only when we need to.
 
 "" Spell checking. I'm really bad at spelling
@@ -294,10 +321,10 @@ let g:lightline.component_type = {
       \     'linter_ok': 'left',
       \ }
 
-let g:lightline#ale#indicator_checking = '●●●'
-let g:lightline#ale#indicator_warnings = '⚠ '
-let g:lightline#ale#indicator_errors = '✖ '
-let g:lightline#ale#indicator_ok = ' ✔ '
+let g:lightline#ale#indicator_checking = " \uf110 "
+let g:lightline#ale#indicator_warnings = " \uf071 "
+let g:lightline#ale#indicator_errors = " \u2716 "
+let g:lightline#ale#indicator_ok = " \u2714 "
 
 "}}}
 
