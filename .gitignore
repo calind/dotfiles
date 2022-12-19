@@ -1,0 +1,39 @@
+work
+Library/*
+Applications/*
+Desktop/*
+Downloads/*
+Pictures/*
+Music/*
+Movies/*
+Public/*
+Documents/*
+VirtualBox VMs/*
+Scans/*
+Local Sites/*
+intelephense/*
+OneDrive
+
+# ignore keys and keychains
+*.xdb
+key*
+
+# ignore dotfiles
+.*
+!.config
+.config/*
+
+# ... except for whitelisted ones
+!.dircolors
+!.zshrc
+!.aliases
+!.iterm2
+
+# ... except neovim config
+!.config/nvim
+!.config/nvim/**
+.config/nvim/plugin/packer_compiled.lua
+
+# ... except git config
+!.config/git
+!.config/git/**

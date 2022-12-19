@@ -1,0 +1,32 @@
+# vim: set ft=sh:
+alias pyc='find . -name "*.pyc" -exec rm -rf {} \; ; find . -name "__pycache__" -type d -print0 | xargs -0 rm -rf'
+
+# git aliases
+alias g='git'
+alias config='git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME'
+
+# rewrite git commands to use hub if available
+if hash hub 2>/dev/null ; then
+    alias git='hub'
+    alias g='hub'
+    alias config='hub --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME'
+fi
+
+if hash envchain 2>/dev/null ; then
+    alias fossa='envchain fossa fossa'
+    alias brew='envchain brew brew'
+    alias drone='envchain drone drone'
+    alias doctl='envchain doctl doctl'
+    alias docker-machine='envchain docker-machine docker-machine'
+fi
+
+if hash nvim 2>/dev/null ; then
+    alias ovim=vim
+    alias ovimdiff=vimdiff
+    alias vim=nvim
+    alias vimdiff=nvim -d
+fi
+
+if [[ "$(uname)" == "Darwin" ]] ; then
+    alias mtr='sudo /usr/local/sbin/mtr'
+fi

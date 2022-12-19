@@ -1,0 +1,50 @@
+[init]
+    defaultBranch = main
+[alias]
+    co = checkout
+    br = branch
+    ci = commit
+    st = status
+    unstage = reset HEAD --
+    tree = log --oneline --graph --abbrev-commit --decorate --date=relative --all
+[color]
+    branch = auto
+    diff = auto
+    status = auto
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+[color "diff"]
+    meta = green bold
+    frag = yellow bold
+    old = red bold
+    new = green
+    witespace = red reverse
+[color "status"]
+    added = yellow bold
+    changed = green
+    untracked = normal dim
+[push]
+    default = simple
+[tag]
+    forceSignAnnotated = true
+[user]
+    name = Calin Don
+    email = calin.don@gmail.com
+    signingkey = B34726BF
+[commit]
+    gpgsign = true
+; [url "git@github.com:"]
+;     insteadOf = https://github.com/
+[diff "sopsdiffer"]
+    textconv = sops -d
+[pull]
+    ff = only
+
+[includeIf "gitdir:~/work/src/github.com/bitpoke/"]
+    path = ~/.config/git/config-bitpoke.inc
+[includeIf "gitdir:~/work/src/gitlab.com/"]
+    path = ~/.config/git/config-bitpoke.inc
+[includeIf "gitdir:~/work/src/bitbucket.org/"]
+    path = ~/.config/git/config-bitpoke.inc

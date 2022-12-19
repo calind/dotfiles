@@ -1,0 +1,32 @@
+#!/bin/bash
+
+WORKDIR="${HOME}"
+BACKUP_DIR="${WORKDIR}/.local/share/dotfiles/backup/$(date +"%Y-%m-%d_%H-%M-%S")"
+
+cd "${WORKDIR}" || exit 1
+
+function config {
+   /usr/bin/git --git-dir="${WORKDIR}/.dotfiles.git/" --work-tree="${WORKDIR}" "$@"
+}
+
+
+git clone --bare --depth=1 https://github.com/calind/dotfiles.git "${WORKDIR}/.dotfiles.git" || exit 1
+
+if [ ! -d "${BACKUP_DIR}" ] ; then
+    mkdir -p "${BACKUP_DIR}"
+fi
+
+if config checkout 2> /dev/null ; then
+    echo "Checked out config."
+else
+    echo "Backing up pre-existing dot files."
+    for path in $(config checkout 2>&1 | grep -E '^\s+' | awk '{print $1}') ; do
+        echo "Backing up $path"
+        if [ ! -d "$(dirname "${BACKUP_DIR}/$path")" ] ; then
+            mkdir -p "$(dirname "${BACKUP_DIR}/$path")"
+        fi
+        mv "${WORKDIR}/$path" "${BACKUP_DIR}/$path"
+   done
+fi
+
+config checkout ; config submodule update --init --recursive
