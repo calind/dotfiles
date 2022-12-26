@@ -29,7 +29,7 @@
     },
     "diagnostics": {
         "globals": [
-            "vim"
+            "vim", "_G"
         ]
     },
     "telemetry": {

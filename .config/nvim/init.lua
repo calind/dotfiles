@@ -7,7 +7,6 @@ local cmd = vim.cmd
 local fn = vim.fn
 local stdpath = vim.fn.stdpath
 local au = vim.api.nvim_create_autocmd
-local hi = vim.cmd.hi
 local feedkey = function(key, mode)
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
 end
@@ -45,7 +44,7 @@ local listchars = { tab = '▸ ', trail = '•', extends = '❯', precedes = '�
 -- local signs = { Error = '✖', Warn = ' ', Hint = '', Info = '',  OK='✔', Loading='', LightBulb = '' }
 -- local signs = { Error = '•', Warn = '•', Hint = '•', Info = '•', OK='✔', Loading='', LightBulb = ''}
 local signs = { Error = '●', Warn = '▲', Hint = '■', Info = '◆', OK = '✔', Loading = '', LightBulb = '' }
-local colors = {}
+
 o.lazyredraw = true -- redraw only when we need to.
 o.title = true -- automatically set window title
 o.termguicolors = true -- enable 24bit colors
@@ -80,67 +79,8 @@ for type, icon in pairs(signs) do
 end
 fn.sign_define('LightBulbSign', { text = signs.LightBulb, texthl = 'LightBulbSign', numhl = 'LightBulbSign' })
 -- }}}
--- {{{ update colors dict and overwrite some of our colors
---
-local lualine_selenized
-au('ColorScheme', { pattern = 'selenized', callback = function()
-    colors = {
-        bg_0 = vim.api.nvim_get_hl_by_name('Normal', true).background, -- '#103c48',
-        bg_1 = g.terminal_color_0, -- '#184956',
-        bg_2 = g.terminal_color_8, -- '#2d5b69',
-        dim_0 = g.terminal_color_7, -- '#72898f',
-        fg_0 = vim.api.nvim_get_hl_by_name('Normal', true).foreground, -- '#adbcbc',
-        fg_1 = g.terminal_color_15, -- '#cad8d9',
 
-        yellow  = g.terminal_color_3, -- '#dbb32d',
-        orange  = '#ed8649',
-        red     = g.terminal_color_1, -- '#fa5750',
-        magenta = g.terminal_color_5, -- '#f275be',
-        violet  = '#af88eb',
-        blue    = g.terminal_color_4, -- '#4695f7',
-        cyan    = g.terminal_color_6, -- '#41c7b9',
-        green   = g.terminal_color_2, -- '#75b938',
-
-        br_red = g.terminal_color_9, -- '#ff665c',
-        br_green = g.terminal_color_10, -- '#84c747',
-        br_yellow = g.terminal_color_11, --'#ebc13d',
-        br_blue = g.terminal_color_12, -- '#58a3ff',
-        br_magenta = g.terminal_color_13, -- '#ff84cd',
-        br_cyan = g.terminal_color_14, -- '#53d6c7',
-        br_orange = '#fd9456',
-        br_violet = '#bd96fa',
-    }
-
-    hi('ColorColumn guifg=NONE guibg=' .. colors.bg_1 .. ' guisp=NONE gui=NONE cterm=NONE')
-    hi('SignColumn cterm=NONE gui=NONE ctermfg=NONE guifg=NONE ctermbg=0 guibg=' .. colors.bg_1)
-    hi('VertSplit guifg=' .. colors.dim_0 .. ' guibg=NONE guisp=NONE gui=NONE cterm=NONE')
-    hi('DiagnosticSignError cterm=NONE gui=NONE ctermfg=NONE guifg=' .. colors.red .. ' ctermbg=0 guibg=' .. colors.bg_1)
-    hi('DiagnosticSignWarn cterm=NONE gui=NONE ctermfg=NONE guifg=' .. colors.yellow ..
-        ' ctermbg=0 guibg=' .. colors.bg_1)
-    hi('DiagnosticSignInfo cterm=NONE gui=NONE ctermfg=NONE guifg=' ..
-        colors.br_cyan .. ' ctermbg=0 guibg=' .. colors.bg_1)
-    hi('DiagnosticSignHint cterm=NONE gui=NONE ctermfg=NONE guifg=' ..
-        colors.br_cyan .. ' ctermbg=0 guibg=' .. colors.bg_1)
-    -- hi('StatusLineNC guifg=NONE guibg=' .. colors.bg_1 ..' guisp=NONE gui=NONE cterm=NONE')
-
-    lualine_selenized = {
-        normal = {
-            a = { fg = colors.bg_1, bg = colors.blue },
-            b = { fg = colors.cyan, bg = colors.bg_2 },
-            c = { fg = colors.dim_0, bg = colors.bg_1 },
-        },
-        insert = { a = { fg = colors.bg_1, bg = colors.green } },
-        visual = { a = { fg = colors.bg_1, bg = colors.magenta } },
-        replace = { a = { fg = colors.bg_1, bg = colors.red } },
-        inactive = {
-            a = { fg = colors.dim_0, bg = colors.bg_1 },
-            b = { fg = colors.dim_0, bg = colors.bg_1 },
-            c = { fg = colors.dim_0, bg = colors.bg_1 },
-        },
-    }
-end })
 cmd.colorscheme 'selenized'
--- }}}
 
 -- {{{ common filetypes
 vim.filetype.add({
@@ -448,7 +388,6 @@ require("cmp_git").setup({
 local lualine = require('lualine')
 lualine.setup {
     options = {
-        theme = lualine_selenized or 'auto',
         section_separators = '',
         component_separators = '❙',
         globalstatus = true,
