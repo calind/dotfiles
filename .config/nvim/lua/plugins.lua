@@ -78,7 +78,7 @@ return require('packer').startup({
     end,
     config = {
         display = {
-            open_fn = function() return require('packer.util').float() end,
+            open_fn = function() return require('packer.util').float({ border = heavy_border }) end,
         }
     }
 })

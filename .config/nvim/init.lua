@@ -1,4 +1,3 @@
-require 'plugins'
 -- {{{ local definitions
 local o = vim.opt
 local g = vim.g
@@ -33,24 +32,20 @@ o.ignorecase = true -- searches are case insensitive...
 o.smartcase = true -- ...unless they contain at least one capital letter
 o.showmatch = true -- show matching
 vim.keymap.set('n', '<CR>', ':nohlsearch<CR>')
--- code editing
-o.cursorline = true -- highlight the line of the cursor
+
+-- {{{ UI setup and tweaks
+o.cursorline = true -- highlight the line of the cursor ...
+o.cursorlineopt = { 'number' } -- ... but only when showing line numbers
 o.textwidth = 120 -- 120 columns by default
-o.colorcolumn = '+1' -- show vertical line after textwidth
+o.colorcolumn = '0' -- show vertical line after textwidth
 o.signcolumn = 'yes' -- always show the sign column
-
--- UI setup and tweaks
-local listchars = { tab = '▸ ', trail = '•', extends = '❯', precedes = '❮' }
--- local signs = { Error = '✖', Warn = ' ', Hint = '', Info = '',  OK='✔', Loading='', LightBulb = '' }
--- local signs = { Error = '•', Warn = '•', Hint = '•', Info = '•', OK='✔', Loading='', LightBulb = ''}
-local signs = { Error = '●', Warn = '▲', Hint = '■', Info = '◆', OK = '✔', Loading = '', LightBulb = '' }
-
-o.lazyredraw = true -- redraw only when we need to.
-o.title = true -- automatically set window title
-o.termguicolors = true -- enable 24bit colors
-o.fillchars:append {
+-- o.foldcolumn = 'auto:9'
+_G.heavy_border = { '┏', '━', '┓', '┃', '┛', '━', '┗', '┃' }
+_G.signs = { Error = '●', Warn = '▲', Hint = '■', Info = '◆', OK = '✔', Loading = '', LightBulb = '' }
+_G.listchars = { tab = '▸ ', trail = '•', extends = '❯', precedes = '❮' }
+_G.fillchars = {
     eob = ' ', -- do not clutter empty space
-    -- stl = '━',
+
     vert = '┃',
     horiz = '━',
     vertright = '┣',
@@ -58,29 +53,42 @@ o.fillchars:append {
     verthoriz = '╋',
     horizup = '┻',
     horizdown = '┳',
-}
-local heavy_border = { '┏', '━', '┓', '┃', '┛', '━', '┗', '┃' }
 
--- {{{ indicator chars
+    foldclose = '▸',
+    foldopen = '▾',
+    foldsep = '┃',
+}
+
+o.lazyredraw = true -- redraw only when we need to.
+o.title = true -- automatically set window title
+o.termguicolors = true -- enable 24bit colors
+o.fillchars:append(fillchars)
 o.list = true
 o.showbreak = '↪ '
 
+-- Show listchars, except for tailing whitespace which is shown only on normal mode.
 au('BufEnter', { callback = function()
-    local _listchars = vim.b.listchars or listchars
-    optl.listchars = _listchars
+    optl.listchars = vim.b.listchars or listchars
 end })
 au('InsertEnter', { callback = function() optl.listchars:remove('trail') end })
-au('InsertLeave', { callback = function() optl.listchars:append({ trail = '•' }) end })
--- }}}
--- {{{ setup signs
-for type, icon in pairs(signs) do
-    local hl = 'DiagnosticSign' .. type
-    fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+au('InsertLeave', { callback = function() optl.listchars:append({ trail = listchars.trail }) end })
+
+-- Build diagnostic signs according to the signs table.
+for kind, icon in pairs(signs) do
+    local hl = 'DiagnosticSign' .. kind
+    fn.sign_define(hl, { text = icon, texthl = hl })
 end
 fn.sign_define('LightBulbSign', { text = signs.LightBulb, texthl = 'LightBulbSign', numhl = 'LightBulbSign' })
--- }}}
 
-cmd.colorscheme 'selenized'
+-- Show colorcolumn only in insert mode
+vim.cmd([[
+augroup ColorColumnOnlyInInsertMode
+  autocmd!
+  autocmd InsertEnter * setlocal colorcolumn=+1
+  autocmd InsertLeave * setlocal colorcolumn=0
+augroup END
+]])
+-- }}}
 
 -- {{{ common filetypes
 vim.filetype.add({
@@ -108,12 +116,14 @@ o.spell = true -- enable spell checking
 o.spellfile = spellfile
 -- }}}
 
-------------------------------------------------------------------------------------------------------------------------
-
 -- {{{ trailing whitespace killer
 vim.cmd [[command! KillWhitespace :normal :%s/ *$//g<cr><c-o><cr>]]
 vim.keymap.set('n', '<Leader>w', ':KillWhitespace<CR>')
 -- }}}
+
+cmd.colorscheme 'selenized'
+
+require 'plugins'
 
 local null_ls_sources = {}
 
