@@ -83,6 +83,10 @@ if [[ -x "${DIRCOLORS}" ]]; then
     alias egrep='egrep --color=auto'
 fi
 
+if [[ -d "${HOME}/.composer/vendor/bin" ]] ; then
+    export PATH="${HOME}/.composer/vendor/bin:$PATH"
+fi
+
 export GOPATH="$HOME/work"
 export PATH="$GOPATH/bin:$PATH"
 
