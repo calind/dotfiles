@@ -116,4 +116,17 @@ fi
 autoload -Uz compinit
 compinit
 
+__envchain_namespaces() {
+    _values 'namespace' "${(uonzf)$(envchain --list)}"
+}
+
+_envchain() {
+    _arguments -S -A '-*' \
+        ':namespace:__envchain_namespaces' \
+        ':command: _command_names -e' \
+        '*::arguments:_precommand'
+}
+
+compdef _envchain envchain
+
 source ~/.aliases
