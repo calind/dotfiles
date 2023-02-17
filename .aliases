@@ -1,23 +1,17 @@
 # vim: set ft=sh:
 alias pyc='find . -name "*.pyc" -exec rm -rf {} \; ; find . -name "__pycache__" -type d -print0 | xargs -0 rm -rf'
 
-# git aliases
-alias g='git'
-alias config='git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME'
-
-# rewrite git commands to use hub if available
-if hash hub 2>/dev/null ; then
-    alias git='hub'
-    alias g='hub'
-    alias config='hub --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME'
-fi
-
 if hash envchain 2>/dev/null ; then
     alias fossa='envchain fossa fossa'
     alias brew='envchain brew brew'
     alias drone='envchain drone drone'
     alias doctl='envchain doctl doctl'
     alias docker-machine='envchain docker-machine docker-machine'
+fi
+
+# rewrite git commands to use hub if available
+if hash hub 2>/dev/null ; then
+    alias git='hub'
 fi
 
 if hash nvim 2>/dev/null ; then
@@ -27,6 +21,30 @@ if hash nvim 2>/dev/null ; then
     alias vimdiff=nvim -d
 fi
 
+if hash mutagen-compose 2>/dev/null ; then
+    alias docker-compose=mutagen-compose
+fi
+
 if [[ "$(uname)" == "Darwin" ]] ; then
     alias mtr='sudo /usr/local/sbin/mtr'
 fi
+
+# git aliases
+alias g='git'
+alias config='git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME'
+
+alias gst='git status'
+alias gadd='git add'
+alias grm='git rm'
+alias gco='git checkout'
+alias gci='git commit'
+alias gtree='git tree'
+
+alias dcup='docker-compose up'
+alias dcdown='docker-compose up'
+alias dclog='docker-compose logs'
+alias dcps='docker-compose ps'
+alias dce='docker-compose exec'
+alias dceweb='docker-compose exec web'
+alias dcedb='docker-compose exec db'
+alias dcewp='docker-compose exec wordpress wp'
