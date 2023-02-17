@@ -76,7 +76,6 @@ _G.signs = { Error = '●', Warn = '▲', Hint = '■', Info = '◆', OK = '✔'
 _G.listchars = { tab = '▸ ', trail = '•', extends = '❯', precedes = '❮' }
 _G.fillchars = {
     eob = ' ', -- do not clutter empty space
-
     -- vert = '┃',
     -- horiz = '━',
     -- vertright = '┣',
@@ -92,7 +91,6 @@ _G.fillchars = {
     verthoriz = '▐',
     horizup = '▐',
     horizdown = '▂',
-
     foldclose = '▸',
     foldopen = '▾',
     foldsep = '┃',
@@ -106,9 +104,11 @@ o.list = true
 o.showbreak = '↪ '
 
 -- Show listchars, except for tailing whitespace which is shown only on normal mode.
-au('BufEnter', { callback = function()
-    optl.listchars = vim.b.listchars or listchars
-end })
+au('BufEnter', {
+    callback = function()
+        optl.listchars = vim.b.listchars or listchars
+    end
+})
 au('InsertEnter', { callback = function() optl.listchars:remove('trail') end })
 au('InsertLeave', { callback = function() optl.listchars:append({ trail = listchars.trail }) end })
 
@@ -207,7 +207,6 @@ wk.setup({
 wk.register({
     gq = { name = "Format" },
     gqq = "Format current line",
-
     gw = { name = "Text format" },
     gww = "Text format current line",
 }, {
@@ -290,10 +289,8 @@ wk.register({
     ['<C-T>'] = 'Next tag in preview window (:ptnext)',
     f = 'Next file in current directory',
     n = 'Next SCM conflict',
-
     ['<space>'] = 'Insert blank line below cursor',
     e = 'Exchange with next line',
-
     x = 'XML decode',
     xx = 'XML decode',
     u = 'URL decode',
@@ -302,7 +299,6 @@ wk.register({
     yy = 'C string decode',
     C = 'C string decode',
     CC = 'C string decode',
-
     p = 'Paste after current line',
     P = 'Paste after current line',
 }, {
@@ -332,10 +328,8 @@ wk.register({
     ['<C-T>'] = 'Previous tag in preview window (:ptprevious)',
     f = 'Previous file in current directory',
     n = 'Previous SCM conflict',
-
     ['<space>'] = 'Insert blank line above cursor',
     e = 'Exchange with previous line',
-
     x = 'XML encode',
     xx = 'XML encode',
     u = 'URL encode',
@@ -344,7 +338,6 @@ wk.register({
     yy = 'C String encode',
     C = 'C String encode',
     CC = 'C String encode',
-
     p = 'Paste before current line',
     P = 'Paste before current line',
 }, {
@@ -432,7 +425,6 @@ lspconfig.defaults = {
         ['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = heavy_border }),
     },
     on_attach = function(client, bufnr)
-
         ---@diagnostic disable-next-line: redefined-local
         local format_filter = function(client)
             local ft = vim.bo[bufnr].filetype
@@ -481,10 +473,6 @@ lspconfig.defaults = {
             print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
         end, bufopts, 'List workspace folders')
 
-        if client.supports_method("textDocument/formatting") then
-
-        end
-
         lsp_status.on_attach(client)
         -- lsp_signature.on_attach(nil, bufnr)
     end,
@@ -505,9 +493,9 @@ require("copilot").setup({
 
 require("copilot_cmp").setup({})
 
+
 cmp.setup({
     preselect = cmp.PreselectMode.None,
-
     --  enabled = function()
     --      local context = require('cmp.config.context')
     --      return not(context.in_treesitter_capture('comment') == true or context.in_syntax_group('Comment'))
@@ -525,7 +513,7 @@ cmp.setup({
         end,
     },
     mapping = cmp.mapping.preset.insert({
-        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-b>'] = cmp.mapping.scroll_docs( -4),
         ['<C-f>'] = cmp.mapping.scroll_docs(4),
 
         ['<Esc>'] = cmp.mapping.abort(),
@@ -563,7 +551,7 @@ cmp.setup({
         ['<S-Tab>'] = function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item() -- be consistent with up/down
-            elseif vim.fn['vsnip#jumpable'](-1) == 1 then
+            elseif vim.fn['vsnip#jumpable']( -1) == 1 then
                 feedkey('<Plug>(vsnip-jump-prev)', '')
             else
                 fallback()
@@ -587,7 +575,6 @@ cmp.setup({
             { name = 'buffer' },
         }
     ),
-
     -- Pictograms
     formatting = {
         format = lspkind.cmp_format({
@@ -597,7 +584,6 @@ cmp.setup({
             ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
         })
     },
-
     window = {
         documentation = {
             border = heavy_border,
@@ -847,17 +833,20 @@ vim.filetype.add({
     },
 })
 
-au('FileType', { pattern = { 'php.wp' }, callback = function()
-    local _listchars = vim.deepcopy(listchars)
-    _listchars['tab'] = '  '
-    vim.b.listchars = _listchars
-    vim.bo.expandtab = false
-    vim.bo.copyindent = true
-    vim.bo.preserveindent = true
-    vim.bo.softtabstop = 0
-    vim.bo.shiftwidth = 4
-    vim.bo.tabstop = 4
-end })
+au('FileType', {
+    pattern = { 'php.wp' },
+    callback = function()
+        local _listchars = vim.deepcopy(listchars)
+        _listchars['tab'] = '  '
+        vim.b.listchars = _listchars
+        vim.bo.expandtab = false
+        vim.bo.copyindent = true
+        vim.bo.preserveindent = true
+        vim.bo.softtabstop = 0
+        vim.bo.shiftwidth = 4
+        vim.bo.tabstop = 4
+    end
+})
 
 local intelephense_default_stubs = {
     'apache', 'bcmath', 'bz2', 'calendar', 'com_dotnet', 'Core', 'ctype', 'curl', 'date', 'dba', 'dom', 'enchant',
@@ -922,11 +911,14 @@ table.insert(null_ls_sources, null_ls.builtins.formatting.phpcbf.with {
 -- }}}
 
 -- {{{ go
-au('FileType', { pattern = { 'go' }, callback = function()
-    local _listchars = vim.deepcopy(listchars)
-    _listchars['tab'] = '  '
-    vim.b.listchars = _listchars
-end })
+au('FileType', {
+    pattern = { 'go' },
+    callback = function()
+        local _listchars = vim.deepcopy(listchars)
+        _listchars['tab'] = '  '
+        vim.b.listchars = _listchars
+    end
+})
 
 lspconfig.gopls.setup(lspconfig.defaults)
 table.insert(null_ls_sources, null_ls.builtins.diagnostics.golangci_lint.with {
@@ -946,10 +938,13 @@ lspconfig.lua_ls.setup(vim.tbl_extend('keep', lspconfig.defaults, {
     },
 }))
 
-au('FileType', { pattern = { 'lua' }, callback = function()
-    vim.b.surround_45 = '[[[ \\r ]]]'
-    vim.b.surround_109 = '[[[ \\r ]]]'
-end })
+au('FileType', {
+    pattern = { 'lua' },
+    callback = function()
+        vim.b.surround_45 = '[[[ \\r ]]]'
+        vim.b.surround_109 = '[[[ \\r ]]]'
+    end
+})
 -- }}}
 
 --{{{ Bash, shell, docker
@@ -966,7 +961,7 @@ table.insert(null_ls_sources, null_ls.builtins.diagnostics.hadolint)
 map({ 'n', 'x' }, 'ga', '<Plug>(EasyAlign)')
 wk.register({
     ga = {
-        name = "Align",
+        name        = "Align",
 
         ['<Space>'] = 'General alignment around whitespaces',
         ['=']       = 'Operators containing equals sign ( `=` ,  `==,`  `!=` ,  `+=` ,  `&&=` , ...)',
