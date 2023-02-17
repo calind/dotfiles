@@ -13,7 +13,7 @@ local packer_bootstrap = ensure_packer()
 vim.cmd([[
     augroup packer_user_config
         autocmd!
-        autocmd BufWritePost plugins.lua source <afile> | PackerCompile
+        autocmd BufWritePost plugins.lua source <afile> | PackerSync
     augroup end
 ]])
 
@@ -21,15 +21,27 @@ return require('packer').startup({
     function(use)
         use 'wbthomason/packer.nvim'
 
+        use 'lewis6991/impatient.nvim'
+
+        use 'tpope/vim-repeat'
         use 'tpope/vim-commentary'
         use 'tpope/vim-surround'
         use 'tpope/vim-unimpaired'
 
         use 'junegunn/vim-easy-align'
 
+        use 'folke/which-key.nvim'
+
         use 'nvim-lua/plenary.nvim'
 
         use 'nvim-lualine/lualine.nvim'
+
+        use ({
+            'lambdalisue/suda.vim',
+            config = function()
+                vim.g.suda_smart_edit = 1
+            end
+        })
 
         use({
             -- Autocomplete
@@ -61,9 +73,14 @@ return require('packer').startup({
                 -- 'ray-x/lsp_signature.nvim',
 
                 'jose-elias-alvarez/null-ls.nvim',
+
+                use({ 'zbirenbaum/copilot-cmp', requires = { 'zbirenbaum/copilot.lua' } }),
             },
 
-            -- use 'nvim-treesitter/nvim-treesitter',
+            use 'lewis6991/gitsigns.nvim',
+
+            use 'nvim-treesitter/nvim-treesitter',
+            use 'nvim-treesitter/playground',
 
             use 'windwp/nvim-autopairs',
 

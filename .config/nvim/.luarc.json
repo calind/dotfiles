@@ -4,13 +4,16 @@
         "checkThirdParty": false,
         "library": [
             "../../.local/share/nvim/site/pack/packer/start/cmp-buffer",
+            "../../.local/share/nvim/site/pack/packer/start/cmp-calc",
             "../../.local/share/nvim/site/pack/packer/start/cmp-cmdline",
+            "../../.local/share/nvim/site/pack/packer/start/cmp-git",
             "../../.local/share/nvim/site/pack/packer/start/cmp-nvim-lsp",
             "../../.local/share/nvim/site/pack/packer/start/cmp-nvim-lsp-document-symbol",
-            "../../.local/share/nvim/site/pack/packer/start/cmp-nvim-lua",
             "../../.local/share/nvim/site/pack/packer/start/cmp-path",
             "../../.local/share/nvim/site/pack/packer/start/cmp-vsnip",
             "../../.local/share/nvim/site/pack/packer/start/friendly-snippets",
+            "../../.local/share/nvim/site/pack/packer/start/gitsigns.nvim",
+            "../../.local/share/nvim/site/pack/packer/start/impatient.nvim",
             "../../.local/share/nvim/site/pack/packer/start/lsp-status.nvim",
             "../../.local/share/nvim/site/pack/packer/start/lspkind-nvim",
             "../../.local/share/nvim/site/pack/packer/start/lualine.nvim",
@@ -20,8 +23,15 @@
             "../../.local/share/nvim/site/pack/packer/start/nvim-code-action-menu",
             "../../.local/share/nvim/site/pack/packer/start/nvim-lightbulb",
             "../../.local/share/nvim/site/pack/packer/start/nvim-lspconfig",
+            "../../.local/share/nvim/site/pack/packer/start/nvim-treesitter",
             "../../.local/share/nvim/site/pack/packer/start/packer.nvim",
+            "../../.local/share/nvim/site/pack/packer/start/playground",
             "../../.local/share/nvim/site/pack/packer/start/plenary.nvim",
+            "../../.local/share/nvim/site/pack/packer/start/vim-commentary",
+            "../../.local/share/nvim/site/pack/packer/start/vim-easy-align",
+            "../../.local/share/nvim/site/pack/packer/start/vim-spellsync",
+            "../../.local/share/nvim/site/pack/packer/start/vim-surround",
+            "../../.local/share/nvim/site/pack/packer/start/vim-unimpaired",
             "../../.local/share/nvim/site/pack/packer/start/vim-vsnip",
             "/usr/local/share/nvim/runtime/",
             "/usr/share/nvim/runtime"
@@ -29,7 +39,8 @@
     },
     "diagnostics": {
         "globals": [
-            "vim", "_G"
+            "vim",
+            "_G"
         ]
     },
     "telemetry": {

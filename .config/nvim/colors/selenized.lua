@@ -20,6 +20,8 @@ local colors = {
         fg_0  = '#adbcbc',
         fg_1  = '#cad8d9',
 
+        dim_1 = '#90998f', -- yellowish dim_0 for things like autocomplete previews
+
         red     = '#fa5750',
         green   = '#75b938',
         yellow  = '#dbb32d',
@@ -126,7 +128,7 @@ local highlights = function(colors)
     hi['IncSearch'] = { fg = colors.orange, bg = none, guisp = none, style = 'reverse' }
     hi['Search'] = { fg = colors.yellow, bg = none, guisp = none, style = 'reverse' }
     hi['QuickFixLine'] = 'Search'
-    hi['Visual'] = { fg = none, bg = colors.bg_2, guisp = none, style = none }
+    hi['Visual'] = { fg = none, bg = colors.bg_1, guisp = none, style = none }
     hi['MatchParen'] = { fg = colors.br_yellow, bg = colors.bg_2, guisp = none, style = 'bold' }
     hi['Cursor'] = { fg = none, bg = none, guisp = none, style = 'reverse' }
     hi['lCursor'] = 'Cursor'
@@ -137,13 +139,13 @@ local highlights = function(colors)
     hi['LineNr'] = { fg = colors.dim_0, bg = colors.bg_1, guisp = none, style = none }
     hi['CursorLineNr'] = { fg = colors.fg_1, bg = colors.bg_1, guisp = none, style = none }
     hi['WinSeparator'] = { fg = colors.dim_0, bg = colors.dim_0, guisp = none, style = none }
-    hi['StatusLine'] = { fg = none, bg = none, guisp = none, style = 'reverse' }
+    hi['StatusLine'] = { fg = none, bg = colors.bg_1, guisp = none, style = none }
     hi['StatusLineNC'] = { fg = none, bg = colors.bg_2, guisp = none, style = none }
     hi['StatusLineTerm'] = 'StatusLine'
     hi['StatusLineTermNC'] = 'StatusLineNC'
-    hi['TabLineSel'] = { fg = colors.fg_1, bg = colors.bg_1, guisp = none, style = 'bold,reverse' }
-    hi['TabLine'] = { fg = colors.dim_0, bg = none, guisp = none, style = 'reverse' }
-    hi['TabLineFill'] = { fg = colors.dim_0, bg = none, guisp = none, style = 'reverse' }
+    hi['TabLineSel'] = { fg = colors.fg_1, bg = colors.bg_2, guisp = none, style = none }
+    hi['TabLine'] = { fg = colors.fg_0, bg = colors.bg_1, guisp = none, style = none }
+    hi['TabLineFill'] = { fg = colors.fg_0, bg = colors.bg_1, guisp = none, style = none }
     hi['ToolbarButton'] = { fg = none, bg = none, guisp = none, style = 'reverse' }
     hi['ToolbarLine'] = { fg = none, bg = colors.bg_2, guisp = none, style = none }
     hi['Pmenu'] = { fg = colors.dim_0, bg = colors.bg_1, guisp = none, style = none }
@@ -218,6 +220,12 @@ local highlights = function(colors)
     hi['FloatBorder'] = { fg = colors.bg_1, bg = none, guisp = none, style = none }
     hi['NormalFloat'] = { fg = colors.dim_0, bg = colors.bg_0, guisp = none, style = none }
     hi['FloatTitle'] = { fg = colors.dim_0, bg = colors.bg_0, guisp = none, style = none }
+    hi['WinBar'] = { fg = colors.dim_0, bg = colors.bg_0, guisp = none, style = none }
+
+    hi['Suggestion'] = { fg = colors.dim_1, bg = none, guisp = none, style = 'italic' }
+
+    -- vim Copilot
+    hi['CopilotSuggestion'] = 'Suggestion'
 
     -- Built-in diagnostic
     hi['DiagnosticError'] = { fg = colors.red, bg = hi['SignColumn'].bg }
@@ -263,10 +271,23 @@ local highlights = function(colors)
     hi['CmpItemKindUnit']          = 'Special'
     hi['CmpItemKindValue']         = 'Identifier'
     hi['CmpItemKindVariable']      = 'Delimiter'
+    hi['CmpItemKindCopilot']       = 'Structure'
 
-    -- Personal touch
+    -- Git Signs
+    hi['GitSignsAdd'] = { fg = colors.green, bg = colors.bg_1 }
+    hi['GitSignsDelete'] = { fg = colors.red, bg = colors.bg_1 }
+    hi['GitSignsChange'] = { fg = colors.blue, bg = colors.bg_1 }
+
     hi['ColorColumn'] = { fg = none, bg = colors.bg_1, guisp = none, style = none }
     hi['WinSeparator'] = { fg = colors.bg_2, bg = none, guisp = none, style = 'bold' }
+
+    hi['@variable.builtin'] = { fg = colors.green }
+    -- improve HTML and Markdown ending
+    hi['@text.emphasis'] = { style = 'italic' }
+    hi['@text.strong'] = { style = 'bold' }
+    hi['@text.title'] = { fg = colors.fg_1, style = 'bold' }
+    hi['@text.literal'] = { bg = colors.bg_1 }
+    hi['@text.uri'] = hi['Underlined']
 
     for group, highlights in pairs(hi) do
         highlight(group, highlights)
