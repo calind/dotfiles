@@ -104,6 +104,15 @@ if [ -f /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.in
     source /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc
 fi
 
+# lazy load kubectl completion
+if [ $commands[kubectl] ]; then
+  kubectl() {
+    unfunction "$0"
+    source <(kubectl completion zsh)
+    $0 "$@"
+  }
+fi
+
 autoload -Uz compinit
 compinit
 
