@@ -13,7 +13,7 @@ local packer_bootstrap = ensure_packer()
 vim.cmd([[
     augroup packer_user_config
         autocmd!
-        autocmd BufWritePost plugins.lua source <afile> | PackerSync
+        autocmd BufWritePost plugins.lua source <afile> | PackerCompile
     augroup end
 ]])
 
@@ -30,62 +30,55 @@ return require('packer').startup({
 
         use 'junegunn/vim-easy-align'
 
+        use 'micarmst/vim-spellsync'
+
         use 'folke/which-key.nvim'
 
         use 'nvim-lua/plenary.nvim'
 
         use 'nvim-lualine/lualine.nvim'
 
-        use ({
+        use({
             'lambdalisue/suda.vim',
             config = function()
                 vim.g.suda_smart_edit = 1
             end
         })
 
-        use({
-            -- Autocomplete
-            'hrsh7th/nvim-cmp',
-            requires = {
-                -- LSP
-                'neovim/nvim-lspconfig',
-                'nvim-lua/lsp-status.nvim',
+        -- LSP
+        use 'neovim/nvim-lspconfig'
+        use 'nvim-lua/lsp-status.nvim'
+        use 'jose-elias-alvarez/null-ls.nvim'
 
-                -- Autocmplete
-                'hrsh7th/cmp-path',
-                'hrsh7th/cmp-buffer',
-                'hrsh7th/cmp-nvim-lsp',
-                'hrsh7th/cmp-cmdline',
-                'hrsh7th/cmp-git',
-                'hrsh7th/cmp-calc',
-                'hrsh7th/cmp-nvim-lsp-document-symbol',
-                -- 'hrsh7th/cmp-nvim-lsp-signature-help',
+        -- Autocmplete
+        use 'hrsh7th/nvim-cmp'
+        use 'hrsh7th/cmp-path'
+        use 'hrsh7th/cmp-buffer'
+        use 'hrsh7th/cmp-nvim-lsp'
+        use 'hrsh7th/cmp-cmdline'
+        use 'hrsh7th/cmp-git'
+        use 'hrsh7th/cmp-calc'
+        use 'hrsh7th/cmp-nvim-lsp-document-symbol'
+        use { 'zbirenbaum/copilot-cmp', requires = { 'zbirenbaum/copilot.lua' } }
 
-                -- Snippets
-                'hrsh7th/cmp-vsnip',
-                'hrsh7th/vim-vsnip',
-                'rafamadriz/friendly-snippets',
+        -- Snippets
+        use 'hrsh7th/cmp-vsnip'
+        use 'hrsh7th/vim-vsnip'
+        use 'rafamadriz/friendly-snippets'
 
-                -- LSP & autocomplete UI
-                'onsails/lspkind-nvim',
-                'kosayoda/nvim-lightbulb',
-                'weilbith/nvim-code-action-menu',
-                -- 'ray-x/lsp_signature.nvim',
+        -- LSP & autocomplete UI
+        use 'onsails/lspkind-nvim'
+        use 'kosayoda/nvim-lightbulb'
+        use 'weilbith/nvim-code-action-menu'
+        -- use 'ray-x/lsp_signature.nvim'
 
-                'jose-elias-alvarez/null-ls.nvim',
+        use 'lewis6991/gitsigns.nvim'
 
-                use({ 'zbirenbaum/copilot-cmp', requires = { 'zbirenbaum/copilot.lua' } }),
-            },
+        use 'windwp/nvim-autopairs'
 
-            use 'lewis6991/gitsigns.nvim',
-
-            use 'nvim-treesitter/nvim-treesitter',
-            use 'nvim-treesitter/playground',
-
-            use 'windwp/nvim-autopairs',
-
-            use 'micarmst/vim-spellsync',
-        })
+        -- Treesitter
+        use 'nvim-treesitter/nvim-treesitter'
+        use 'nvim-treesitter/playground'
 
         -- Automatically set up your configuration after cloning packer.nvim
         -- Put this at the end after all plugins
