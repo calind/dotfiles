@@ -685,7 +685,7 @@ gitsigns.setup({
         -- Options passed to nvim_open_win
         border = heavy_border,
     },
-    current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
+    current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
 })
 
 wk.register({ ['=h'] = { name = "git hunk" } }, { mode = { 'n', 'v' } })
