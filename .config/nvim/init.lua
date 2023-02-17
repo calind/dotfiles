@@ -33,6 +33,12 @@ end
 
 local nmap = _map('n', { silent = true })
 local nnoremap = _map('n', { noremap = true, silent = true })
+
+local has_words_before = function()
+    if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then return false end
+    local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+    return col ~= 0 and vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]:match("^%s*$") == nil
+end
 -- }}}
 
 -- sanitize workflow
@@ -543,20 +549,11 @@ cmp.setup({
             feedkey('?', 'n')
         end),
         ['<Left>'] = cmp.mapping.abort(),
-        ['<Right>'] = cmp.mapping.confirm({ select = false }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-        ['<CR>'] = cmp.mapping.confirm({ select = false }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-        -- ['<Tab>'] = cmp.mapping(function(fallback)
-        --     if cmp.visible() then
-        --         cmp.confirm({ select = true })
-        --     elseif vim.fn['vsnip#available'](1) == 1 then
-        --         feedkey('<Plug>(vsnip-expand-or-jump)', '')
-        --     else
-        --         fallback()
-        --     end
-        -- end, { 'i', 's' }),
+        ['<Right>'] = cmp.mapping.confirm({ select = false, behavior = cmp.ConfirmBehavior.Replace }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+        ['<CR>'] = cmp.mapping.confirm({ select = false, behavior = cmp.ConfirmBehavior.Replace }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
         ['<Tab>'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                cmp.select_next_item() -- be consistent with up/down
+            if cmp.visible() and has_words_before() then
+                cmp.select_next_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
             elseif vim.fn['vsnip#available'](1) == 1 then
                 feedkey('<Plug>(vsnip-expand-or-jump)', '')
             else
