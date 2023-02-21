@@ -201,7 +201,7 @@ local null_ls_sources = {}
 -- {{{ which-key
 local wk = require("which-key")
 
-o.timeoutlen = 500
+o.timeoutlen = 150
 wk.setup({
     plugins = {
         spelling = {
@@ -551,6 +551,91 @@ require("copilot").setup({
 
 require("copilot_cmp").setup({})
 
+local cmp_insert_mapping = {
+    ['<C-b>'] = cmp.mapping.scroll_docs( -4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<Esc>'] = cmp.mapping.abort(),
+    ['<Esc><Esc>'] = cmp.mapping(function()
+        cmp.mapping.abort()
+        vim.cmd.stopinsert()
+    end),
+    ['<Esc>:'] = cmp.mapping(function()
+        cmp.mapping.abort()
+        vim.cmd.stopinsert()
+        feedkey(':', 'n')
+    end),
+    ['<Esc>/'] = cmp.mapping(function()
+        cmp.mapping.abort()
+        vim.cmd.stopinsert()
+        feedkey('/', 'n')
+    end),
+    ['<Esc>?'] = cmp.mapping(function()
+        cmp.mapping.abort()
+        vim.cmd.stopinsert()
+        feedkey('?', 'n')
+    end),
+    ['<Left>'] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+            cmp.abort()
+        end
+        if vim.fn['vsnip#jumpable']( -1) == 1 then
+            feedkey('<Plug>(vsnip-jump-prev)', '')
+        else
+            fallback()
+        end
+    end, {'i', 's'}),
+    ['<Right>'] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+            cmp.abort()
+        end
+        if vim.fn['vsnip#available'](1) == 1 then
+            feedkey('<Plug>(vsnip-expand-or-jump)', '')
+        else
+            fallback()
+        end
+    end, {'i', 's'}),
+    ['<CR>'] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+            cmp.confirm({ select = false, behavior = cmp.ConfirmBehavior.Replace }) -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items. 
+        elseif vim.fn['vsnip#available'](1) == 1 then
+            feedkey('<Plug>(vsnip-expand-or-jump)', '')
+        else
+            fallback()
+        end
+    end, { 'i', 's' }),
+    ['<Down>'] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+            cmp.select_next_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
+        else
+            fallback()
+        end
+    end, { 'i', 's' }),
+    ['<Tab>'] = cmp.mapping(function(fallback)
+        if vim.fn['vsnip#available'](1) == 1 then
+            feedkey('<Plug>(vsnip-expand-or-jump)', '')
+        elseif cmp.visible() and has_words_before() then
+            cmp.select_next_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
+        else
+            fallback()
+        end
+    end, { 'i', 's' }),
+    ['<Up>'] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+            cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
+        else
+            fallback()
+        end
+    end, { 'i', 's' }),
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+        if vim.fn['vsnip#jumpable']( -1) == 1 then
+            feedkey('<Plug>(vsnip-jump-prev)', '')
+        elseif cmp.visible() then
+            cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
+        else
+            fallback()
+        end
+    end, { 'i', 's' }),
+}
 
 cmp.setup({
     preselect = cmp.PreselectMode.None,
@@ -570,52 +655,7 @@ cmp.setup({
             vim.fn['vsnip#anonymous'](args.body)
         end,
     },
-    mapping = cmp.mapping.preset.insert({
-        ['<C-b>'] = cmp.mapping.scroll_docs( -4),
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
-
-        ['<Esc>'] = cmp.mapping.abort(),
-        ['<Esc><Esc>'] = cmp.mapping(function()
-            cmp.mapping.abort()
-            vim.cmd.stopinsert()
-        end),
-        ['<Esc>:'] = cmp.mapping(function()
-            cmp.mapping.abort()
-            vim.cmd.stopinsert()
-            feedkey(':', 'n')
-        end),
-        ['<Esc>/'] = cmp.mapping(function()
-            cmp.mapping.abort()
-            vim.cmd.stopinsert()
-            feedkey('/', 'n')
-        end),
-        ['<Esc>?'] = cmp.mapping(function()
-            cmp.mapping.abort()
-            vim.cmd.stopinsert()
-            feedkey('?', 'n')
-        end),
-        ['<Left>'] = cmp.mapping.abort(),
-        ['<Right>'] = cmp.mapping.confirm({ select = false, behavior = cmp.ConfirmBehavior.Replace }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-        ['<CR>'] = cmp.mapping.confirm({ select = false, behavior = cmp.ConfirmBehavior.Replace }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-        ['<Tab>'] = cmp.mapping(function(fallback)
-            if cmp.visible() and has_words_before() then
-                cmp.select_next_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
-            elseif vim.fn['vsnip#available'](1) == 1 then
-                feedkey('<Plug>(vsnip-expand-or-jump)', '')
-            else
-                fallback()
-            end
-        end, { 'i', 's' }),
-        ['<S-Tab>'] = function(fallback)
-            if cmp.visible() then
-                cmp.select_prev_item() -- be consistent with up/down
-            elseif vim.fn['vsnip#jumpable']( -1) == 1 then
-                feedkey('<Plug>(vsnip-jump-prev)', '')
-            else
-                fallback()
-            end
-        end,
-    }),
+    mapping = cmp.mapping.preset.insert(cmp_insert_mapping),
     sources = cmp.config.sources(
         {
             { name = 'cmp_git' },
