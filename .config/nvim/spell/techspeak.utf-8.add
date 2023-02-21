@@ -134,3 +134,9 @@ WooCommerce
 woocommerce
 bool
 args
+popup
+maxwidth
+cmp
+lsp
+Esc
+Vim
