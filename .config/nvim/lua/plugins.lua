@@ -39,6 +39,13 @@ return require('packer').startup({
         use 'nvim-lualine/lualine.nvim'
 
         use({
+            'johmsalas/text-case.nvim',
+            config = function()
+                _G.textcase = require('textcase').api
+            end
+        })
+
+        use({
             'lambdalisue/suda.vim',
             config = function()
                 vim.g.suda_smart_edit = 1

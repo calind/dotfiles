@@ -41,6 +41,31 @@ local has_words_before = function()
 end
 -- }}}
 
+local snips_defaults = {
+    ['author'] = 'Calin Don',
+    ['author_url'] = 'https://calind.me',
+    ['author_email'] = 'calin.don@gmail.com',
+}
+au('BufEnter', {
+    callback = function()
+        for k, v in pairs(snips_defaults) do
+            vim.b['snips_' .. k] = vim.b['snips_' .. k] or v
+        end
+    end
+})
+
+au({'BufNewFile', 'BufRead'}, {
+    callback = function ()
+        local path = vim.fs.normalize(fn.expand('%:p'))
+        vim.pretty_print(path)
+        if path:find('github.com/bitpoke') then
+            vim.b['snips_author'] = 'Bitpoke'
+            vim.b['snips_author_url'] = 'https://bitpoke.io'
+            vim.b['snips_author_email'] = 'hello@bitpoke.io'
+        end
+    end
+})
+
 -- sanitize workflow
 g.mapleader = ',' -- remap leader to ,
 o.encoding = 'utf8'
@@ -358,6 +383,39 @@ wk.register({
     prefix = '='
 })
 -- }}}
+
+--{{{ vsnip
+vim.g.vsnip_snippet_dir = vim.fn.stdpath('config') .. '/snippets'
+
+fn["vsnip#variable#register"]('VSNIP_DASHCASE_FILENAME', function(_)
+    return textcase.to_dash_case(fn.expand('%:p:t:r'))
+end)
+fn["vsnip#variable#register"]('VSNIP_SNAKECASE_FILENAME', function(_)
+    return textcase.to_snake_case(fn.expand('%:p:t:r'))
+end)
+fn["vsnip#variable#register"]('VSNIP_TITLECASE_FILENAME', function(_)
+    return textcase.to_title_case(fn.expand('%:p:t:r'))
+end)
+fn["vsnip#variable#register"]('VSNIP_DASH_TITLECASE_FILENAME', function(_)
+    return textcase.to_title_case(fn.expand('%:p:t:r')):gsub(' ', '_')
+end)
+fn["vsnip#variable#register"]('VSNIP_CAMELCASE_FILENAME', function(_)
+    return textcase.to_camel_case(fn.expand('%:p:t:r'))
+end)
+fn["vsnip#variable#register"]('VSNIP_PASCALCASE_FILENAME', function(_)
+    return textcase.to_pascal_case(fn.expand('%:p:t:r'))
+end)
+
+fn["vsnip#variable#register"]('TM_AUTHOR', function(_)
+    return vim.b['snips_author'] or 'Please, set b:snips_author'
+end)
+fn["vsnip#variable#register"]('TM_AUTHOR_URL', function(_)
+    return vim.b['snips_author_url'] or 'Please, set b:snips_author_url'
+end)
+fn["vsnip#variable#register"]('TM_AUTHOR_EMAIL', function(_)
+    return vim.b['snips_author_email'] or 'Please, set b:snips_author_email'
+end)
+--}}}
 
 -- {{{ LSP
 local lspconfig = require('lspconfig')
