@@ -23,8 +23,15 @@ bindkey "\e[1;3D" backward-word # ⌥←
 bindkey "\e[1;3C" forward-word # ⌥→
 
 # set homebrew environment
+if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/usr/local/bin/brew" ] ; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/home/linuxbrew/.linuxbrew/bin/brew" ] ; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
 if type brew &>/dev/null; then
-    eval "$(brew shellenv)"
     FPATH="${HOMEBREW_PREFIX}/share/zsh-completions:$FPATH"
 fi
 
