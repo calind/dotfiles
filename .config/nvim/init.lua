@@ -385,36 +385,36 @@ wk.register({
 -- }}}
 
 --{{{ vsnip
-vim.g.vsnip_snippet_dir = vim.fn.stdpath('config') .. '/snippets'
+-- vim.g.vsnip_snippet_dir = vim.fn.stdpath('config') .. '/snippets'
 
-fn["vsnip#variable#register"]('VSNIP_DASHCASE_FILENAME', function(_)
-    return textcase.to_dash_case(fn.expand('%:p:t:r'))
-end)
-fn["vsnip#variable#register"]('VSNIP_SNAKECASE_FILENAME', function(_)
-    return textcase.to_snake_case(fn.expand('%:p:t:r'))
-end)
-fn["vsnip#variable#register"]('VSNIP_TITLECASE_FILENAME', function(_)
-    return textcase.to_title_case(fn.expand('%:p:t:r'))
-end)
-fn["vsnip#variable#register"]('VSNIP_DASH_TITLECASE_FILENAME', function(_)
-    return textcase.to_title_case(fn.expand('%:p:t:r')):gsub(' ', '_')
-end)
-fn["vsnip#variable#register"]('VSNIP_CAMELCASE_FILENAME', function(_)
-    return textcase.to_camel_case(fn.expand('%:p:t:r'))
-end)
-fn["vsnip#variable#register"]('VSNIP_PASCALCASE_FILENAME', function(_)
-    return textcase.to_pascal_case(fn.expand('%:p:t:r'))
-end)
+-- fn["vsnip#variable#register"]('VSNIP_DASHCASE_FILENAME', function(_)
+--     return textcase.to_dash_case(fn.expand('%:p:t:r'))
+-- end)
+-- fn["vsnip#variable#register"]('VSNIP_SNAKECASE_FILENAME', function(_)
+--     return textcase.to_snake_case(fn.expand('%:p:t:r'))
+-- end)
+-- fn["vsnip#variable#register"]('VSNIP_TITLECASE_FILENAME', function(_)
+--     return textcase.to_title_case(fn.expand('%:p:t:r'))
+-- end)
+-- fn["vsnip#variable#register"]('VSNIP_DASH_TITLECASE_FILENAME', function(_)
+--     return textcase.to_title_case(fn.expand('%:p:t:r')):gsub(' ', '_')
+-- end)
+-- fn["vsnip#variable#register"]('VSNIP_CAMELCASE_FILENAME', function(_)
+--     return textcase.to_camel_case(fn.expand('%:p:t:r'))
+-- end)
+-- fn["vsnip#variable#register"]('VSNIP_PASCALCASE_FILENAME', function(_)
+--     return textcase.to_pascal_case(fn.expand('%:p:t:r'))
+-- end)
 
-fn["vsnip#variable#register"]('TM_AUTHOR', function(_)
-    return vim.b['snips_author'] or 'Please, set b:snips_author'
-end)
-fn["vsnip#variable#register"]('TM_AUTHOR_URL', function(_)
-    return vim.b['snips_author_url'] or 'Please, set b:snips_author_url'
-end)
-fn["vsnip#variable#register"]('TM_AUTHOR_EMAIL', function(_)
-    return vim.b['snips_author_email'] or 'Please, set b:snips_author_email'
-end)
+-- fn["vsnip#variable#register"]('TM_AUTHOR', function(_)
+--     return vim.b['snips_author'] or 'Please, set b:snips_author'
+-- end)
+-- fn["vsnip#variable#register"]('TM_AUTHOR_URL', function(_)
+--     return vim.b['snips_author_url'] or 'Please, set b:snips_author_url'
+-- end)
+-- fn["vsnip#variable#register"]('TM_AUTHOR_EMAIL', function(_)
+--     return vim.b['snips_author_email'] or 'Please, set b:snips_author_email'
+-- end)
 --}}}
 
 -- {{{ LSP
@@ -550,11 +550,17 @@ require("copilot").setup({
 })
 
 require("copilot_cmp").setup({})
-
+local snippy = require('snippy')
 local cmp_insert_mapping = {
     ['<C-b>'] = cmp.mapping.scroll_docs( -4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<Esc>'] = cmp.mapping.abort(),
+    ['<Esc>'] = cmp.mapping(function(fallback)
+        if snippy.is_active() then
+            require('snippy.buf').clear_state()
+        end
+        cmp.abort()
+        fallback()
+    end, { 'i', 's' }),
     ['<Esc><Esc>'] = cmp.mapping(function()
         cmp.mapping.abort()
         vim.cmd.stopinsert()
@@ -578,27 +584,38 @@ local cmp_insert_mapping = {
         if cmp.visible() then
             cmp.abort()
         end
-        if vim.fn['vsnip#jumpable']( -1) == 1 then
-            feedkey('<Plug>(vsnip-jump-prev)', '')
+        -- if vim.fn['vsnip#jumpable']( -1) == 1 then
+        --     feedkey('<Plug>(vsnip-jump-prev)', '')
+        if snippy.can_jump( -1) then
+            snippy.previous()
         else
             fallback()
         end
-    end, {'i', 's'}),
+    end, { 'i', 's' }),
     ['<Right>'] = cmp.mapping(function(fallback)
         if cmp.visible() then
             cmp.abort()
         end
-        if vim.fn['vsnip#available'](1) == 1 then
-            feedkey('<Plug>(vsnip-expand-or-jump)', '')
+        -- if vim.fn['vsnip#available'](1) == 1 then
+        --     feedkey('<Plug>(vsnip-expand-or-jump)', '')
+        if snippy.can_expand_or_advance() then
+            snippy.expand_or_advance()
         else
             fallback()
         end
-    end, {'i', 's'}),
+    end, { 'i', 's' }),
     ['<CR>'] = cmp.mapping(function(fallback)
         if cmp.visible() then
-            cmp.confirm({ select = false, behavior = cmp.ConfirmBehavior.Replace }) -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items. 
-        elseif vim.fn['vsnip#available'](1) == 1 then
-            feedkey('<Plug>(vsnip-expand-or-jump)', '')
+            cmp.confirm({ select = false, behavior = cmp.ConfirmBehavior.Replace }) -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+            if cmp.get_active_entry() then
+                -- elseif vim.fn['vsnip#available'](1) == 1 then
+                --     feedkey('<Plug>(vsnip-expand-or-jump)', '')
+                if snippy.can_expand_or_advance() then
+                    snippy.expand_or_advance()
+                end
+            else
+                fallback()
+            end
         else
             fallback()
         end
@@ -611,8 +628,10 @@ local cmp_insert_mapping = {
         end
     end, { 'i', 's' }),
     ['<Tab>'] = cmp.mapping(function(fallback)
-        if vim.fn['vsnip#available'](1) == 1 then
-            feedkey('<Plug>(vsnip-expand-or-jump)', '')
+        -- if vim.fn['vsnip#available'](1) == 1 then
+        --     feedkey('<Plug>(vsnip-expand-or-jump)', '')
+        if snippy.can_expand_or_advance() then
+            snippy.expand_or_advance()
         elseif cmp.visible() and has_words_before() then
             cmp.select_next_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
         else
@@ -627,8 +646,10 @@ local cmp_insert_mapping = {
         end
     end, { 'i', 's' }),
     ['<S-Tab>'] = cmp.mapping(function(fallback)
-        if vim.fn['vsnip#jumpable']( -1) == 1 then
-            feedkey('<Plug>(vsnip-jump-prev)', '')
+        if snippy.can_jump( -1) then
+            snippy.previous()
+            -- if vim.fn['vsnip#jumpable']( -1) == 1 then
+            --     feedkey('<Plug>(vsnip-jump-prev)', '')
         elseif cmp.visible() then
             cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
         else
@@ -652,7 +673,7 @@ cmp.setup({
     -- },
     snippet = {
         expand = function(args)
-            vim.fn['vsnip#anonymous'](args.body)
+            snippy.expand_snippet(args.body) --            vim.fn['vsnip#anonymous'](args.body)
         end,
     },
     mapping = cmp.mapping.preset.insert(cmp_insert_mapping),
@@ -662,7 +683,7 @@ cmp.setup({
         },
         {
             { name = 'copilot' },
-            { name = 'vsnip' },
+            { name = 'snippy' },
             { name = 'nvim_lsp' },
         },
         {

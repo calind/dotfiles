@@ -69,9 +69,13 @@ return require('packer').startup({
         use { 'zbirenbaum/copilot-cmp', requires = { 'zbirenbaum/copilot.lua' } }
 
         -- Snippets
-        use 'hrsh7th/cmp-vsnip'
-        use 'hrsh7th/vim-vsnip'
-        use 'rafamadriz/friendly-snippets'
+        -- use 'hrsh7th/cmp-vsnip'
+        -- use 'hrsh7th/vim-vsnip'
+        -- use 'rafamadriz/friendly-snippets'
+        use 'dcampos/nvim-snippy'
+        use 'dcampos/cmp-snippy'
+        use 'honza/vim-snippets'
+
 
         -- LSP & autocomplete UI
         use 'onsails/lspkind-nvim'
