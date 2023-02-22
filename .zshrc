@@ -19,8 +19,6 @@ unsetopt beep
 bindkey '\e[H'  beginning-of-line
 bindkey '\e[F'  end-of-line
 bindkey '\e[3~' delete-char
-bindkey "\e[1;3D" backward-word # ⌥←
-bindkey "\e[1;3C" forward-word # ⌥→
 
 # set homebrew environment
 if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/usr/local/bin/brew" ] ; then
