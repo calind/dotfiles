@@ -1203,6 +1203,7 @@ null_ls.setup({
     debug = true,
     sources = null_ls_sources,
     border = heavy_border,
+    update_in_insert = false,
 })
 -- }}}
 -- vim:foldmethod=marker:foldlevel=0
