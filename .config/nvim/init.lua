@@ -87,6 +87,12 @@ o.ignorecase = true -- searches are case insensitive...
 o.smartcase = true -- ...unless they contain at least one capital letter
 o.showmatch = true -- show matching
 nmap('<CR>', ':nohlsearch<CR>', "Clear search highlight")
+au('BufReadPost', {
+    pattern = { 'quickfix', 'loclist' },
+    callback = function()
+        nnoremap('<CR>', '<CR>', { buffer = true })
+    end
+})
 
 -- {{{ UI setup and tweaks
 o.cursorline = true -- highlight the line of the cursor ...
