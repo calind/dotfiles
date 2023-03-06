@@ -29,6 +29,10 @@ if [[ "$(uname)" == "Darwin" ]] ; then
     alias mtr='sudo /usr/local/sbin/mtr'
 fi
 
+if [[ -n "${KITTY_WINDOW_ID}" ]] ; then
+    alias ssh='kitty +kitten ssh'
+fi
+
 # git aliases
 alias g='git'
 alias config='git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME'
