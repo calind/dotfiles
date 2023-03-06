@@ -1206,4 +1206,14 @@ null_ls.setup({
     update_in_insert = false,
 })
 -- }}}
+
+--{{{ mason (load after null-ls, lspconfig, etc.)
+require("mason").setup({
+    ui = {
+        border = heavy_border,
+    }
+})
+require("mason-lspconfig").setup({ automatic_installation = true })
+require("mason-null-ls").setup({ automatic_installation = true })
+--}}}
 -- vim:foldmethod=marker:foldlevel=0
