@@ -269,25 +269,74 @@ local highlights = function(colors)
     hi['CmpItemKindCopilot']       = 'Structure'
 
     -- Git Signs
-    hi['GitSignsAdd'] = { fg = colors.green, bg = colors.bg_1 }
-    hi['GitSignsDelete'] = { fg = colors.red, bg = colors.bg_1 }
-    hi['GitSignsChange'] = { fg = colors.blue, bg = colors.bg_1 }
+    hi['GitSignsAdd']              = { fg = colors.green, bg = colors.bg_1 }
+    hi['GitSignsDelete']           = { fg = colors.red, bg = colors.bg_1 }
+    hi['GitSignsChange']           = { fg = colors.blue, bg = colors.bg_1 }
 
-    hi['ColorColumn'] = { fg = none, bg = colors.bg_1, guisp = none, style = none }
-    hi['WinSeparator'] = { fg = colors.bg_2, bg = none, guisp = none, style = 'bold' }
+    hi['ColorColumn']              = { fg = none, bg = colors.bg_1, guisp = none, style = none }
+    hi['WinSeparator']             = { fg = colors.bg_2, bg = none, guisp = none, style = 'bold' }
 
-    hi['@variable.builtin'] = { fg = colors.green }
-    -- improve HTML and Markdown ending
-    hi['@text.emphasis'] = { style = 'italic' }
-    hi['@text.strong'] = { style = 'bold' }
-    hi['@text.title'] = { fg = colors.fg_1, style = 'bold' }
-    hi['@text.literal'] = { bg = colors.bg_1 }
-    hi['@text.uri'] = hi['Underlined']
+    hi['@variable.builtin']        = { fg = colors.green }
+    -- improve HTML and Markdown editing
+    hi['@text.emphasis']           = { style = 'italic' }
+    hi['@text.strong']             = { style = 'bold' }
+    hi['@text.title']              = { fg = colors.fg_1, style = 'bold' }
+    hi['@text.literal']            = { bg = colors.bg_1 }
+    hi['@text.uri']                = hi['Underlined']
+    hi['@text.codeblock']          = { bg = colors.bg_15 }
 
     for group, highlights in pairs(hi) do
         highlight(group, highlights)
     end
     _G.selenized.colors = colors
 end
-
 highlights(colors[background])
+
+local enabled_langs = { markdown = true, help = true }
+local ns = vim.api.nvim_create_namespace('codeblock')
+
+local function clear_marks()
+    local buf = vim.api.nvim_get_current_buf()
+    local marks = vim.api.nvim_buf_get_extmarks(buf, ns, 0, -1, {})
+    for _, mark in ipairs(marks) do
+        vim.api.nvim_buf_del_extmark(buf, ns, mark[1])
+    end
+end
+
+local function place_marks()
+    local lang = vim.bo.filetype
+    if not enabled_langs[lang] then return end
+
+    local readonly = vim.bo.readonly
+    local buf = vim.api.nvim_get_current_buf()
+    local ok, parser = pcall(vim.treesitter.get_parser, buf, lang)
+    if not ok then return end
+
+    local highlighter = require("vim.treesitter.highlighter")
+    local hl = highlighter.active[buf]
+    if not hl then
+        return
+    end
+    local query = vim.treesitter.get_query(lang, 'highlights')
+
+    if not readonly then
+        clear_marks()
+    end
+    for _, tree in ipairs(parser:trees()) do
+        for capture_id, node, _ in query:iter_captures(tree:root(), 0) do
+            local name              = query.captures[capture_id]
+            local line, col         = node:start()
+            local end_line, end_col = node:end_()
+            if name == 'text.codeblock' then
+                vim.api.nvim_buf_set_extmark(buf, ns, line, col, {
+                    end_line = end_line,
+                    end_col = end_col,
+                    hl_group = '@text.codeblock',
+                    hl_eol = true,
+                })
+            end
+        end
+    end
+end
+vim.api.nvim_create_autocmd({ 'BufWinEnter', 'WinNew' }, { callback = place_marks })
+vim.api.nvim_create_autocmd({ 'CursorHold', 'TextChangedI' }, { callback = place_marks })
