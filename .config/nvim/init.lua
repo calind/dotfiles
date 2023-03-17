@@ -480,8 +480,8 @@ local cmp_insert_mapping = {
         end
         -- if vim.fn['vsnip#available'](1) == 1 then
         --     feedkey('<Plug>(vsnip-expand-or-jump)', '')
-        if snippy.can_expand_or_advance() then
-            snippy.expand_or_advance()
+        if snippy.can_jump(1) then
+            snippy.next()
         else
             fallback()
         end
