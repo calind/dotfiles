@@ -800,7 +800,10 @@ lspconfig.jsonls.setup(vim.tbl_extend('keep', lspconfig.defaults, {
 --}}}
 
 --{{{ html/css
-lspconfig.html.setup(lspconfig.defaults)
+lspconfig.html.setup(vim.tbl_extend('keep', lspconfig.defaults, {
+    -- get_language_id = function() return 'php' end,
+    filetypes = { 'html', 'htmldjango' },
+}))
 lspconfig.cssls.setup(lspconfig.defaults)
 --}}}
 
@@ -916,6 +919,14 @@ table.insert(null_ls_sources, null_ls.builtins.diagnostics.golangci_lint.with {
 })
 -- }}}
 
+-- {{{ python
+
+lspconfig.pyright.setup(lspconfig.defaults)
+table.insert(null_ls_sources, null_ls.builtins.diagnostics.ruff)
+table.insert(null_ls_sources, null_ls.builtins.formatting.isort)
+table.insert(null_ls_sources, null_ls.builtins.formatting.black)
+-- }}}
+
 -- {{{ lua
 lspconfig.lua_ls.setup(vim.tbl_extend('keep', lspconfig.defaults, {
     settings = {
@@ -1015,7 +1026,7 @@ require('nvim-treesitter.configs').setup {
     ensure_installed = {
         'go', 'gomod',
         'php',
-        'python',
+        'python', 'htmldjango',
         'lua',
         'c', 'cpp', 'c_sharp',
         'javascript', 'typescript', 'tsx', 'jq',
