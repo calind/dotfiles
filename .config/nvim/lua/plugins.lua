@@ -21,6 +21,8 @@ return require('packer').startup({
     function(use)
         use 'wbthomason/packer.nvim'
 
+        use 'calind/selenized.nvim'
+
         use "williamboman/mason.nvim"
         use "williamboman/mason-lspconfig.nvim"
         use "jay-babu/mason-null-ls.nvim"
