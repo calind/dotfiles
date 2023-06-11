@@ -57,7 +57,6 @@ au('BufEnter', {
 au({ 'BufNewFile', 'BufRead' }, {
     callback = function()
         local path = vim.fs.normalize(fn.expand('%:p'))
-        vim.pretty_print(path)
         if path:find('github.com/bitpoke') then
             vim.b['snips_author'] = 'Bitpoke'
             vim.b['snips_author_url'] = 'https://bitpoke.io'
@@ -87,7 +86,7 @@ o.timeoutlen = 150
 wk.setup({
     plugins = {
         spelling = {
-            enabled = true, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
+            enabled = true,   -- enabling this will show WhichKey when pressing z= to select spelling suggestions
             suggestions = 10, -- how many suggestions should be shown in the list?
         },
     },
@@ -434,7 +433,7 @@ require("copilot").setup({
 require("copilot_cmp").setup({})
 local snippy = require('snippy')
 local cmp_insert_mapping = {
-    ['<C-b>'] = cmp.mapping.scroll_docs( -4),
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
     ['<Esc>'] = cmp.mapping(function(fallback)
         if snippy.is_active() then
@@ -468,7 +467,7 @@ local cmp_insert_mapping = {
         end
         -- if vim.fn['vsnip#jumpable']( -1) == 1 then
         --     feedkey('<Plug>(vsnip-jump-prev)', '')
-        if snippy.can_jump( -1) then
+        if snippy.can_jump(-1) then
             snippy.previous()
         else
             fallback()
@@ -528,7 +527,7 @@ local cmp_insert_mapping = {
         end
     end, { 'i', 's' }),
     ['<S-Tab>'] = cmp.mapping(function(fallback)
-        if snippy.can_jump( -1) then
+        if snippy.can_jump(-1) then
             snippy.previous()
             -- if vim.fn['vsnip#jumpable']( -1) == 1 then
             --     feedkey('<Plug>(vsnip-jump-prev)', '')
@@ -581,7 +580,7 @@ cmp.setup({
         format = lspkind.cmp_format({
             mode = 'symbol_text',
             symbol_map = { Copilot = "" },
-            maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
+            maxwidth = 50,         -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
             ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
         })
     },
@@ -728,7 +727,7 @@ lualine.setup {
             },
             {
                 'filename',
-                file_status = true, -- Displays file status (readonly status, modified status)
+                file_status = true,    -- Displays file status (readonly status, modified status)
                 newfile_status = true, -- Display new file status (new file means no write after created)
                 symbols = {
                     readonly = '[]',
@@ -963,7 +962,6 @@ map({ 'n', 'x' }, 'ga', '<Plug>(EasyAlign)')
 wk.register({
     ga = {
         name        = "Align",
-
         ['<Space>'] = 'General alignment around whitespaces',
         ['=']       = 'Operators containing equals sign ( `=` ,  `==,`  `!=` ,  `+=` ,  `&&=` , ...)',
         [':']       = 'Suitable for formatting JSON or YAML',
@@ -991,25 +989,25 @@ npairs.setup({
 local brackets = { { '(', ')' }, { '[', ']' }, { '{', '}' } }
 npairs.add_rules {
     npairs.Rule(' ', ' ')
-    :with_pair(function(opts)
-        local pair = opts.line:sub(opts.col - 1, opts.col)
-        return vim.tbl_contains({
-            brackets[1][1] .. brackets[1][2],
-            brackets[2][1] .. brackets[2][2],
-            brackets[3][1] .. brackets[3][2]
-        }, pair)
-    end)
-    :with_move(npairs.cond.none())
-    :with_cr(npairs.cond.none())
-    :with_del(function(opts)
-        local col = vim.api.nvim_win_get_cursor(0)[2]
-        local context = opts.line:sub(col - 1, col + 2)
-        return vim.tbl_contains({
-            brackets[1][1] .. '  ' .. brackets[1][2],
-            brackets[2][1] .. '  ' .. brackets[2][2],
-            brackets[3][1] .. '  ' .. brackets[3][2]
-        }, context)
-    end)
+        :with_pair(function(opts)
+            local pair = opts.line:sub(opts.col - 1, opts.col)
+            return vim.tbl_contains({
+                brackets[1][1] .. brackets[1][2],
+                brackets[2][1] .. brackets[2][2],
+                brackets[3][1] .. brackets[3][2]
+            }, pair)
+        end)
+        :with_move(npairs.cond.none())
+        :with_cr(npairs.cond.none())
+        :with_del(function(opts)
+            local col = vim.api.nvim_win_get_cursor(0)[2]
+            local context = opts.line:sub(col - 1, col + 2)
+            return vim.tbl_contains({
+                brackets[1][1] .. '  ' .. brackets[1][2],
+                brackets[2][1] .. '  ' .. brackets[2][2],
+                brackets[3][1] .. '  ' .. brackets[3][2]
+            }, context)
+        end)
 }
 for _, bracket in pairs(brackets) do
     npairs.Rule('', ' ' .. bracket[2])
@@ -1051,7 +1049,6 @@ require('nvim-treesitter.configs').setup {
     highlight = {
         -- `false` will disable the whole extension
         enable = true,
-
         -- disable slow treesitter highlight for large files
         disable = function(_, buf)
             local max_filesize = 100 * 1024 -- 100 KB
@@ -1060,7 +1057,6 @@ require('nvim-treesitter.configs').setup {
                 return true
             end
         end,
-
         -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
         -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
         -- Using this option may slow down your editor, and you may see some duplicate highlights.
