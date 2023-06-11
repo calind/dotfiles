@@ -140,3 +140,12 @@ cmp
 lsp
 Esc
 Vim
+quickfix
+Neovim
+Bitpoke
+shellcheck
+desc
+Django
+pyright
+noqa
+printf
