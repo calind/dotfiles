@@ -769,45 +769,6 @@ lualine.setup {
 }
 -- }}}
 
---{{{ ltex
-
-lspconfig.ltex.setup(lspconfig.defaults)
--- local ltex_language_id_mapping = {
---   bib = 'bibtex',
---   plaintex = 'tex',
---   rnoweb = 'sweave',
---   rst = 'restructuredtext',
---   tex = 'latex',
---   xhtml = 'xhtml',
---   ['php.wp'] = 'php',
---   shell = 'shellscript',
--- }
---
--- lspconfig.ltex.setup(vim.tbl_extend('keep', lspconfig.defaults, {
---     filetypes = {
---         'bib', 'gitcommit', 'markdown', 'org', 'plaintex', 'rst', 'rnoweb', 'tex',
---         -- enable LTeX for programming languages
---         'go', 'php', 'php.wp', 'shell', 'python', 'sql', 'lua',
---         'javascript', 'javascriptreact', 'typescript', 'typescriptreact'
---    },
---     get_language_id = function(_, filetype)
---         local language_id = ltex_language_id_mapping[filetype]
---         if language_id then
---             return language_id
---         else
---             return filetype
---         end
---     end,
---     settings = {
---         ltex = {
---             enabled = {
---                 'bibtex', 'context', 'context.tex', 'html', 'latex', 'markdown', 'org', 'restructuredtext', 'rsweave',
---                 'shellscript', 'php', 'go', 'lua', 'python', 'sql',
---                 'javascript', 'javascriptreact', 'typescript', 'typescriptreact'}
---         },
---     },
--- }))
---}}}
 
 --{{{ html/css/json
 lspconfig.html.setup(lspconfig.defaults)
