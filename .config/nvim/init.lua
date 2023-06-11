@@ -76,6 +76,7 @@ end
 -- }}}
 
 require 'plugins'
+require 'hl-codeblock'
 
 local null_ls_sources = {}
 
