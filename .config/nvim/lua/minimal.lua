@@ -115,6 +115,7 @@ vim.fn.sign_define('LightBulbSign', { text = signs.LightBulb, texthl = 'LightBul
 local spellfile = vim.fn.stdpath('config') .. '/spell/techspeak.utf-8.add'
 o.spell = true -- enable spell checking
 o.spellfile = spellfile
+o.spelloptions:append({ "camel" })
 -- }}}
 
 
