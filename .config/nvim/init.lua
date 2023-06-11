@@ -769,11 +769,39 @@ lualine.setup {
 }
 -- }}}
 
+--{{{ json/yaml
+au('FileType', {
+    pattern = { 'yaml' },
+    callback = function()
+        vim.bo.expandtab = true
+        vim.bo.softtabstop = 2
+        vim.bo.shiftwidth = 2
+        vim.bo.tabstop = 2
+        vim.bo.iskeyword = vim.bo.iskeyword .. ',-'
+    end
+})
 
---{{{ html/css/json
+lspconfig.yamlls.setup(vim.tbl_extend('keep', lspconfig.defaults, {
+    settings = {
+        yaml = {
+            keyOrdering = false,
+            schemas = require('schemastore').yaml.schemas(),
+        },
+    },
+}))
+lspconfig.jsonls.setup(vim.tbl_extend('keep', lspconfig.defaults, {
+    settings = {
+        json = {
+            schemas = require('schemastore').json.schemas(),
+            validate = { enable = true },
+        },
+    },
+}))
+--}}}
+
+--{{{ html/css
 lspconfig.html.setup(lspconfig.defaults)
 lspconfig.cssls.setup(lspconfig.defaults)
-lspconfig.jsonls.setup(lspconfig.defaults)
 --}}}
 
 -- {{{ php

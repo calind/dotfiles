@@ -26,6 +26,7 @@ return require('packer').startup({
         use "williamboman/mason.nvim"
         use "williamboman/mason-lspconfig.nvim"
         use "jay-babu/mason-null-ls.nvim"
+        use "b0o/schemastore.nvim"
 
         use 'lewis6991/impatient.nvim'
 
