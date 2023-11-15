@@ -1,4 +1,4 @@
--- {{{ local definitions
+-- {{{ local definitionsp
 local o = vim.opt
 local g = vim.g
 local optl = vim.opt_local
@@ -6,6 +6,7 @@ local cmd = vim.cmd
 local fn = vim.fn
 local stdpath = vim.fn.stdpath
 local au = vim.api.nvim_create_autocmd
+local ag = vim.api.nvim_create_autogroup
 local feedkey = function(key, mode)
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
 end
@@ -309,7 +310,7 @@ local lsp_status = require('lsp-status')
 local lightbulb = require('nvim-lightbulb')
 local null_ls = require('null-ls')
 
-local root_pattern = require("null-ls.utils").root_pattern
+local null_ls_root_pattern = require("null-ls.utils").root_pattern
 
 require('lspconfig.ui.windows').default_options.border = heavy_border
 lsp_status.register_progress()
@@ -358,6 +359,14 @@ vim.g.code_action_menu_window_border = heavy_border
 wk.register({ ["<space>"] = { name = "LSP" } })
 
 local lsp_formatters = {}
+local format_filter = function(client)
+    local ft = vim.bo.filetype
+    local formatters = vim.b.lsp_formatters or lsp_formatters[ft] or {}
+    if vim.tbl_isempty(formatters) or vim.tbl_contains(formatters, client.name) then
+        return true
+    end
+    return false
+end
 
 lspconfig.defaults = {
     handlers = {
@@ -366,14 +375,6 @@ lspconfig.defaults = {
     },
     on_attach = function(client, bufnr)
         ---@diagnostic disable-next-line: redefined-local
-        local format_filter = function(client)
-            local ft = vim.bo[bufnr].filetype
-            local formatters = vim.b[bufnr].lsp_formatters or lsp_formatters[ft] or {}
-            if vim.tbl_isempty(formatters) or vim.tbl_contains(formatters, client.name) then
-                return true
-            end
-            return false
-        end
 
         -- Enable completion triggered by <c-x><c-o>
         vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
@@ -388,10 +389,25 @@ lspconfig.defaults = {
         nmap('<Space>d', vim.diagnostic.open_float, bufopts, 'Preview diagnostic')
         nmap('<Space>q', vim.diagnostic.setloclist, bufopts, 'Open loclist')
 
+        -- toggle diagnostics
+        nmap('yoD',
+            function()
+                if vim.diagnostic.is_disabled() then
+                    vim.diagnostic.enable()
+                else
+                    vim.diagnostic.disable()
+                end
+            end,
+            bufopts, 'diagnostics')
+        nmap(']oD', vim.diagnostic.disable, bufopts, 'diagnostics')
+        nmap('>oD', vim.diagnostic.disable, bufopts, 'diagnostics')
+        nmap('[oD', vim.diagnostic.enable, bufopts, 'diagnostics')
+        nmap('<oD', vim.diagnostic.enable, bufopts, 'diagnostics')
+
         -- goto
         nmap('gd', vim.lsp.buf.definition, bufopts, 'Go to definition')
         nmap('gD', vim.lsp.buf.declaration, bufopts, 'Go to declaration')
-        nmap('gi', vim.lsp.buf.implementation, bufopts, 'Show implementations')
+        nmap('gI', vim.lsp.buf.implementation, bufopts, 'Show implementations')
         nmap('gr', vim.lsp.buf.references, bufopts, 'Show references ')
         nmap('gT', vim.lsp.buf.type_definition, bufopts, 'Go to type definition')
 
@@ -417,21 +433,40 @@ lspconfig.defaults = {
         -- lsp_signature.on_attach(nil, bufnr)
     end,
     capabilities = vim.tbl_extend('keep', require('cmp_nvim_lsp').default_capabilities(),
-        lsp_status.capabilities
+        lsp_status.capabilities,
+        {
+            textDocument = {
+                completion = {
+                    completionItem = {
+                        snippetSupport = true,
+                    },
+                }
+            }
+        }
     ),
     flags = {
         debounce_text_changes = 150,
     },
 }
+au("BufWritePre", { callback = function() vim.lsp.buf.format({ async = false, filter = format_filter }) end })
 
 o.completeopt = 'menuone,noselect,preview'
 
+-- require("copilot").setup({
+--     suggestion = {
+--         enabled = true,
+--         auto_trigger = true,
+--         keymap = {
+--             accept = "<Tab>",
+--         }
+--     },
+-- })
 require("copilot").setup({
     suggestion = { enabled = false },
     panel = { enabled = false },
 })
+require("copilot_cmp").setup()
 
-require("copilot_cmp").setup({})
 local snippy = require('snippy')
 local cmp_insert_mapping = {
     ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -488,16 +523,18 @@ local cmp_insert_mapping = {
     end, { 'i', 's' }),
     ['<CR>'] = cmp.mapping(function(fallback)
         if cmp.visible() then
-            cmp.confirm({ select = false, behavior = cmp.ConfirmBehavior.Replace }) -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-            if cmp.get_active_entry() then
-                -- elseif vim.fn['vsnip#available'](1) == 1 then
-                --     feedkey('<Plug>(vsnip-expand-or-jump)', '')
-                if snippy.can_expand_or_advance() then
-                    snippy.expand_or_advance()
-                end
-            else
-                fallback()
-            end
+            cmp.confirm({ select = false }) -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+            -- https://github.com/dcampos/nvim-snippy#known-bugs
+            -- https://github.com/neovim/neovim/issues/23653
+            -- if cmp.get_active_entry() then
+            --     -- elseif vim.fn['vsnip#available'](1) == 1 then
+            --     --     feedkey('<Plug>(vsnip-expand-or-jump)', '')
+            --     if snippy.can_expand_or_advance() then
+            --         snippy.expand_or_advance()
+            --     end
+            -- else
+            --     fallback()
+            -- end
         else
             fallback()
         end
@@ -576,6 +613,24 @@ cmp.setup({
             { name = 'buffer' },
         }
     ),
+    sorting = {
+        priority_weight = 2,
+        comparators = {
+            require("copilot_cmp.comparators").prioritize,
+
+            -- Below is the default comparitor list and order for nvim-cmp
+            cmp.config.compare.offset,
+            -- cmp.config.compare.scopes, --this is commented in nvim-cmp too
+            cmp.config.compare.exact,
+            cmp.config.compare.score,
+            cmp.config.compare.recently_used,
+            cmp.config.compare.locality,
+            cmp.config.compare.kind,
+            cmp.config.compare.sort_text,
+            cmp.config.compare.length,
+            cmp.config.compare.order,
+        },
+    },
     -- Pictograms
     formatting = {
         format = lspkind.cmp_format({
@@ -762,6 +817,23 @@ lualine.setup {
             },
             'encoding',
             'filetype',
+            {
+                -- show the virtual environment name
+                function()
+                    if (vim.env.VIRTUAL_ENV_PROMPT or "") ~= "" then
+                        return vim.env.VIRTUAL_ENV_PROMPT:gsub("%s+", "")
+                    end
+
+                    local venv = vim.fs.basename(vim.env.VIRTUAL_ENV or "")
+                    if venv == ".venv" then
+                        venv = vim.fs.basename(vim.fs.dirname(vim.env.VIRTUAL_ENV or ""))
+                    end
+                    if venv ~= "" then
+                        return venv
+                    end
+                    return ""
+                end,
+            },
         },
         lualine_y = { 'progress' },
         lualine_z = { 'location' }
@@ -797,14 +869,6 @@ lspconfig.jsonls.setup(vim.tbl_extend('keep', lspconfig.defaults, {
         },
     },
 }))
---}}}
-
---{{{ html/css
-lspconfig.html.setup(vim.tbl_extend('keep', lspconfig.defaults, {
-    -- get_language_id = function() return 'php' end,
-    filetypes = { 'html', 'htmldjango' },
-}))
-lspconfig.cssls.setup(lspconfig.defaults)
 --}}}
 
 -- {{{ php
@@ -871,37 +935,84 @@ lspconfig.intelephense.setup(vim.tbl_extend('keep', lspconfig.defaults, {
 lsp_formatters['php'] = { 'null-ls' }
 lsp_formatters['php.wp'] = lsp_formatters['php']
 
-table.insert(null_ls_sources, null_ls.builtins.diagnostics.phpcs.with {
+local phpcs_root_pattern = null_ls_root_pattern("phpcs.xml.dist", "phpcs.xml", ".phpcs.xml.dist", ".phpcs.xml")
+local null_ls_phpcs_config = {
     prefer_local = 'vendor/bin',
+    timeout = 15000, -- 15s
     -- use WordPress coding standards for files detected as php.wp
     extra_args = function(params)
         if params.ft == "php.wp" then
             -- skip for code under custom phpcs config file
-            local local_root = root_pattern("phpcs.xml.dist", "phpcs.xml")(params.bufname)
-            return not local_root and { '--standard=WordPress' }
+            local local_root = phpcs_root_pattern(params.bufname)
+            local args = { '-d', 'memory_limit=1G' }
+            if (not local_root) then
+                table.insert(args, '--standard=WordPress')
+            end
+            return args
         end
     end,
     cwd = function(params)
-        local local_root = root_pattern("phpcs.xml.dist", "phpcs.xml")(params.bufname)
+        local local_root = phpcs_root_pattern(params.bufname)
         return local_root or params.root
     end,
-})
-table.insert(null_ls_sources, null_ls.builtins.formatting.phpcbf.with {
-    prefer_local = 'vendor/bin',
-    -- use WordPress coding standards for files detected as php.wp
-    extra_args = function(params)
-        if params.ft == "php.wp" then
-            -- skip for code under custom phpcs config file
-            local local_root = root_pattern("phpcs.xml.dist", "phpcs.xml")(params.bufname)
-            return not local_root and { '--standard=WordPress' }
-        end
-    end,
-    cwd = function(params)
-        local local_root = root_pattern("phpcs.xml.dist", "phpcs.xml")(params.bufname)
-        return local_root or params.root
-    end,
-})
+
+}
+table.insert(null_ls_sources, null_ls.builtins.diagnostics.phpcs.with(null_ls_phpcs_config))
+table.insert(null_ls_sources, null_ls.builtins.formatting.phpcbf.with(null_ls_phpcs_config))
 -- }}}
+
+--{{{ html/css/js
+lspconfig.html.setup(vim.tbl_extend('keep', lspconfig.defaults, {
+    filetypes = { 'html', 'htmldjango', 'php' },
+    -- https://github.com/microsoft/vscode-docs/blob/cccc58b6e71c71ff843d401f67a3424a2e131ef9/docs/languages/html.md#formatting
+    settings = {
+        html = {
+            format = {
+                templating = true,
+            }
+        }
+    },
+}))
+
+-- lspconfig.cssls.setup(lspconfig.defaults)
+lspconfig.tailwindcss.setup(lspconfig.defaults)
+
+vim.filetype.add({
+    pattern = {
+        ['.*/wp%-includes/*.js'] = 'javascript.wp',
+        ['.*/wp%-admin/*.js'] = 'javascript.wp',
+        ['.*/wp%-content/*.js'] = 'javascript.wp',
+        ['.*/wp%-.*.js'] = 'javascript.wp',
+    },
+})
+
+au('FileType', {
+    pattern = { 'javascript.wp' },
+    callback = function()
+        local _listchars = vim.deepcopy(listchars)
+        _listchars['tab'] = '  '
+        vim.b.listchars = _listchars
+        vim.bo.expandtab = false
+        vim.bo.copyindent = true
+        vim.bo.preserveindent = true
+        vim.bo.softtabstop = 0
+        vim.bo.shiftwidth = 4
+        vim.bo.tabstop = 4
+    end
+})
+
+lspconfig.eslint.setup(vim.tbl_extend('keep', lspconfig.defaults, {
+    filetypes = table.insert(lspconfig.eslint.document_config.default_config.filetypes, 'javascript.wp'),
+}))
+lspconfig.tsserver.setup(lspconfig.defaults)
+table.insert(null_ls_sources, null_ls.builtins.diagnostics.jshint.with {
+    condition = function(utils)
+        return utils.root_has_file({ ".jshintrc" })
+    end,
+})
+table.insert(null_ls_sources, null_ls.builtins.formatting.prettier)
+
+--}}}
 
 -- {{{ go
 au('FileType', {
@@ -921,9 +1032,19 @@ table.insert(null_ls_sources, null_ls.builtins.diagnostics.golangci_lint.with {
 
 -- {{{ python
 
-lspconfig.pyright.setup(lspconfig.defaults)
+lspconfig.pyright.setup(vim.tbl_extend('keep', lspconfig.defaults, {
+    settings = {
+        python = {
+            analysis = {
+                diagnosticSeverityOverrides = {
+                    reportUndefinedVariable = 'none',
+                }
+            },
+        },
+    },
+}))
 table.insert(null_ls_sources, null_ls.builtins.diagnostics.ruff)
-table.insert(null_ls_sources, null_ls.builtins.formatting.isort)
+table.insert(null_ls_sources, null_ls.builtins.formatting.ruff)
 table.insert(null_ls_sources, null_ls.builtins.formatting.black)
 -- }}}
 
@@ -951,7 +1072,7 @@ au('FileType', {
 --{{{ Bash, shell, docker
 
 lspconfig.bashls.setup(lspconfig.defaults)
-table.insert(null_ls_sources, null_ls.builtins.diagnostics.shellcheck)
+-- table.insert(null_ls_sources, null_ls.builtins.diagnostics.shellcheck)
 
 lspconfig.dockerls.setup(lspconfig.defaults)
 table.insert(null_ls_sources, null_ls.builtins.diagnostics.hadolint)
@@ -1074,6 +1195,7 @@ nnoremap('<leader>t', cmd.TSHighlightCapturesUnderCursor, 'Show highlight captur
 -- {{{ null-ls
 null_ls.setup({
     debug = true,
+    log_level = "trace",
     sources = null_ls_sources,
     border = heavy_border,
     update_in_insert = false,
@@ -1087,6 +1209,6 @@ require("mason").setup({
     }
 })
 require("mason-lspconfig").setup({ automatic_installation = true })
-require("mason-null-ls").setup({ automatic_installation = true })
+require("mason-null-ls").setup({ automatic_installation = { exclude = { "phpcs", "phpcbf" } } })
 --}}}
 -- vim:foldmethod=marker:foldlevel=0
