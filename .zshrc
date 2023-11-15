@@ -224,3 +224,6 @@ compdef _envchain envchain
 export PATH="${HOME}/bin:$PATH"
 
 source ~/.aliases
+if [[ -f "${HOME}/.zshrc.local" ]] ; then
+    source "${HOME}/.zshrc.local"
+fi
