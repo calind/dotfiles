@@ -20,6 +20,32 @@ bindkey '\e[H'  beginning-of-line
 bindkey '\e[F'  end-of-line
 bindkey '\e[3~' delete-char
 
+declare -A colors
+colors[bg_0]="#103c48"
+colors[bg_1]="#184956"
+colors[bg_2]="#2d5b69"
+colors[dim_0]="#72898f"
+colors[fg_0]="#adbcbc"
+colors[fg_1]="#cad8d9"
+colors[red]="#fa5750"
+colors[green]="#75b938"
+colors[yellow]="#dbb32d"
+colors[blue]="#4695f7"
+colors[magenta]="#f275be"
+colors[cyan]="#41c7b9"
+colors[orange]="#ed8649"
+colors[violet]="#af88eb"
+colors[br_red]="#ff665c"
+colors[br_green]="#84c747"
+colors[br_yellow]="#ebc13d"
+colors[br_blue]="#58a3ff"
+colors[br_magenta]="#ff84cd"
+colors[br_cyan]="#53d6c7"
+colors[br_orange]="#fd9456"
+colors[br_violet]="#bd96fa"
+export colors
+
+
 # set homebrew environment
 if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/usr/local/bin/brew" ] ; then
     eval "$(/usr/local/bin/brew shellenv)"
