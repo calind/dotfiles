@@ -42,9 +42,22 @@
 [pull]
     ff = only
 
-[includeIf "gitdir:~/work/src/github.com/bitpoke/"]
-    path = ~/.config/git/config-bitpoke.inc
 [includeIf "gitdir:~/work/src/gitlab.com/"]
     path = ~/.config/git/config-bitpoke.inc
-[includeIf "gitdir:~/work/src/bitbucket.org/"]
+
+[includeIf "gitdir:~/work/src/github.com/bitpoke/"]
     path = ~/.config/git/config-bitpoke.inc
+[includeIf "gitdir:~/work/src/github.com/SubscriptionGroup/"]
+    path = ~/.config/git/config-bitpoke.inc
+[includeIf "gitdir:~/work/src/github.com/AudioTribeRO/"]
+    path = ~/.config/git/config-bitpoke.inc
+
+[includeIf "gitdir:~/work/src/github.com/AudioTribeRO/"]
+    path = ~/.config/git/enable-fsmonitor.inc
+[includeIf "gitdir:~/work/src/github.com/bitpoke/"]
+    path = ~/.config/git/enable-fsmonitor.inc
+[includeIf "gitdir:~/work/src/github.com/calind/"]
+    path = ~/.config/git/enable-fsmonitor.inc
+[safe]
+    bareRepository = all
+    ; bareRepository = explicit
