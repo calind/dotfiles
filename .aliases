@@ -1,4 +1,5 @@
 # vim: set ft=sh:
+# shellcheck shell=bash
 alias pyc='find . -name "*.pyc" -exec rm -rf {} \; ; find . -name "__pycache__" -type d -print0 | xargs -0 rm -rf'
 
 if hash envchain 2>/dev/null ; then
@@ -25,6 +26,10 @@ if hash mutagen-compose 2>/dev/null ; then
     alias docker-compose=mutagen-compose
 fi
 
+if hash mutagen 2>/dev/null ; then
+    alias mslid=mutagen sync list --template '{{ range $idx, $e := . }}{{ printf "%s\n" $e.Identifier }}{{ end }}'
+fi
+
 if [[ "$(uname)" == "Darwin" ]] ; then
     alias mtr='sudo /usr/local/sbin/mtr'
 fi
@@ -46,9 +51,15 @@ alias gtree='git tree'
 
 alias dcup='docker-compose up'
 alias dcdown='docker-compose up'
+alias dcstop='docker-compose stop'
+alias dcrm='docker-compose rm'
 alias dclog='docker-compose logs'
 alias dcps='docker-compose ps'
 alias dce='docker-compose exec'
 alias dceweb='docker-compose exec web'
 alias dcedb='docker-compose exec db'
 alias dcewp='docker-compose exec wordpress wp'
+alias dcb='docker-compose build'
+alias dcp='docker-compose push'
+
+alias venv='source .venv/bin/activate'
