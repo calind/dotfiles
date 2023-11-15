@@ -221,4 +221,6 @@ _envchain() {
 
 compdef _envchain envchain
 
+export PATH="${HOME}/bin:$PATH"
+
 source ~/.aliases
