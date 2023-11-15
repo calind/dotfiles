@@ -121,7 +121,4 @@ o.spell = true -- enable spell checking
 o.spellfile = spellfile
 o.spelloptions:append({ "camel" })
 -- }}}
-
-
-vim.cmd.colorscheme 'selenized'
 -- vim:foldmethod=marker:foldlevel=0

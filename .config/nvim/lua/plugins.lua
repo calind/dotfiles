@@ -1,112 +1,98 @@
-local ensure_packer = function()
-    local fn = vim.fn
-    local install_path = fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
-    if fn.empty(fn.glob(install_path)) > 0 then
-        fn.system({ 'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path })
-        vim.cmd [[packadd packer.nvim]]
-        return true
-    end
-    return false
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    })
 end
-local packer_bootstrap = ensure_packer()
+vim.opt.rtp:prepend(lazypath)
 
-vim.cmd([[
-    augroup packer_user_config
-        autocmd!
-        autocmd BufWritePost plugins.lua source <afile> | PackerCompile
-    augroup end
-]])
+return require("lazy").setup({
+        "calind/selenized.nvim",
 
-return require('packer').startup({
-    function(use)
-        use 'wbthomason/packer.nvim'
+        "williamboman/mason.nvim",
+        "williamboman/mason-lspconfig.nvim",
+        "jay-babu/mason-null-ls.nvim",
+        "b0o/schemastore.nvim",
 
-        use 'calind/selenized.nvim'
+        "tpope/vim-repeat",
+        "tpope/vim-commentary",
+        "tpope/vim-surround",
+        "tpope/vim-unimpaired",
 
-        use "williamboman/mason.nvim"
-        use "williamboman/mason-lspconfig.nvim"
-        use "jay-babu/mason-null-ls.nvim"
-        use "b0o/schemastore.nvim"
+        "junegunn/vim-easy-align",
 
-        use 'lewis6991/impatient.nvim'
+        "micarmst/vim-spellsync",
 
-        use 'tpope/vim-repeat'
-        use 'tpope/vim-commentary'
-        use 'tpope/vim-surround'
-        use 'tpope/vim-unimpaired'
+        "folke/which-key.nvim",
 
-        use 'junegunn/vim-easy-align'
+        "nvim-lua/plenary.nvim",
 
-        use 'micarmst/vim-spellsync'
+        "nvim-lualine/lualine.nvim",
 
-        use 'folke/which-key.nvim'
-
-        use 'nvim-lua/plenary.nvim'
-
-        use 'nvim-lualine/lualine.nvim'
-
-        use({
-            'johmsalas/text-case.nvim',
+        {
+            "johmsalas/text-case.nvim",
             config = function()
-                _G.textcase = require('textcase').api
+                _G.textcase = require("textcase").api
             end
-        })
-
-        use({
-            'lambdalisue/suda.vim',
+        },
+        {
+            "lambdalisue/suda.vim",
             config = function()
                 vim.g.suda_smart_edit = 1
             end
-        })
+        },
 
         -- LSP
-        use 'neovim/nvim-lspconfig'
-        use 'nvim-lua/lsp-status.nvim'
-        use 'jose-elias-alvarez/null-ls.nvim'
+        "neovim/nvim-lspconfig",
+        "nvim-lua/lsp-status.nvim",
+        "jose-elias-alvarez/null-ls.nvim",
 
         -- Autocmplete
-        use 'hrsh7th/nvim-cmp'
-        use 'hrsh7th/cmp-path'
-        use 'hrsh7th/cmp-buffer'
-        use 'hrsh7th/cmp-nvim-lsp'
-        use 'hrsh7th/cmp-cmdline'
-        use 'hrsh7th/cmp-git'
-        use 'hrsh7th/cmp-calc'
-        use 'hrsh7th/cmp-nvim-lsp-document-symbol'
-        use { 'zbirenbaum/copilot-cmp', requires = { 'zbirenbaum/copilot.lua' } }
+        {
+            "hrsh7th/nvim-cmp",
+            dependencies = {
+                "hrsh7th/cmp-path",
+                "hrsh7th/cmp-buffer",
+                "hrsh7th/cmp-nvim-lsp",
+                "hrsh7th/cmp-cmdline",
+                "hrsh7th/cmp-git",
+                "hrsh7th/cmp-calc",
+                "hrsh7th/cmp-nvim-lsp-document-symbol",
+
+            }
+        },
+        { "zbirenbaum/copilot-cmp", dependencies = { "zbirenbaum/copilot.lua" } },
 
         -- Snippets
-        -- use 'hrsh7th/cmp-vsnip'
-        -- use 'hrsh7th/vim-vsnip'
-        -- use 'rafamadriz/friendly-snippets'
-        use 'dcampos/nvim-snippy'
-        use 'dcampos/cmp-snippy'
-        use 'honza/vim-snippets'
+        -- "hrsh7th/cmp-vsnip",
+        -- "hrsh7th/vim-vsnip",
+        -- "rafamadriz/friendly-snippets",
+        "dcampos/nvim-snippy",
+        "dcampos/cmp-snippy",
+        "honza/vim-snippets",
 
 
         -- LSP & autocomplete UI
-        use 'onsails/lspkind-nvim'
-        use 'kosayoda/nvim-lightbulb'
-        use 'weilbith/nvim-code-action-menu'
-        -- use 'ray-x/lsp_signature.nvim'
+        "onsails/lspkind-nvim",
+        "kosayoda/nvim-lightbulb",
+        "weilbith/nvim-code-action-menu",
+        -- "ray-x/lsp_signature.nvim",
 
-        use 'lewis6991/gitsigns.nvim'
+        "lewis6991/gitsigns.nvim",
 
-        use 'windwp/nvim-autopairs'
+        "windwp/nvim-autopairs",
 
         -- Treesitter
-        use 'nvim-treesitter/nvim-treesitter'
-        use 'nvim-treesitter/playground'
-
-        -- Automatically set up your configuration after cloning packer.nvim
-        -- Put this at the end after all plugins
-        if packer_bootstrap then
-            require('packer').sync()
-        end
-    end,
-    config = {
-        display = {
-            open_fn = function() return require('packer.util').float({ border = heavy_border }) end,
+        "nvim-treesitter/nvim-treesitter",
+        "nvim-treesitter/playground",
+    },
+    {
+        ui = {
+            border = heavy_border,
         }
-    }
-})
+    })

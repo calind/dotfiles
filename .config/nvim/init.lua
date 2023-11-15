@@ -67,16 +67,11 @@ au({ 'BufNewFile', 'BufRead' }, {
 })
 
 -- minimal, sans-plugins, config
+vim.loader.enable()
 require 'minimal'
-
--- {{{ load impatient
-local ok, impatient = pcall(require, 'impatient')
-if ok then
-    impatient.enable_profile()
-end
--- }}}
-
 require 'plugins'
+
+vim.cmd.colorscheme 'selenized'
 require 'hl-codeblock'
 
 local null_ls_sources = {}
@@ -1153,7 +1148,7 @@ require('nvim-treesitter.configs').setup {
         'javascript', 'typescript', 'tsx', 'jq',
         'html', 'css',
         'sql',
-        'vim', 'help',
+        'vim',
         'markdown', 'comment', 'dot',
         'bash', 'dockerfile', 'make', 'diff', 'awk',
         'git_rebase', 'gitignore', 'gitattributes', 'gitcommit',
