@@ -1,5 +1,8 @@
 # zmodload zsh/zprof
 
+autoload -Uz compinit && compinit
+autoload -U +X bashcompinit && bashcompinit
+
 # Set locales on MacOS
 if type defaults &>/dev/null; then
     LANG="$(defaults read -g AppleLocale)"
@@ -176,8 +179,6 @@ if [ $commands[kubectl] ]; then
   }
 fi
 
-autoload -Uz compinit
-compinit
 
 __envchain_namespaces() {
     _values 'namespace' "${(uonzf)$(envchain --list)}"
