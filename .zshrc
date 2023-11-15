@@ -184,6 +184,30 @@ if [ $commands[az] ]; then
   }
 fi
 
+FZF_PREVIEW_OPTS="cat {}"
+if [ $commands[rich] ]; then
+    FZF_PREVIEW_OPTS="rich --force-terminal -n -y --max-width=\$FZF_PREVIEW_COLUMNS {}"
+fi
+
+FZF_DEFAULT_OPTS=$(cat <<-EOD
+    --color="fg:${colors[fg_0]},bg:${colors[bg_0]},hl:${colors[cyan]}:bold"
+    --color="fg+:${colors[fg_0]}:regular,bg+:${colors[bg_1]},hl+:$colors[br_cyan]:bold"
+    --color="pointer:${colors[cyan]},prompt:${colors[yellow]}:bold"
+    --color="info:${colors[blue]}"
+    --color="query:${colors[fg_0]}:regular"
+    --color="border:${colors[bg_2]}"
+    --color="header:${colors[fg_1]}:bold,label:${colors[fg_1]}:bold"
+    --preview-window=border-bold
+    --scrollbar='▐'
+    --separator='━'
+    --prompt='❯ '
+    --pointer='❯'
+EOD
+)
+
+export FZF_DEFAULT_OPTS
+
+
 __envchain_namespaces() {
     _values 'namespace' "${(uonzf)$(envchain --list)}"
 }
