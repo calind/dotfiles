@@ -61,6 +61,7 @@ fi
 
 # Load version control information
 autoload -Uz vcs_info
+autoload -U add-zsh-hook
 
 # check for changes
 zstyle ':vcs_info:*' check-for-changes true
@@ -83,12 +84,43 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
     fi
 }
 
-precmd() {
+if [[ -n "${HOMEBREW_PREFIX}" ]] && [[ -f "${HOMEBREW_PREFIX}/opt/kube-ps1/share/kube-ps1.sh" ]]; then
+    source "${HOMEBREW_PREFIX}/opt/kube-ps1/share/kube-ps1.sh"
+fi
+
+_set_prompt() {
     vcs_info
 
-    PS1="%F{3}λ%f %~${vcs_info_msg_0_} ❯ "
+    local venv=""
+
+    if [[ -n "${VIRTUAL_ENV}" ]] ; then
+        if [[ -n "${VIRTUAL_ENV_PROMPT}" ]] ; then
+            venv="${VIRTUAL_ENV_PROMPT}"
+        elif [[ "${VIRTUAL_ENV##*/}" == ".venv" ]] ; then
+            venv="(${$(dirname "$VIRTUAL_ENV")##*/}) "
+        else
+            venv="(${VIRTUAL_ENV##*/}) "
+        fi
+    fi
+
+    host_prompt=""
+    if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+        host_prompt="%K{${colors[bg_1]}}%F{${colors[dim_0]}}%n@%m%f%k "
+    fi
+
+    PS1="%F{3}λ%f ${host_prompt}${venv}%~${vcs_info_msg_0_} ❯ "
     PS2="  ❯ "
+    RPROMPT=""
+
+    if [[ "off" != "${KUBE_PS1_ENABLED}" ]]; then
+        test -n "${KUBE_PS1_CONTEXT}" && RPROMPT="${KUBE_PS1_CONTEXT}"
+        test -n "${KUBE_PS1_NAMESPACE}" && RPROMPT="${RPROMPT}:${KUBE_PS1_NAMESPACE}"
+    fi
+
+    test -n "${RPROMPT}" && RPROMPT="%K{${colors[bg_1]}}%F{${colors[dim_0]}} ${RPROMPT} %f%k"
+
 }
+add-zsh-hook precmd _set_prompt
 
 if [[ -n "${HOMEBREW_PREFIX}" ]] && [[ -x "${HOMEBREW_PREFIX}/bin/gls" ]]; then
     alias ls="${HOMEBREW_PREFIX}/bin/gls"
