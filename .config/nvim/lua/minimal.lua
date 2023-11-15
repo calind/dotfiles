@@ -9,11 +9,11 @@ local au = vim.api.nvim_create_autocmd
 -- }}}
 
 -- sanitize workflow
-g.mapleader = ',' -- remap leader to ,
+g.mapleader = ','                      -- remap leader to ,
 o.encoding = 'utf8'
-o.wrap = false -- don't wrap lines
-o.scrolloff = 3 -- have some context around the current line always on screen
-o.splitright = true -- split to the right by default
+o.wrap = false                         -- don't wrap lines
+o.scrolloff = 3                        -- have some context around the current line always on screen
+o.splitright = true                    -- split to the right by default
 o.wildignore:append { '*.pyc', '*.o' } -- ignore some common extensions
 o.updatetime = 300
 
@@ -23,18 +23,18 @@ o.shiftwidth = 4
 o.expandtab = true
 
 -- searching behavior
-o.hlsearch = true -- highlight matches
-o.incsearch = true -- incremental search
+o.hlsearch = true   -- highlight matches
+o.incsearch = true  -- incremental search
 o.ignorecase = true -- searches are case insensitive...
-o.smartcase = true -- ...unless they contain at least one capital letter
-o.showmatch = true -- show matching
+o.smartcase = true  -- ...unless they contain at least one capital letter
+o.showmatch = true  -- show matching
 -- <CR> to clear search highlight
 vim.keymap.set('n', '<CR>', ':nohlsearch<CR>', { silent = true, desc = 'Clear search highlight' })
 -- Restore <CR> behavior for quickfix and loclist
 au('BufReadPost', {
     pattern = { 'quickfix', 'loclist' },
     callback = function()
-        vim.keymap.set('<CR>', '<CR>', { silent = true, buffer = true })
+        vim.keymap.set('n', '<CR>', '<CR>', { silent = true, buffer = true })
     end
 })
 
@@ -63,13 +63,17 @@ vim.filetype.add({
 -- }}}
 
 -- {{{ UI setup and tweaks
-o.cursorline = true -- highlight the line of the cursor ...
+o.cursorline = true            -- highlight the line of the cursor ...
 o.cursorlineopt = { 'number' } -- ... but only when showing line numbers
-o.textwidth = 120 -- 120 columns by default
-o.colorcolumn = '0' -- show vertical line after textwidth
+o.textwidth = 120              -- 120 columns by default
+o.colorcolumn = '0'            -- show vertical line after textwidth
 o.number = true
-o.signcolumn = 'number' -- always show the sign column
 o.foldcolumn = 'auto:9'
+if vim.fn.has('nvim-0.9') == 1 then
+    o.statuscolumn = ' %=%l %s%C'
+else
+    o.signcolumn = 'number' -- always show the sign column
+end
 _G.heavy_border = { '┏', '━', '┓', '┃', '┛', '━', '┗', '┃' }
 _G.signs = { Error = '●', Warn = '▲', Hint = '■', Info = '◆', OK = '✔', Loading = '', LightBulb = '' }
 _G.listchars = { tab = '▸ ', trail = '•', extends = '❯', precedes = '❮' }
@@ -87,8 +91,8 @@ _G.fillchars = {
     foldsep = '┃',
 }
 
-o.lazyredraw = true -- redraw only when we need to.
-o.title = true -- automatically set window title
+o.lazyredraw = true    -- redraw only when we need to.
+o.title = true         -- automatically set window title
 o.termguicolors = true -- enable 24bit colors
 o.fillchars:append(fillchars)
 o.list = true
