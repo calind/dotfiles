@@ -175,6 +175,14 @@ if [ $commands[kubectl] ]; then
   }
 fi
 
+# lazy load azure-cli completion
+if [ $commands[az] ]; then
+  az() {
+    unfunction "$0"
+    test -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/az" && source "${HOMEBREW_PREFIX}/etc/bash_completion.d/az"
+    $0 "$@"
+  }
+fi
 
 __envchain_namespaces() {
     _values 'namespace' "${(uonzf)$(envchain --list)}"
