@@ -447,21 +447,6 @@ au("BufWritePre", { callback = function() vim.lsp.buf.format({ async = false, fi
 
 o.completeopt = 'menuone,noselect,preview'
 
--- require("copilot").setup({
---     suggestion = {
---         enabled = true,
---         auto_trigger = true,
---         keymap = {
---             accept = "<Tab>",
---         }
---     },
--- })
-require("copilot").setup({
-    suggestion = { enabled = false },
-    panel = { enabled = false },
-})
-require("copilot_cmp").setup()
-
 local snippy = require('snippy')
 local cmp_insert_mapping = {
     ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -596,7 +581,6 @@ cmp.setup({
             { name = 'cmp_git' },
         },
         {
-            { name = 'copilot' },
             { name = 'snippy' },
             { name = 'nvim_lsp' },
         },
@@ -611,8 +595,6 @@ cmp.setup({
     sorting = {
         priority_weight = 2,
         comparators = {
-            require("copilot_cmp.comparators").prioritize,
-
             -- Below is the default comparitor list and order for nvim-cmp
             cmp.config.compare.offset,
             -- cmp.config.compare.scopes, --this is commented in nvim-cmp too
@@ -664,7 +646,7 @@ cmp.setup.cmdline({ '/', '?' }, {
         {
             { name = 'buffer' }
         }
-    )
+    ),
 })
 
 -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
@@ -674,7 +656,7 @@ cmp.setup.cmdline(':', {
         { name = 'path' }
     }, {
         { name = 'cmdline' }
-    })
+    }),
 })
 -- }}}
 

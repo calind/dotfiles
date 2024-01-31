@@ -50,7 +50,7 @@ return require("lazy").setup({
         -- LSP
         "neovim/nvim-lspconfig",
         "nvim-lua/lsp-status.nvim",
-        "jose-elias-alvarez/null-ls.nvim",
+        "nvimtools/none-ls.nvim",
 
         -- Autocmplete
         {
@@ -66,7 +66,7 @@ return require("lazy").setup({
 
             }
         },
-        { "zbirenbaum/copilot-cmp", dependencies = { "zbirenbaum/copilot.lua" } },
+        -- { "zbirenbaum/copilot-cmp", dependencies = { "zbirenbaum/copilot.lua" } },
 
         -- Snippets
         -- "hrsh7th/cmp-vsnip",
