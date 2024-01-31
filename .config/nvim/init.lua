@@ -71,6 +71,7 @@ vim.loader.enable()
 require 'minimal'
 require 'plugins'
 
+_G.default_border = box_border
 vim.cmd.colorscheme 'selenized'
 require 'hl-codeblock'
 
@@ -102,7 +103,7 @@ wk.setup({
         ["gw"] = "Text format",
     },
     window = {
-        border = heavy_border,
+        border = default_border,
         margin = { 1, 10, 1, 10 },
         padding = { 1, 0, 1, 0 },
     }
@@ -307,7 +308,7 @@ local null_ls = require('null-ls')
 
 local null_ls_root_pattern = require("null-ls.utils").root_pattern
 
-require('lspconfig.ui.windows').default_options.border = heavy_border
+require('lspconfig.ui.windows').default_options.border = default_border
 lsp_status.register_progress()
 lsp_status.config({
     kind_labels = lspkind.presets.default,
@@ -329,7 +330,7 @@ lightbulb.setup({
 
 vim.diagnostic.config({
     float = {
-        border = heavy_border,
+        border = default_border,
     },
     virtual_text = {
         source = 'if_many',
@@ -340,7 +341,7 @@ vim.diagnostic.config({
     severity_sort = true,
 })
 
-vim.g.code_action_menu_window_border = heavy_border
+vim.g.code_action_menu_window_border = default_border
 
 
 -- lsp_signature.setup({
@@ -365,8 +366,8 @@ end
 
 lspconfig.defaults = {
     handlers = {
-        ['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = heavy_border }),
-        ['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = heavy_border }),
+        ['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = default_border }),
+        ['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = default_border }),
     },
     on_attach = function(client, bufnr)
         ---@diagnostic disable-next-line: redefined-local
@@ -619,11 +620,11 @@ cmp.setup({
     },
     window = {
         documentation = {
-            border = heavy_border,
+            border = default_border,
             winhighlight = '',
         },
         completion = {
-            border = heavy_border,
+            border = default_border,
             winhighlight = '',
         },
     },
@@ -702,7 +703,7 @@ gitsigns.setup({
     attach_to_untracked = false,
     preview_config = {
         -- Options passed to nvim_open_win
-        border = heavy_border,
+        border = default_border,
     },
     current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
 })
@@ -1174,7 +1175,7 @@ null_ls.setup({
     debug = true,
     log_level = "trace",
     sources = null_ls_sources,
-    border = heavy_border,
+    border = default_border,
     update_in_insert = false,
 })
 -- }}}
@@ -1182,7 +1183,7 @@ null_ls.setup({
 --{{{ mason (load after null-ls, lspconfig, etc.)
 require("mason").setup({
     ui = {
-        border = heavy_border,
+        border = default_border,
     }
 })
 require("mason-lspconfig").setup({ automatic_installation = true })
