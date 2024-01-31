@@ -75,6 +75,8 @@ else
     o.signcolumn = 'number' -- always show the sign column
 end
 _G.heavy_border = { '┏', '━', '┓', '┃', '┛', '━', '┗', '┃' }
+_G.textualize_border = { '🮇', '▔', '▎', '▎', '▎', '▁', '🮇', '🮇' }
+_G.box_border = { '􀀁', '􀀄', '􀀂', '􀀆', '􀀃', '􀀅', '􀀀', '􀀇' }
 _G.signs = { Error = '●', Warn = '▲', Hint = '■', Info = '◆', OK = '✔', Loading = '', LightBulb = '' }
 _G.listchars = { tab = '▸ ', trail = '•', extends = '❯', precedes = '❮' }
 _G.fillchars = {
