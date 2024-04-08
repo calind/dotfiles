@@ -947,7 +947,7 @@ lspconfig.intelephense.setup({
             }
         }
     }
-}))
+})
 
 lsp_formatters['php'] = { 'null-ls' }
 lsp_formatters['php.wp'] = lsp_formatters['php']
