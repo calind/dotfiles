@@ -296,6 +296,16 @@ wk.register({
 -- end)
 --}}}
 
+--{{{ mason (this MUST be set up before LSP and null-ls)
+require("mason").setup({
+    ui = {
+        border = default_border,
+    }
+})
+require("mason-lspconfig").setup({ automatic_installation = true })
+require("mason-null-ls").setup({ automatic_installation = { exclude = { "phpcs", "phpcbf" } } })
+--}}}
+
 -- {{{ LSP
 local lspconfig = require('lspconfig')
 local cmp = require('cmp')
@@ -1180,13 +1190,4 @@ null_ls.setup({
 })
 -- }}}
 
---{{{ mason (load after null-ls, lspconfig, etc.)
-require("mason").setup({
-    ui = {
-        border = default_border,
-    }
-})
-require("mason-lspconfig").setup({ automatic_installation = true })
-require("mason-null-ls").setup({ automatic_installation = { exclude = { "phpcs", "phpcbf" } } })
---}}}
 -- vim:foldmethod=marker:foldlevel=0
