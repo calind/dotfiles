@@ -90,6 +90,12 @@ return require("lazy").setup({
         -- Treesitter
         "nvim-treesitter/nvim-treesitter",
         "nvim-treesitter/playground",
+
+        -- Language specific
+        {
+            "luckasRanarison/tailwind-tools.nvim",
+            dependencies = { "nvim-treesitter/nvim-treesitter" },
+        },
     },
     {
         ui = {

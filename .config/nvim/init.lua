@@ -634,8 +634,9 @@ cmp.setup({
     -- Pictograms
     formatting = {
         format = lspkind.cmp_format({
+            before = require("tailwind-tools.cmp").lspkind_format,
             mode = 'symbol_text',
-            symbol_map = { Copilot = "" },
+            symbol_map = { Copilot = "", Color = "󰝤" },
             maxwidth = 50,         -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
             ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
         })
@@ -972,10 +973,43 @@ lspconfig.html.setup({
             }
         }
     },
-}))
+})
 
--- lspconfig.cssls.setup(lspconfig.defaults)
-lspconfig.tailwindcss.setup(lspconfig.defaults)
+-- lspconfig.cssls.setup({})
+lspconfig.tailwindcss.setup({
+    on_attach = function(client, bufnr)
+        client.server_capabilities.completionProvider.triggerCharacters = { '"', "'", "`", ".", "(", "[", "!", "/", ":" }
+    end,
+    filetypes = { 'html', 'htmldjango', 'php', 'php.wp', 'javascript', 'javascript.wp', 'typescript', 'javascriptreact',
+        'typescriptreact' },
+    init_options = {
+        userLanguages = {
+            ["php.wp"] = "html",
+            ["javascript.wp"] = "javascript",
+        }
+    },
+    settings = {
+        tailwindCSS = {
+            experimental = {
+                classRegex = {
+                    { [[body_class(.*)]], [[(?:'|")([^"']*)(?:'|")]] },
+                    { [[array(.*)]],      [[(?:'|")([^"']*)(?:'|")]] },
+                }
+            }
+        }
+    }
+})
+
+require("tailwind-tools").setup({
+    document_color = {
+        enabled = false,
+        kind = "background",
+    },
+    conceal = {
+        enabled = false,
+    },
+    custom_filetypes = { 'php.wp', 'javascript.wp' },
+})
 
 vim.filetype.add({
     pattern = {
