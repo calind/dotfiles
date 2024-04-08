@@ -157,6 +157,10 @@ fi
 export GOPATH="$HOME/work"
 export PATH="$GOPATH/bin:$PATH"
 
+if [[ -d "${HOME}/.local/bin" ]] ; then
+    export PATH="${HOME}/.local/bin:$PATH"
+fi
+
 export EDITOR=/usr/local/bin/nvim
 
 if [ -f /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc ] ; then
