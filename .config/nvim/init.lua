@@ -468,6 +468,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 au("BufWritePre", { callback = format })
 
+require("copilot").setup({
+    panel = { enabled = false },
+    suggestion = { enabled = false, auto_trigger = true },
+})
+require("copilot_cmp").setup()
+require("CopilotChat").setup()
 
 local snippy = require('snippy')
 local cmp_insert_mapping = {
@@ -604,6 +610,7 @@ cmp.setup({
             { name = 'cmp_git' },
         },
         {
+            { name = 'copilot' },
             { name = 'snippy' },
             { name = 'nvim_lsp' },
         },
@@ -618,9 +625,10 @@ cmp.setup({
     sorting = {
         priority_weight = 2,
         comparators = {
+            require("copilot_cmp.comparators").prioritize,
             -- Below is the default comparitor list and order for nvim-cmp
             cmp.config.compare.offset,
-            -- cmp.config.compare.scopes, --this is commented in nvim-cmp too
+            -- cmp.config.compare.scopes, -- this is commented in nvim-cmp too
             cmp.config.compare.exact,
             cmp.config.compare.score,
             cmp.config.compare.recently_used,
@@ -659,6 +667,14 @@ cmp.event:on(
     cmp_autopairs.on_confirm_done()
 )
 
+vim.api.nvim_create_autocmd('BufEnter', {
+    pattern = 'copilot-*',
+    callback = function()
+        cmp.setup.buffer({
+            enabled = false,
+        })
+    end
+})
 
 -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
 cmp.setup.cmdline({ '/', '?' }, {

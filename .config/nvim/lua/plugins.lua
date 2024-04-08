@@ -66,8 +66,14 @@ return require("lazy").setup({
 
             }
         },
-        -- { "zbirenbaum/copilot-cmp", dependencies = { "zbirenbaum/copilot.lua" } },
-
+        { "zbirenbaum/copilot-cmp", dependencies = { "zbirenbaum/copilot.lua" } },
+        {
+            "CopilotC-Nvim/CopilotChat.nvim",
+            branch = "canary",
+            dependencies = {
+                { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
+            },
+        },
         -- Snippets
         -- "hrsh7th/cmp-vsnip",
         -- "hrsh7th/vim-vsnip",
