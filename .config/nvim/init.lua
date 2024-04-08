@@ -6,7 +6,7 @@ local cmd = vim.cmd
 local fn = vim.fn
 local stdpath = vim.fn.stdpath
 local au = vim.api.nvim_create_autocmd
-local ag = vim.api.nvim_create_autogroup
+local ag = vim.api.nvim_create_augroup
 local feedkey = function(key, mode)
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
 end
@@ -374,41 +374,69 @@ local format_filter = function(client)
     return false
 end
 
-lspconfig.defaults = {
-    handlers = {
-        ['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = default_border }),
-        ['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = default_border }),
-    },
-    on_attach = function(client, bufnr)
-        ---@diagnostic disable-next-line: redefined-local
+local format = function(args)
+    vim.lsp.buf.format({ async = true, filter = format_filter })
+end
+
+lspconfig.util.default_config = vim.tbl_extend("force", lspconfig.util.default_config,
+    {
+        handlers = {
+            ['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = default_border }),
+            ['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = default_border }),
+        },
+        capabilities = vim.tbl_extend('keep', require('cmp_nvim_lsp').default_capabilities(),
+            lsp_status.capabilities,
+            {
+                textDocument = {
+                    completion = {
+                        completionItem = {
+                            snippetSupport = true,
+                        },
+                    }
+                }
+            }
+        ),
+        flags = {
+            debounce_text_changes = 150,
+        }
+    }
+)
+
+-- Global mappings.
+-- See `:help vim.diagnostic.*` for documentation on any of the below functions
+nmap('[d', vim.diagnostic.goto_prev, {}, 'Go to previous diagnostic')
+nmap(']d', vim.diagnostic.goto_next, {}, 'Go to next diagnostic')
+nmap('<Space>d', vim.diagnostic.open_float, {}, 'Preview diagnostic')
+nmap('<Space>q', vim.diagnostic.setloclist, {}, 'Open loclist')
+-- toggle diagnostics
+nmap('yoD',
+    function()
+        if vim.diagnostic.is_disabled() then
+            vim.diagnostic.enable()
+        else
+            vim.diagnostic.disable()
+        end
+    end,
+    {}, 'diagnostics')
+nmap(']oD', vim.diagnostic.disable, {}, 'diagnostics')
+nmap('>oD', vim.diagnostic.disable, {}, 'diagnostics')
+nmap('[oD', vim.diagnostic.enable, {}, 'diagnostics')
+nmap('<oD', vim.diagnostic.enable, {}, 'diagnostics')
+
+-- Use LspAttach autocommand to only map the following keys
+-- after the language server attaches to the current buffer
+vim.api.nvim_create_autocmd('LspAttach', {
+    group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+    callback = function(ev)
+        local bufnr = ev.buf
+        local client = vim.lsp.get_client_by_id(ev.data.client_id)
 
         -- Enable completion triggered by <c-x><c-o>
-        vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+        vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
-        -- Mappings.
+        -- Buffer local mappings.
         -- See `:help vim.lsp.*` for documentation on any of the below functions
         local bufopts = { noremap = true, silent = true, buffer = bufnr }
-
-        -- diagnostics
-        nmap('[d', vim.diagnostic.goto_prev, bufopts, 'Go to previous diagnostic')
-        nmap(']d', vim.diagnostic.goto_next, bufopts, 'Go to next diagnostic')
-        nmap('<Space>d', vim.diagnostic.open_float, bufopts, 'Preview diagnostic')
-        nmap('<Space>q', vim.diagnostic.setloclist, bufopts, 'Open loclist')
-
-        -- toggle diagnostics
-        nmap('yoD',
-            function()
-                if vim.diagnostic.is_disabled() then
-                    vim.diagnostic.enable()
-                else
-                    vim.diagnostic.disable()
-                end
-            end,
-            bufopts, 'diagnostics')
-        nmap(']oD', vim.diagnostic.disable, bufopts, 'diagnostics')
-        nmap('>oD', vim.diagnostic.disable, bufopts, 'diagnostics')
-        nmap('[oD', vim.diagnostic.enable, bufopts, 'diagnostics')
-        nmap('<oD', vim.diagnostic.enable, bufopts, 'diagnostics')
 
         -- goto
         nmap('gd', vim.lsp.buf.definition, bufopts, 'Go to definition')
@@ -425,7 +453,7 @@ lspconfig.defaults = {
         nmap('<space>c', vim.cmd.CodeActionMenu, bufopts, 'Code Action')
 
         -- global actions
-        nmap('<space>f', function() vim.lsp.buf.format { async = true, filter = format_filter } end, bufopts, 'Format')
+        nmap('<space>f', format, bufopts, 'Format')
 
         -- LSP workspace
         wk.register({ ['<space>w'] = { name = "Workspace" }, { buffer = bufnr } })
@@ -436,27 +464,10 @@ lspconfig.defaults = {
         end, bufopts, 'List workspace folders')
 
         lsp_status.on_attach(client)
-        -- lsp_signature.on_attach(nil, bufnr)
     end,
-    capabilities = vim.tbl_extend('keep', require('cmp_nvim_lsp').default_capabilities(),
-        lsp_status.capabilities,
-        {
-            textDocument = {
-                completion = {
-                    completionItem = {
-                        snippetSupport = true,
-                    },
-                }
-            }
-        }
-    ),
-    flags = {
-        debounce_text_changes = 150,
-    },
-}
-au("BufWritePre", { callback = function() vim.lsp.buf.format({ async = false, filter = format_filter }) end })
+})
+au("BufWritePre", { callback = format })
 
-o.completeopt = 'menuone,noselect,preview'
 
 local snippy = require('snippy')
 local cmp_insert_mapping = {
@@ -513,8 +524,8 @@ local cmp_insert_mapping = {
         end
     end, { 'i', 's' }),
     ['<CR>'] = cmp.mapping(function(fallback)
-        if cmp.visible() then
-            cmp.confirm({ select = false }) -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+        if cmp.visible() and cmp.get_selected_entry() then
+            cmp.confirm({ select = false, behavior = cmp.ConfirmBehavior.Replace }) -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
             -- https://github.com/dcampos/nvim-snippy#known-bugs
             -- https://github.com/neovim/neovim/issues/23653
             -- if cmp.get_active_entry() then
@@ -537,6 +548,13 @@ local cmp_insert_mapping = {
             fallback()
         end
     end, { 'i', 's' }),
+    ['<Up>'] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+            cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
+        else
+            fallback()
+        end
+    end, { 'i', 's' }),
     ['<Tab>'] = cmp.mapping(function(fallback)
         -- if vim.fn['vsnip#available'](1) == 1 then
         --     feedkey('<Plug>(vsnip-expand-or-jump)', '')
@@ -544,13 +562,6 @@ local cmp_insert_mapping = {
             snippy.expand_or_advance()
         elseif cmp.visible() and has_words_before() then
             cmp.select_next_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
-        else
-            fallback()
-        end
-    end, { 'i', 's' }),
-    ['<Up>'] = cmp.mapping(function(fallback)
-        if cmp.visible() then
-            cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
         else
             fallback()
         end
@@ -568,6 +579,7 @@ local cmp_insert_mapping = {
     end, { 'i', 's' }),
 }
 
+o.completeopt = 'menuone,noselect,preview'
 cmp.setup({
     preselect = cmp.PreselectMode.None,
     --  enabled = function()
@@ -841,22 +853,22 @@ au('FileType', {
     end
 })
 
-lspconfig.yamlls.setup(vim.tbl_extend('keep', lspconfig.defaults, {
+lspconfig.yamlls.setup({
     settings = {
         yaml = {
             keyOrdering = false,
             schemas = require('schemastore').yaml.schemas(),
         },
     },
-}))
-lspconfig.jsonls.setup(vim.tbl_extend('keep', lspconfig.defaults, {
+})
+lspconfig.jsonls.setup({
     settings = {
         json = {
             schemas = require('schemastore').json.schemas(),
             validate = { enable = true },
         },
     },
-}))
+})
 --}}}
 
 -- {{{ php
@@ -907,7 +919,7 @@ table.insert(intelephense_default_stubs, 'wordpress')
 table.insert(intelephense_default_stubs, 'memcache')
 table.insert(intelephense_default_stubs, 'memcached')
 
-lspconfig.intelephense.setup(vim.tbl_extend('keep', lspconfig.defaults, {
+lspconfig.intelephense.setup({
     get_language_id = function() return 'php' end,
     filetypes = { 'php', 'php.wp' },
     settings = {
@@ -950,8 +962,8 @@ table.insert(null_ls_sources, null_ls.builtins.formatting.phpcbf.with(null_ls_ph
 -- }}}
 
 --{{{ html/css/js
-lspconfig.html.setup(vim.tbl_extend('keep', lspconfig.defaults, {
-    filetypes = { 'html', 'htmldjango', 'php' },
+lspconfig.html.setup({
+    filetypes = { 'html', 'htmldjango', 'php', 'php.wp' },
     -- https://github.com/microsoft/vscode-docs/blob/cccc58b6e71c71ff843d401f67a3424a2e131ef9/docs/languages/html.md#formatting
     settings = {
         html = {
@@ -989,14 +1001,11 @@ au('FileType', {
     end
 })
 
-lspconfig.eslint.setup(vim.tbl_extend('keep', lspconfig.defaults, {
+lspconfig.eslint.setup({
     filetypes = table.insert(lspconfig.eslint.document_config.default_config.filetypes, 'javascript.wp'),
-}))
-lspconfig.tsserver.setup(lspconfig.defaults)
-table.insert(null_ls_sources, null_ls.builtins.diagnostics.jshint.with {
-    condition = function(utils)
-        return utils.root_has_file({ ".jshintrc" })
-    end,
+})
+lspconfig.tsserver.setup({
+    filetypes = table.insert(lspconfig.tsserver.document_config.default_config.filetypes, 'javascript.wp'),
 })
 table.insert(null_ls_sources, null_ls.builtins.formatting.prettier)
 
@@ -1012,7 +1021,7 @@ au('FileType', {
     end
 })
 
-lspconfig.gopls.setup(lspconfig.defaults)
+lspconfig.gopls.setup({})
 table.insert(null_ls_sources, null_ls.builtins.diagnostics.golangci_lint.with {
     prefer_local = 'bin',
 })
@@ -1020,7 +1029,7 @@ table.insert(null_ls_sources, null_ls.builtins.diagnostics.golangci_lint.with {
 
 -- {{{ python
 
-lspconfig.pyright.setup(vim.tbl_extend('keep', lspconfig.defaults, {
+lspconfig.pyright.setup({
     settings = {
         python = {
             analysis = {
@@ -1030,14 +1039,12 @@ lspconfig.pyright.setup(vim.tbl_extend('keep', lspconfig.defaults, {
             },
         },
     },
-}))
-table.insert(null_ls_sources, null_ls.builtins.diagnostics.ruff)
-table.insert(null_ls_sources, null_ls.builtins.formatting.ruff)
-table.insert(null_ls_sources, null_ls.builtins.formatting.black)
+})
+lspconfig.ruff_lsp.setup({})
 -- }}}
 
 -- {{{ lua
-lspconfig.lua_ls.setup(vim.tbl_extend('keep', lspconfig.defaults, {
+lspconfig.lua_ls.setup({
     settings = {
         Lua = {
             runtime = {
@@ -1046,7 +1053,7 @@ lspconfig.lua_ls.setup(vim.tbl_extend('keep', lspconfig.defaults, {
             },
         },
     },
-}))
+})
 
 au('FileType', {
     pattern = { 'lua' },
@@ -1059,10 +1066,8 @@ au('FileType', {
 
 --{{{ Bash, shell, docker
 
-lspconfig.bashls.setup(lspconfig.defaults)
--- table.insert(null_ls_sources, null_ls.builtins.diagnostics.shellcheck)
-
-lspconfig.dockerls.setup(lspconfig.defaults)
+lspconfig.bashls.setup({})
+lspconfig.dockerls.setup({})
 table.insert(null_ls_sources, null_ls.builtins.diagnostics.hadolint)
 
 --}}}
