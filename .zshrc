@@ -1,8 +1,5 @@
 # zmodload zsh/zprof
 
-autoload -Uz compinit && compinit
-autoload -U +X bashcompinit && bashcompinit
-
 # Set locales on MacOS
 if type defaults &>/dev/null; then
     LANG="$(defaults read -g AppleLocale)"
@@ -59,8 +56,12 @@ if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/home/linuxbrew/.linuxbrew/bin/brew" ] ;
 fi
 
 if type brew &>/dev/null; then
-    FPATH="${HOMEBREW_PREFIX}/share/zsh-completions:$FPATH"
+    FPATH="${HOMEBREW_PREFIX}/share/zsh-completions:${FPATH}"
 fi
+FPATH="${HOME}/.zfunc:${FPATH}"
+
+autoload -Uz compinit && compinit
+autoload -U +X bashcompinit && bashcompinit
 
 # Load version control information
 autoload -Uz vcs_info

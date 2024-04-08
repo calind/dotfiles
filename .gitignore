@@ -30,6 +30,7 @@ key*
 # ... except for whitelisted ones
 !.dircolors
 !.zshrc
+!.zfunc
 !.aliases
 !.iterm2
 
@@ -45,3 +46,7 @@ key*
 # ... except launchd config
 !.local/share/LaunchDaemons
 !.local/share/LaunchDaemons/**
+
+# ... except for fonts
+!.local/share/fonts
+!.local/share/fonts/**
