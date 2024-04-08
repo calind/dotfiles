@@ -171,6 +171,8 @@ if [ -f /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.in
     source /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc
 fi
 
+eval "$(register-python-argcomplete pipx)"
+
 # lazy load kubectl completion
 if [ $commands[kubectl] ]; then
   kubectl() {
