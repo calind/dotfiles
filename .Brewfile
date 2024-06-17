@@ -1,0 +1,65 @@
+brew "coreutils"
+brew "gnu-sed"
+brew "gnu-tar"
+brew "gzip"
+
+brew "envchain"
+brew "git"
+brew "neovim"
+brew "zsh"
+brew "zsh-completions"
+
+brew "composer"
+brew "go@1.21"
+brew "node@20" # latest LTS
+brew "php@8.1" # latests supported WordPress version
+brew "python@3.12"
+brew "uv"
+
+brew "bat"
+brew "curl"
+brew "fzf"
+brew "htop"
+brew "jq"
+brew "ripgrep"
+brew "sops"
+brew "tree"
+brew "wget"
+brew "yq"
+brew "watch"
+brew "mtr"
+
+brew "gh"
+
+brew "helm"
+brew "kube-ps1"
+brew "kubectl"
+brew "kubectx"
+brew "kustomize"
+
+brew "dockutil"
+brew "mas"
+
+cask "font-sauce-code-pro-nerd-font"
+
+cask "firefox"
+cask "gpg-suite-no-mail"
+cask "kitty"
+cask "orbstack"
+cask "rectangle"
+cask "secretive"
+cask "sequel-ace"
+cask "slack"
+cask "tableplus"
+cask "the-unarchiver"
+cask "whatsapp"
+cask "spotify"
+
+cask "google-cloud-sdk"
+
+cask "adobe-acrobat-reader"
+mas "Enpass", id:732710998   # Install Enpass from App Store so that I can unlock it with Touch ID
+mas "Microsoft Excel", id:462058435
+mas "Microsoft Word", id:462054704
+mas "Pages", id:409201541
+mas "Numbers", id:409203825

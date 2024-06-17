@@ -55,8 +55,25 @@ fi
 if [ -n "${HOMEBREW_PREFIX}" ]; then
     FPATH="${HOMEBREW_PREFIX}/share/zsh-completions:${FPATH}"
 fi
-FPATH="${HOME}/.zfunc:${FPATH}"
 
+# Add development tools to PATH
+if [ -d "${HOMEBREW_PREFIX}/opt/node@20/bin" ] ; then
+    export PATH="${HOMEBREW_PREFIX}/opt/node@20/bin:${PATH}"
+fi
+
+if [ -d "${HOMEBREW_PREFIX}/opt/python@3.12/bin" ] ; then
+    export PATH="${HOMEBREW_PREFIX}/opt/python@3.12/bin:${PATH}"
+fi
+
+if [ -d "${HOMEBREW_PREFIX}/opt/go@1.21/bin" ] ; then
+    export PATH="${HOMEBREW_PREFIX}/opt/go@1.21/bin:${PATH}"
+fi
+
+if [ -d "${HOMEBREW_PREFIX}/opt/php@8.1/bin" ] ; then
+    export PATH="${HOMEBREW_PREFIX}/opt/php@8.1/bin:${PATH}"
+fi
+
+FPATH="${HOME}/.zfunc:${FPATH}"
 autoload -Uz compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
 

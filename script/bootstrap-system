@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "${HOME}"
+
+if [ ! -x "/usr/local/bin/brew" ] ; then
+    echo "Installing homebrew..." >&2
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    brew analytics off
+fi
+
+brew bundle --global
+echo '1' | envchain -s brew HOMEBREW_NO_AUTO_UPDATE && echo
+echo '1' | envchain -s brew HOMEBREW_NO_INSTALL_CLEANUP && echo
+
+chmod go-w '/usr/local/share'
+chmod -R go-w '/usr/local/share/zsh'
+
+cp "${HOME}/.local/share/fonts/SauceCodeBox.ttf" "${HOME}/Library/Fonts/"
+
+echo "Installing Romanian Programmer's Keyboard layout..." >&2
+
+# removing the previous version
+sudo rm -f "/Library/Keyboard Layouts/Romanian Programmers Mac.keylayout"
+sudo rm -f "/Library/Keyboard Layouts/Romanian Programmers Mac.icns"
+sudo cp "${HOME}/.local/share/darwin/Library/Keyboard Layouts/Romanian - Programmers.keylayout" "/Library/Keyboard Layouts/"
+sudo cp "${HOME}/.local/share/darwin/Library/Keyboard Layouts/Romanian - Programmers.icns" "/Library/Keyboard Layouts/"
+
+# clear the OS intl caches
+sudo find /System/Library/Caches -name "*IntlDataCache*" 2>/dev/null | sudo xargs rm -v
+sudo find /var -name "*IntlDataCache*" 2>/dev/null | sudo xargs rm -v
+
+if [ -z "$(sudo launchctl list | grep -o com.github.calind.remapTilde)" ] ; then
+    echo "Remap titde key..." >&2
+    sudo cp "${HOME}/.local/share/darwin/Library/LaunchDaemons/com.github.calind.remapTilde.plist" "/Library/LaunchDaemons/"
+    sudo launchctl load "/Library/LaunchDaemons/com.github.calind.remapTilde.plist"
+fi
+
+echo "Configure Screenshot folder..." >&2
+mkdir -p "${HOME}/Desktop/Shots"
+defaults write com.apple.screencapture location "${HOME}/Desktop/Shots"
+dockutil --add "${HOME}/Desktop/Shots" --after "Downloads" --view fan --display stack --sort datecreated --no-restart
+
+echo "Configure Dock..." >&2
+defaults write com.apple.Dock autohide -bool TRUE
+defaults write com.apple.Dock magnification -bool TRUE
+defaults write com.apple.Dock largesize -int 108
+defaults write com.apple.Dock tilesize -int 72
+
+dockutil --add "/Applications/Spotify.app" --before "/System/Applications/System Settings.app" --no-restart
+
+killall Dock # restart the Dock

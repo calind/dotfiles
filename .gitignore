@@ -1,18 +1,19 @@
 work
 Library/*
 Applications/*
-Desktop/*
-Downloads/*
+Desktop
+Downloads
 Pictures/*
 Music/*
 Movies/*
 Public/*
-Documents/*
+Documents
 VirtualBox VMs/*
 Scans/*
 Local Sites/*
 intelephense/*
 OneDrive
+OrbStack
 
 # ignore keys and keychains
 *.xdb
@@ -26,6 +27,7 @@ key*
 .local/*
 !.local/share
 .local/share/*
+!.Brewfile
 
 # ... except for whitelisted ones
 !.dircolors
@@ -44,8 +46,8 @@ key*
 !.config/git/**
 
 # ... except launchd config
-!.local/share/LaunchDaemons
-!.local/share/LaunchDaemons/**
+!.local/share/darwin
+!.local/share/darwin/**
 
 # ... except for fonts
 !.local/share/fonts
