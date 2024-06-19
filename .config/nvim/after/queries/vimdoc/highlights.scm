@@ -1,2 +1,0 @@
-; extends
-(code) @text.codeblock

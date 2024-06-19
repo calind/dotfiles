@@ -35,11 +35,11 @@ local function place_marks()
             local name              = query.captures[capture_id]
             local line, col         = node:start()
             local end_line, end_col = node:end_()
-            if name == 'text.codeblock' then
+            if name == 'markup.raw.block' then
                 vim.api.nvim_buf_set_extmark(buf, ns, line, col, {
                     end_line = end_line,
                     end_col = end_col,
-                    hl_group = '@text.codeblock',
+                    hl_group = '@markup.raw.block',
                     hl_eol = true,
                 })
             end
