@@ -1,24 +1,22 @@
 # zmodload zsh/zprof
 
-# Set locales on MacOS
-if type defaults &>/dev/null; then
-    LANG="$(defaults read -g AppleLocale)"
-    export LANG="${LANG/en_RO/en_US}.UTF-8"
+setopt autocd
+unsetopt beep
+
+# Home, End, Delete key bindings
+bindkey '\e[H'  beginning-of-line
+bindkey '\e[F'  end-of-line
+bindkey '\e[3~' delete-char
+
+# Set locales
+if [ ! -z "${LANG}" ]; then
     export LC_COLLATE=C
     export LC_CTYPE="${LANG}"
 fi
 
-export TERMINFO_DIRS=$TERMINFO_DIRS:$HOME/.local/share/terminfo
-
 HISTFILE=~/.histfile
 HISTSIZE=10000
 SAVEHIST=100000
-setopt autocd
-unsetopt beep
-
-bindkey '\e[H'  beginning-of-line
-bindkey '\e[F'  end-of-line
-bindkey '\e[3~' delete-char
 
 declare -A colors
 colors[bg_0]="#103c48"
@@ -45,8 +43,7 @@ colors[br_orange]="#fd9456"
 colors[br_violet]="#bd96fa"
 export colors
 
-
-# set homebrew environment
+# setup Homebrew environment
 if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/usr/local/bin/brew" ] ; then
     eval "$(/usr/local/bin/brew shellenv)"
 fi
@@ -55,7 +52,7 @@ if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/home/linuxbrew/.linuxbrew/bin/brew" ] ;
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
-if type brew &>/dev/null; then
+if [ -n "${HOMEBREW_PREFIX}" ]; then
     FPATH="${HOMEBREW_PREFIX}/share/zsh-completions:${FPATH}"
 fi
 FPATH="${HOME}/.zfunc:${FPATH}"
@@ -109,7 +106,7 @@ _set_prompt() {
 
     host_prompt=""
     if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-        host_prompt="%K{${colors[bg_1]}}%F{${colors[dim_0]}}%n@%m%f%k "
+        host_prompt="%K{${colors[bg_1]}}%F{${colors[dim_0]}} %n@%m %f%k "
     fi
 
     PS1="%F{3}λ%f ${host_prompt}${venv}%~${vcs_info_msg_0_} ❯ "
@@ -124,6 +121,17 @@ _set_prompt() {
     test -n "${RPROMPT}" && RPROMPT="%K{${colors[bg_1]}}%F{${colors[dim_0]}} ${RPROMPT} %f%k"
 
 }
+
+function git() {
+    if [ "${PWD}" = "${HOME}" ] || [ "${PWD}" = "${HOME}/.config" ] || [ "${PWD}" = "${HOME}/.local" ]; then
+        GIT_DIR="${HOME}/.dotfiles.git" \
+        GIT_WORK_TREE="${HOME}" \
+            command git "$@"
+    else
+        command git "$@"
+    fi
+}
+
 add-zsh-hook precmd _set_prompt
 
 if [[ -n "${HOMEBREW_PREFIX}" ]] && [[ -x "${HOMEBREW_PREFIX}/bin/gls" ]]; then
@@ -161,7 +169,7 @@ if [[ -d "${HOME}/.local/bin" ]] ; then
     export PATH="${HOME}/.local/bin:$PATH"
 fi
 
-export EDITOR=/usr/local/bin/nvim
+export EDITOR=vim
 
 if [ -f /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc ] ; then
     source /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
@@ -170,8 +178,6 @@ fi
 if [ -f /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc ] ; then
     source /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc
 fi
-
-eval "$(register-python-argcomplete pipx)"
 
 # lazy load kubectl completion
 if [ $commands[kubectl] ]; then
@@ -231,6 +237,7 @@ compdef _envchain envchain
 export PATH="${HOME}/bin:$PATH"
 
 source ~/.aliases
+
 if [[ -f "${HOME}/.zshrc.local" ]] ; then
     source "${HOME}/.zshrc.local"
 fi
