@@ -10,14 +10,19 @@ if hash envchain 2>/dev/null ; then
     alias docker-machine='envchain docker-machine docker-machine'
 fi
 
+if hash bat 2>/dev/null ; then
+    alias cat='bat'
+    if [[ -n "${ZSH_VERSION}" ]] ; then
+        alias -g -- --help='--help 2>&1 | bat --language=help --style=plain'
+    fi
+fi
+
 # rewrite git commands to use hub if available
 if hash hub 2>/dev/null ; then
     alias git='hub'
 fi
 
 if hash nvim 2>/dev/null ; then
-    alias ovim=vim
-    alias ovimdiff=vimdiff
     alias vim=nvim
     alias vimdiff=nvim -d
 fi
