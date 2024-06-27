@@ -12,7 +12,26 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 return require("lazy").setup({
-        "calind/selenized.nvim",
+        {
+            "calind/selenized.nvim",
+            dev = true,
+            lazy = false,
+            priority = 1000,
+            config = function()
+                vim.cmd.colorscheme("selenized")
+            end
+        },
+        "mbbill/undotree",
+        -- {
+        --     'maxmx03/solarized.nvim',
+        --     lazy = false,
+        --     priority = 1000,
+        --     config = function()
+        --         vim.o.background = 'dark' -- or 'light'
+
+        --         vim.cmd.colorscheme 'solarized'
+        --     end,
+        -- },
 
         "williamboman/mason.nvim",
         "williamboman/mason-lspconfig.nvim",
@@ -97,14 +116,29 @@ return require("lazy").setup({
         "nvim-treesitter/nvim-treesitter",
         "nvim-treesitter/playground",
 
+        "jmbuhr/otter.nvim",
+
+        "fladson/vim-kitty",
+
         -- Language specific
         {
             "luckasRanarison/tailwind-tools.nvim",
+            dev = true,
             dependencies = { "nvim-treesitter/nvim-treesitter" },
         },
+        {
+            "bitpoke/wordpress.nvim",
+            dev = true,
+        },
+
     },
     {
         ui = {
             border = heavy_border,
+            backdrop = 100,
+        },
+        dev = {
+            path = "~/work/src/github.com/calind",
         }
-    })
+    }
+)

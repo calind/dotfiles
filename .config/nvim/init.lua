@@ -36,12 +36,11 @@ local nmap = _map('n', { silent = true })
 local nnoremap = _map('n', { noremap = true, silent = true })
 
 local has_words_before = function()
-    if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then return false end
+    if vim.bo.buftype == "prompt" then return false end
     local line, col = unpack(vim.api.nvim_win_get_cursor(0))
     return col ~= 0 and vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]:match("^%s*$") == nil
 end
 -- }}}
-
 local snips_defaults = {
     ['author'] = 'Calin Don',
     ['author_url'] = 'https://calind.me',
@@ -71,12 +70,99 @@ vim.loader.enable()
 require 'minimal'
 require 'plugins'
 
+-- vim.keymap.set("c", "wq", function()
+--     print("Use :w then :q to save and quit")
+-- end, { noremap = true, silent = true })
+-- vim.cmd([[
+-- cnoreabbrev <expr> x getcmdtype() == ":" && getcmdline() == 'x' ? 'w<bar>bd' : 'x'
+-- cnoreabbrev <expr> wq getcmdtype() == ":" && getcmdline() == 'wq' ? 'w<bar>bd' : 'wq'
+-- cnoreabbrev <expr> q getcmdtype() == ":" && getcmdline() == 'q' ? 'bd' : 'q'
+-- ]])
+
 _G.default_border = box_border
-vim.cmd.colorscheme 'selenized'
 require 'hl-codeblock'
 
 local null_ls_sources = {}
 
+local otter = require('otter')
+otter.setup({
+    lsp = {
+        border = default_border,
+    },
+    buffers = {
+        set_filetype = true,
+    },
+})
+au('FileType', {
+    pattern = { 'html', 'htmldjango', 'php', 'php.wp' },
+    callback = function(args)
+        local buf = args.buf
+        otter.activate({ 'javascript' })
+        vim.api.nvim_buf_create_user_command(buf, 'OtterRename', otter.ask_rename, {})
+        vim.api.nvim_buf_create_user_command(buf, 'OtterHover', otter.ask_hover, {})
+        vim.api.nvim_buf_create_user_command(buf, 'OtterReferences', otter.ask_references, {})
+        vim.api.nvim_buf_create_user_command(buf, 'OtterTypeDefinition', otter.ask_type_definition, {})
+        vim.api.nvim_buf_create_user_command(buf, 'OtterDefinition', otter.ask_definition, {})
+        vim.api.nvim_buf_create_user_command(buf, 'OtterFormat', otter.ask_format, {})
+        vim.api.nvim_buf_create_user_command(buf, 'OtterDocumentSymbols', otter.ask_document_symbols, {})
+    end
+})
+
+nmap('<ESC>', function()
+    vim.cmd('cclose')
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+        local config = vim.api.nvim_win_get_config(win)
+        if config.relative ~= "" then
+            vim.api.nvim_win_close(win, false)
+        end
+    end
+end)
+
+nmap('<D-]>', vim.cmd.tabnext, 'Next ,tab')
+nmap('<D-[>', vim.cmd.tabprevious, 'Previous tab')
+map({ 'n', 'i' }, '<D-f>', function()
+    local mode = vim.api.nvim_get_mode().mode
+
+    if mode == 'n' then
+        feedkey('/', 'n')
+    elseif mode == 'i' then
+        feedkey('<Esc>/', 'n')
+    end
+end, 'Search')
+
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move lines up" })
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move lines down" })
+
+vim.keymap.set("n", "J", "mzJ`z", { desc = "Join lines" })
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up" })
+vim.keymap.set("n", "n", "nzzzv", { desc = "Next" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous" })
+
+-- greatest remap ever
+vim.keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste over without yanking" })
+
+-- next greatest remap ever : asbjornHaland
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to clipboard" })
+vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = "Yank to clipboard" })
+
+vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete into the void" })
+
+-- the differences are so subtle that it's hard to tell them apart
+vim.keymap.set("i", "<C-c>", "<Esc>")
+
+vim.keymap.set("n", "Q", "<nop>")
+
+vim.keymap.set("n", "<leader>t", ":Inspect<CR>", { desc = "Inspect" })
+vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle, { desc = "Undo tree" })
+
+vim.api.nvim_create_autocmd('TextYankPost', {
+    desc = 'Highlight when yanking',
+    group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
+    callback = function()
+        vim.highlight.on_yank()
+    end,
+})
 -- {{{ which-key
 local wk = require("which-key")
 
@@ -263,39 +349,6 @@ wk.register({
 })
 -- }}}
 
---{{{ vsnip
--- vim.g.vsnip_snippet_dir = vim.fn.stdpath('config') .. '/snippets'
-
--- fn["vsnip#variable#register"]('VSNIP_DASHCASE_FILENAME', function(_)
---     return textcase.to_dash_case(fn.expand('%:p:t:r'))
--- end)
--- fn["vsnip#variable#register"]('VSNIP_SNAKECASE_FILENAME', function(_)
---     return textcase.to_snake_case(fn.expand('%:p:t:r'))
--- end)
--- fn["vsnip#variable#register"]('VSNIP_TITLECASE_FILENAME', function(_)
---     return textcase.to_title_case(fn.expand('%:p:t:r'))
--- end)
--- fn["vsnip#variable#register"]('VSNIP_DASH_TITLECASE_FILENAME', function(_)
---     return textcase.to_title_case(fn.expand('%:p:t:r')):gsub(' ', '_')
--- end)
--- fn["vsnip#variable#register"]('VSNIP_CAMELCASE_FILENAME', function(_)
---     return textcase.to_camel_case(fn.expand('%:p:t:r'))
--- end)
--- fn["vsnip#variable#register"]('VSNIP_PASCALCASE_FILENAME', function(_)
---     return textcase.to_pascal_case(fn.expand('%:p:t:r'))
--- end)
-
--- fn["vsnip#variable#register"]('TM_AUTHOR', function(_)
---     return vim.b['snips_author'] or 'Please, set b:snips_author'
--- end)
--- fn["vsnip#variable#register"]('TM_AUTHOR_URL', function(_)
---     return vim.b['snips_author_url'] or 'Please, set b:snips_author_url'
--- end)
--- fn["vsnip#variable#register"]('TM_AUTHOR_EMAIL', function(_)
---     return vim.b['snips_author_email'] or 'Please, set b:snips_author_email'
--- end)
---}}}
-
 --{{{ mason (this MUST be set up before LSP and null-ls)
 require("mason").setup({
     ui = {
@@ -375,7 +428,11 @@ local format_filter = function(client)
 end
 
 local format = function(args)
-    vim.lsp.buf.format({ async = true, filter = format_filter })
+    local active_clients = vim.lsp.get_active_clients({ name = 'tailwindcss' })
+    -- if active_clients and #active_clients > 0 then
+    --     require('tailwind-tools.lsp').sort_classes()
+    -- end
+    vim.lsp.buf.format({ async = false, filter = format_filter })
 end
 
 lspconfig.util.default_config = vim.tbl_extend("force", lspconfig.util.default_config,
@@ -411,22 +468,19 @@ nmap('<Space>q', vim.diagnostic.setloclist, {}, 'Open loclist')
 -- toggle diagnostics
 nmap('yoD',
     function()
-        if vim.diagnostic.is_disabled() then
-            vim.diagnostic.enable()
-        else
-            vim.diagnostic.disable()
-        end
+        vim.diagnostic.enable(not vim.diagnostic.is_enabled())
     end,
     {}, 'diagnostics')
-nmap(']oD', vim.diagnostic.disable, {}, 'diagnostics')
-nmap('>oD', vim.diagnostic.disable, {}, 'diagnostics')
+nmap(']oD', function() vim.diagnostic.enable(false) end, {}, 'diagnostics')
+nmap('>oD', function() vim.diagnostic.enable(false) end, {}, 'diagnostics')
 nmap('[oD', vim.diagnostic.enable, {}, 'diagnostics')
 nmap('<oD', vim.diagnostic.enable, {}, 'diagnostics')
 
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
+local ag_UserLspConfig = vim.api.nvim_create_augroup('UserLspConfig', {})
 vim.api.nvim_create_autocmd('LspAttach', {
-    group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+    group = ag_UserLspConfig,
     callback = function(ev)
         local bufnr = ev.buf
         local client = vim.lsp.get_client_by_id(ev.data.client_id)
@@ -438,12 +492,36 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- See `:help vim.lsp.*` for documentation on any of the below functions
         local bufopts = { noremap = true, silent = true, buffer = bufnr }
 
+        local filtered_goto = function(name)
+            return function()
+                local callback = vim.lsp.buf[name]
+                local filter = vim.b[bufnr].lsp_goto_filter
+                if filter then
+                    callback({
+                        on_list = function(opts)
+                            local filtered_opts = filter(name, opts)
+                            vim.fn.setqflist({}, ' ', filtered_opts)
+                            if #filtered_opts.items > 1 then
+                                vim.cmd.copen()
+                            else
+                                vim.cmd.cfirst()
+                            end
+                        end
+                    })
+                else
+                    callback()
+                end
+            end
+        end
+
+        vim.print(vim.lsp.buf.definition)
+
         -- goto
-        nmap('gd', vim.lsp.buf.definition, bufopts, 'Go to definition')
-        nmap('gD', vim.lsp.buf.declaration, bufopts, 'Go to declaration')
-        nmap('gI', vim.lsp.buf.implementation, bufopts, 'Show implementations')
-        nmap('gr', vim.lsp.buf.references, bufopts, 'Show references ')
-        nmap('gT', vim.lsp.buf.type_definition, bufopts, 'Go to type definition')
+        nmap('gd', filtered_goto('definition'), bufopts, 'Go to definition')
+        nmap('gD', filtered_goto('declaration'), bufopts, 'Go to declaration')
+        nmap('gI', filtered_goto('implementation'), bufopts, 'Show implementations')
+        nmap('gr', filtered_goto('references'), bufopts, 'Show references ')
+        nmap('gT', filtered_goto('type_definition'), bufopts, 'Go to type definition')
 
         -- under cursor
         nmap('K', vim.lsp.buf.hover, bufopts)
@@ -471,140 +549,52 @@ au("BufWritePre", { callback = format })
 require("copilot").setup({
     panel = { enabled = false },
     suggestion = { enabled = false, auto_trigger = true },
+    copilot_node_command = "/usr/local/opt/node@20/bin/node",
 })
 require("copilot_cmp").setup()
 require("CopilotChat").setup()
 
 local snippy = require('snippy')
-local cmp_insert_mapping = {
-    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<Esc>'] = cmp.mapping(function(fallback)
-        if snippy.is_active() then
-            require('snippy.buf').clear_state()
-        end
-        cmp.abort()
-        fallback()
-    end, { 'i', 's' }),
-    ['<Esc><Esc>'] = cmp.mapping(function()
-        cmp.mapping.abort()
-        vim.cmd.stopinsert()
-    end),
-    ['<Esc>:'] = cmp.mapping(function()
-        cmp.mapping.abort()
-        vim.cmd.stopinsert()
-        feedkey(':', 'n')
-    end),
-    ['<Esc>/'] = cmp.mapping(function()
-        cmp.mapping.abort()
-        vim.cmd.stopinsert()
-        feedkey('/', 'n')
-    end),
-    ['<Esc>?'] = cmp.mapping(function()
-        cmp.mapping.abort()
-        vim.cmd.stopinsert()
-        feedkey('?', 'n')
-    end),
-    ['<Left>'] = cmp.mapping(function(fallback)
-        if cmp.visible() then
-            cmp.abort()
-        end
-        -- if vim.fn['vsnip#jumpable']( -1) == 1 then
-        --     feedkey('<Plug>(vsnip-jump-prev)', '')
-        if snippy.can_jump(-1) then
-            snippy.previous()
-        else
-            fallback()
-        end
-    end, { 'i', 's' }),
-    ['<Right>'] = cmp.mapping(function(fallback)
-        if cmp.visible() then
-            cmp.abort()
-        end
-        -- if vim.fn['vsnip#available'](1) == 1 then
-        --     feedkey('<Plug>(vsnip-expand-or-jump)', '')
-        if snippy.can_jump(1) then
-            snippy.next()
-        else
-            fallback()
-        end
-    end, { 'i', 's' }),
-    ['<CR>'] = cmp.mapping(function(fallback)
-        if cmp.visible() and cmp.get_selected_entry() then
-            cmp.confirm({ select = false, behavior = cmp.ConfirmBehavior.Replace }) -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-            -- https://github.com/dcampos/nvim-snippy#known-bugs
-            -- https://github.com/neovim/neovim/issues/23653
-            -- if cmp.get_active_entry() then
-            --     -- elseif vim.fn['vsnip#available'](1) == 1 then
-            --     --     feedkey('<Plug>(vsnip-expand-or-jump)', '')
-            --     if snippy.can_expand_or_advance() then
-            --         snippy.expand_or_advance()
-            --     end
-            -- else
-            --     fallback()
-            -- end
-        else
-            fallback()
-        end
-    end, { 'i', 's' }),
-    ['<Down>'] = cmp.mapping(function(fallback)
-        if cmp.visible() then
-            cmp.select_next_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
-        else
-            fallback()
-        end
-    end, { 'i', 's' }),
-    ['<Up>'] = cmp.mapping(function(fallback)
-        if cmp.visible() then
-            cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
-        else
-            fallback()
-        end
-    end, { 'i', 's' }),
-    ['<Tab>'] = cmp.mapping(function(fallback)
-        -- if vim.fn['vsnip#available'](1) == 1 then
-        --     feedkey('<Plug>(vsnip-expand-or-jump)', '')
-        if snippy.can_expand_or_advance() then
-            snippy.expand_or_advance()
-        elseif cmp.visible() and has_words_before() then
-            cmp.select_next_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
-        else
-            fallback()
-        end
-    end, { 'i', 's' }),
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
-        if snippy.can_jump(-1) then
-            snippy.previous()
-            -- if vim.fn['vsnip#jumpable']( -1) == 1 then
-            --     feedkey('<Plug>(vsnip-jump-prev)', '')
-        elseif cmp.visible() then
-            cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select }) -- be consistent with up/down
-        else
-            fallback()
-        end
-    end, { 'i', 's' }),
-}
 
-o.completeopt = 'menuone,noselect,preview'
+o.completeopt = { 'menuone', 'noselect', 'preview' }
 cmp.setup({
-    preselect = cmp.PreselectMode.None,
-    --  enabled = function()
-    --      local context = require('cmp.config.context')
-    --      return not(context.in_treesitter_capture('comment') == true or context.in_syntax_group('Comment'))
-    --  end,
-
     experimental = {
         ghost_text = { hl_group = 'Suggestion' },
     },
-    -- view = {
-    --     entries = 'native',
-    -- },
     snippet = {
         expand = function(args)
-            snippy.expand_snippet(args.body) --            vim.fn['vsnip#anonymous'](args.body)
+            vim.snippet.expand(args.body)
         end,
     },
-    mapping = cmp.mapping.preset.insert(cmp_insert_mapping),
+    mapping = cmp.mapping.preset.insert({
+        -- Select the [n]ext item
+        ['<C-n>'] = cmp.mapping.select_next_item(),
+        -- Select the [p]revious item
+        ['<C-p>'] = cmp.mapping.select_prev_item(),
+
+        -- Scroll the documentation window [b]ack / [f]orward
+        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+
+        -- Accept ([y]es) the completion.
+        --  This will auto-import if your LSP supports it.
+        --  This will expand snippets if the LSP sent a snippet.
+        ['<C-y>'] = cmp.mapping.confirm { select = true },
+        ['<C-l>'] = cmp.mapping(function(fallback)
+            if snippy.can_expand_or_advance() then
+                snippy.expand_or_advance()
+            else
+                fallback()
+            end
+        end, { 'i', 's' }),
+        ['<C-h>'] = cmp.mapping(function(fallback)
+            if snippy.can_jump(-1) then
+                snippy.previous()
+            else
+                fallback()
+            end
+        end, { 'i', 's' }),
+    }),
     sources = cmp.config.sources(
         {
             { name = 'cmp_git' },
@@ -643,9 +633,22 @@ cmp.setup({
     formatting = {
         format = lspkind.cmp_format({
             before = require("tailwind-tools.cmp").lspkind_format,
+            -- before = function(entry, vim_item)
+            --     if entry.source.name == 'nvim_lsp' then
+            --         -- Display which LSP servers this item came from.
+            --         local lspserver_name = nil
+            --         pcall(function()
+            --             lspserver_name = entry.source.source.client.name
+            --             if vim_item then
+            --                 vim_item.menu = lspserver_name
+            --             end
+            --         end)
+            --     end
+            --     return vim_item
+            -- end,
             mode = 'symbol_text',
             symbol_map = { Copilot = "", Color = "󰝤" },
-            maxwidth = 50,         -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
+            maxwidth = 150,        -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
             ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
         })
     },
@@ -745,6 +748,12 @@ gitsigns.setup({
         border = default_border,
     },
     current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
+    worktrees = {
+        {
+            toplevel = vim.env.HOME,
+            gitdir = vim.env.HOME .. '/.dotfiles.git'
+        },
+    },
 })
 
 wk.register({ ['=h'] = { name = "git hunk" } }, { mode = { 'n', 'v' } })
@@ -763,15 +772,16 @@ map('n', '[c', function()
 end, { expr = true }, 'Previous change')
 
 -- Actions
-map({ 'n', 'v' }, '=hs', ':Gitsigns stage_hunk<CR>', 'Stage hunk')
-map({ 'n', 'v' }, '=hr', ':Gitsigns reset_hunk<CR>', 'Reset hunk')
-map('n', '=hu', gitsigns.undo_stage_hunk, 'Undo staged hunk')
-map('n', '=hS', gitsigns.stage_buffer, 'Stage buffer')
-map('n', '=hR', gitsigns.reset_buffer, 'Reset buffer')
-map('n', '=hh', gitsigns.preview_hunk, 'Preview hunk')
-map('n', '=hb', function() gitsigns.blame_line { full = true } end, 'Show git blame')
-map('n', '=hd', gitsigns.diffthis, 'Diff from index')
-map('n', '=hD', function() gitsigns.diffthis('~') end, 'Diff from HEAD~')
+wk.register({ ['<leader>h'] = { name = "Git [H]unks" } })
+map({ 'n', 'v' }, '<leader>hs', ':Gitsigns stage_hunk<CR>', 'Stage hunk')
+map({ 'n', 'v' }, '<leader>hr', ':Gitsigns reset_hunk<CR>', 'Reset hunk')
+map('n', '<leader>hu', gitsigns.undo_stage_hunk, 'Undo staged hunk')
+map('n', '<leader>hS', gitsigns.stage_buffer, 'Stage buffer')
+map('n', '<leader>hR', gitsigns.reset_buffer, 'Reset buffer')
+map('n', '<leader>hh', gitsigns.preview_hunk, 'Preview hunk')
+map('n', '<leader>hb', function() gitsigns.blame_line { full = true } end, 'Show git blame')
+map('n', '<leader>hd', gitsigns.diffthis, 'Diff from index')
+map('n', '<leader>hD', function() gitsigns.diffthis('~') end, 'Diff from HEAD~')
 
 map('n', 'yoD', gitsigns.toggle_deleted, "git deleted")
 map('n', '=sD', gitsigns.toggle_deleted, "git deleted")
@@ -889,98 +899,29 @@ lspconfig.jsonls.setup({
 --}}}
 
 -- {{{ php
-vim.filetype.add({
-    extension = {
-        phpt = 'php',
-    },
-    filename = {
-        ['object-cache.php'] = 'php.wp',
-        ['advanced-cache.php'] = 'php.wp',
-    },
-    pattern = {
-        ['.*/wp%-includes/*.php'] = 'php.wp',
-        ['.*/wp%-admin/*.php'] = 'php.wp',
-        ['.*/wp%-content/*.php'] = 'php.wp',
-        ['.*/wp%-.*.php'] = 'php.wp',
-        ['.*/class%-.*.php'] = 'php.wp',
-        ['.*/interface%-.*.php'] = 'php.wp',
-    },
-})
+local wp = require('wordpress')
+
+lspconfig.intelephense.setup(wp.intelephense)
+
+lsp_formatters['php'] = { 'html', 'null-ls' }
+lsp_formatters['php.wp'] = lsp_formatters['php']
+
+table.insert(null_ls_sources, null_ls.builtins.diagnostics.phpcs.with(wp.null_ls_phpcs))
+table.insert(null_ls_sources, null_ls.builtins.formatting.phpcbf.with(wp.null_ls_phpcs))
 
 au('FileType', {
-    pattern = { 'php.wp' },
+    pattern = { '*.wp' },
     callback = function()
         local _listchars = vim.deepcopy(listchars)
         _listchars['tab'] = '  '
         vim.b.listchars = _listchars
-        vim.bo.expandtab = false
-        vim.bo.copyindent = true
-        vim.bo.preserveindent = true
-        vim.bo.softtabstop = 0
-        vim.bo.shiftwidth = 4
-        vim.bo.tabstop = 4
     end
 })
-
-local intelephense_default_stubs = {
-    'apache', 'bcmath', 'bz2', 'calendar', 'com_dotnet', 'Core', 'ctype', 'curl', 'date', 'dba', 'dom', 'enchant',
-    'exif', 'FFI', 'fileinfo', 'filter', 'fpm', 'ftp', 'gd', 'gettext', 'gmp', 'hash', 'iconv', 'imap', 'intl', 'json',
-    'ldap', 'libxml', 'mbstring', 'meta', 'mysqli', 'oci8', 'odbc', 'openssl', 'pcntl', 'pcre', 'PDO', 'pdo_ibm',
-    'pdo_mysql', 'pdo_pgsql', 'pdo_sqlite', 'pgsql', 'Phar', 'posix', 'pspell', 'readline', 'Reflection', 'session',
-    'shmop', 'SimpleXML', 'snmp', 'soap', 'sockets', 'sodium', 'SPL', 'sqlite3', 'standard', 'superglobals', 'sysvmsg',
-    'sysvsem', 'sysvshm', 'tidy', 'tokenizer', 'xml', 'xmlreader', 'xmlrpc', 'xmlwriter', 'xsl', 'Zend OPcache', 'zip',
-    'zlib'
-}
-
-table.insert(intelephense_default_stubs, 'wordpress')
-table.insert(intelephense_default_stubs, 'memcache')
-table.insert(intelephense_default_stubs, 'memcached')
-
-lspconfig.intelephense.setup({
-    get_language_id = function() return 'php' end,
-    filetypes = { 'php', 'php.wp' },
-    settings = {
-        intelephense = {
-            stubs = intelephense_default_stubs,
-            files = {
-                maxSize = 5000000,
-            }
-        }
-    }
-})
-
-lsp_formatters['php'] = { 'null-ls' }
-lsp_formatters['php.wp'] = lsp_formatters['php']
-
-local phpcs_root_pattern = null_ls_root_pattern("phpcs.xml.dist", "phpcs.xml", ".phpcs.xml.dist", ".phpcs.xml")
-local null_ls_phpcs_config = {
-    prefer_local = 'vendor/bin',
-    timeout = 15000, -- 15s
-    -- use WordPress coding standards for files detected as php.wp
-    extra_args = function(params)
-        if params.ft == "php.wp" then
-            -- skip for code under custom phpcs config file
-            local local_root = phpcs_root_pattern(params.bufname)
-            local args = { '-d', 'memory_limit=1G' }
-            if (not local_root) then
-                table.insert(args, '--standard=WordPress')
-            end
-            return args
-        end
-    end,
-    cwd = function(params)
-        local local_root = phpcs_root_pattern(params.bufname)
-        return local_root or params.root
-    end,
-
-}
-table.insert(null_ls_sources, null_ls.builtins.diagnostics.phpcs.with(null_ls_phpcs_config))
-table.insert(null_ls_sources, null_ls.builtins.formatting.phpcbf.with(null_ls_phpcs_config))
 -- }}}
 
 --{{{ html/css/js
 lspconfig.html.setup({
-    filetypes = { 'html', 'htmldjango', 'php', 'php.wp' },
+    filetypes = { 'html', 'templ', 'htmldjango' },
     -- https://github.com/microsoft/vscode-docs/blob/cccc58b6e71c71ff843d401f67a3424a2e131ef9/docs/languages/html.md#formatting
     settings = {
         html = {
@@ -1027,37 +968,26 @@ require("tailwind-tools").setup({
     custom_filetypes = { 'php.wp', 'javascript.wp' },
 })
 
-vim.filetype.add({
-    pattern = {
-        ['.*/wp%-includes/*.js'] = 'javascript.wp',
-        ['.*/wp%-admin/*.js'] = 'javascript.wp',
-        ['.*/wp%-content/*.js'] = 'javascript.wp',
-        ['.*/wp%-.*.js'] = 'javascript.wp',
-    },
-})
-
-au('FileType', {
-    pattern = { 'javascript.wp' },
-    callback = function()
-        local _listchars = vim.deepcopy(listchars)
-        _listchars['tab'] = '  '
-        vim.b.listchars = _listchars
-        vim.bo.expandtab = false
-        vim.bo.copyindent = true
-        vim.bo.preserveindent = true
-        vim.bo.softtabstop = 0
-        vim.bo.shiftwidth = 4
-        vim.bo.tabstop = 4
-    end
-})
-
 lspconfig.eslint.setup({
     filetypes = table.insert(lspconfig.eslint.document_config.default_config.filetypes, 'javascript.wp'),
 })
 lspconfig.tsserver.setup({
     filetypes = table.insert(lspconfig.tsserver.document_config.default_config.filetypes, 'javascript.wp'),
 })
-table.insert(null_ls_sources, null_ls.builtins.formatting.prettier)
+table.insert(null_ls_sources, null_ls.builtins.formatting.prettier.with({
+    disabled_filetypes = { "html" }, -- format with html language server instead
+    extra_args = function(params)
+        return params.options
+            and params.options.tabSize
+            and {
+                "--tab-width",
+                params.options.tabSize,
+            }
+    end,
+}))
+
+lsp_formatters['javascript'] = { 'null-ls' }
+lsp_formatters['javascript.wp'] = lsp_formatters['javascript']
 
 --}}}
 
@@ -1078,6 +1008,57 @@ table.insert(null_ls_sources, null_ls.builtins.diagnostics.golangci_lint.with {
 -- }}}
 
 -- {{{ python
+vim.api.nvim_create_autocmd('LspAttach', {
+    group = ag_UserLspConfig,
+    callback = function(ev)
+        local bufnr = ev.buf
+        local client = vim.lsp.get_client_by_id(ev.data.client_id)
+
+        if client.name ~= 'pyright' then
+            return
+        end
+
+        vim.b[bufnr].lsp_goto_filter = function(name, opts)
+            local sources = {}
+            local stubs = {}
+
+            for _, item in ipairs(opts.items) do
+                local extension = vim.fn.fnamemodify(item.filename, ':e')
+                if extension == 'pyi' then
+                    table.insert(stubs, item)
+                else
+                    table.insert(sources, item)
+                end
+            end
+
+            if 'definition' == name and #sources >= 1 then
+                opts.items = sources
+            elseif 'declaration' == name and #stubs >= 1 then
+                opts.items = stubs
+            end
+
+            return opts
+        end
+
+        -- -- Buffer local mappings.
+        -- -- See `:help vim.lsp.*` for documentation on any of the below functions
+        -- local bufopts = { noremap = true, silent = true, buffer = bufnr }
+
+        -- -- goto
+        -- nmap('gd', function()
+        --     vim.lsp.buf.definition({
+        --         on_list = function(opts)
+        --             vim.print(vim.inspect(opts))
+        --         end
+        --     })
+        -- end, bufopts, 'Go to definition')
+
+        -- nmap('gD', vim.lsp.buf.declaration, bufopts, 'Go to declaration')
+        -- nmap('gI', vim.lsp.buf.implementation, bufopts, 'Show implementations')
+        -- nmap('gr', vim.lsp.buf.references, bufopts, 'Show references ')
+        -- nmap('gT', vim.lsp.buf.type_definition, bufopts, 'Go to type definition')
+    end
+})
 
 lspconfig.pyright.setup({
     settings = {
@@ -1189,7 +1170,7 @@ require('nvim-treesitter.configs').setup {
     -- A list of parser names, or 'all'
     ensure_installed = {
         'go', 'gomod',
-        'php',
+        'php', 'phpdoc',
         'python', 'htmldjango',
         'lua',
         'c', 'cpp', 'c_sharp',
@@ -1204,9 +1185,9 @@ require('nvim-treesitter.configs').setup {
         'proto',
     },
 
-    ignore_install = {
-        "phpdoc", -- wait until claytonrcarter/tree-sitter-phpdoc#1 is completed
-    },
+    -- ignore_install = {
+    --     "phpdoc", -- wait until claytonrcarter/tree-sitter-phpdoc#1 is completed
+    -- },
 
     -- Install parsers synchronously (only applied to `ensure_installed`)
     sync_install = false,
@@ -1230,9 +1211,6 @@ require('nvim-treesitter.configs').setup {
     },
     indent = { enable = true },
 }
-
-nnoremap('<leader>t', cmd.TSHighlightCapturesUnderCursor, 'Show highlight captures')
-
 --}}}
 
 -- {{{ null-ls

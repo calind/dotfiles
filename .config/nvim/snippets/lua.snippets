@@ -1,0 +1,27 @@
+snippet module "Creates a new lua module"
+	local M = { _VERSION = "0.0.1" }
+	
+	${0}
+	
+	return M
+
+snippet modulemt "Creates a new lua module with metatable"
+	local M = { _VERSION = "0.0.1" }
+	local mt = { __index = M }
+	
+	${0}
+	
+	return setmetatable(M, mt)
+
+snippet class "Creates a new lua class module"
+	local M = { _VERSION = "0.0.1" }
+	local mt = { __index = M }
+	
+	function M.new()
+		local obj = {}
+		return setmetatable(obj, mt)
+	end
+	
+	${0}
+	
+	return setmetatable(M, mt)

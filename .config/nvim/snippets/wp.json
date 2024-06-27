@@ -1,0 +1,93 @@
+{
+    "Hook: Add action": {
+        "prefix": [
+            "add_action"
+        ],
+        "body": [
+            "add_action(",
+            "\t'${1:hook_name}',",
+            "\tfunction() {",
+            "\t\t$0",
+            "\t}",
+            ");"
+        ]
+    },
+    "Hook: Add filter": {
+        "prefix": [
+            "add_filter"
+        ],
+        "body": [
+            "add_action(",
+            "\t'${1:filter_name}',",
+            "\tfunction( \\$${2:input} ) {",
+            "\t\treturn \\$${2};$0",
+            "\t}",
+            ");"
+        ]
+    },
+    "WP_Scripts: Enqueue script": {
+        "prefix": [
+            "wp_enqueue_script"
+        ],
+        "body": [
+            "wp_enqueue_script( '${1:handle}', plugins_url( '${2:src}' ), array( ${3:dependencies} ), '${4:version}', ${5:in_footer} );"
+        ]
+    },
+    "WP_Scripts: Enqueue style": {
+        "prefix": [
+            "wp_enqueue_style"
+        ],
+        "body": [
+            "wp_enqueue_style( '${1:handle}', plugins_url( '${2:src}' ), array( ${3:dependencies} ), '${4:version}' );"
+        ]
+    },
+    "Plugin: Main file": {
+        "prefix": [
+            "plugin"
+        ],
+        "body": [
+            "/**",
+            " * Plugin Name: ${1:${VSNIP_TITLECASE_FILENAME}}",
+            " * Version: ${2:1.0.0}",
+            " * Description: $3",
+            " * Plugin URI: ${4:${TM_AUTHOR_URL}/${VSNIP_DASHCASE_FILENAME}}",
+            " *",
+            " * Author: ${5:${TM_AUTHOR}}",
+            " * Author URI: ${6:${TM_AUTHOR_URL}}",
+            " *",
+            " * Text Domain: ${VSNIP_DASHCASE_FILENAME}",
+            " * Domain Path: /lang/",
+            " * Requires at least: 5.9",
+            " * Tested up to: 6.0",
+            " *",
+            " * License:     GPLv2 or later",
+            " * License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+            " *",
+            " * @package $1",
+            " * @author $5",
+            " * @since $2",
+            " */",
+            "",
+            "namespace ${7:$5\\\\${VSNIP_PASCALCASE_FILENAME}};",
+            "",
+            "defined( 'ABSPATH' ) || exit;",
+            "",
+            "require_once 'includes/class-${VSNIP_DASHCASE_FILENAME}.php';",
+            "",
+            "/**",
+            " * Returns the main instance of $1 to prevent the need to use globals.",
+            " *",
+            " * @return object ${VSNIP_DASH_TITLECASE_FILENAME}",
+            " * @since  ${2:1.0.0}",
+            " */",
+            "function ${VSNIP_SNAKECASE_FILENAME}() {",
+            "\t\\$instance = ${VSNIP_DASH_TITLECASE_FILENAME}::instance( __FILE__, '${2:1.0.0}' );",
+            "\t${0}",
+            "\treturn \\$instance;",
+            "}",
+            "",
+            "${VSNIP_SNAKECASE_FILENAME}();"
+        ],
+        "description": "Plugin main file template."
+    }
+}

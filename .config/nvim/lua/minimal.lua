@@ -12,15 +12,20 @@ local au = vim.api.nvim_create_autocmd
 g.mapleader = ','                      -- remap leader to ,
 o.encoding = 'utf8'
 o.wrap = false                         -- don't wrap lines
-o.scrolloff = 3                        -- have some context around the current line always on screen
+o.scrolloff = 8                        -- have some context around the current line always on screen
 o.splitright = true                    -- split to the right by default
 o.wildignore:append { '*.pyc', '*.o' } -- ignore some common extensions
-o.updatetime = 300
+o.updatetime = 50
 
 -- set default <Tab> behavior: 4 spaces
 o.tabstop = 4
 o.shiftwidth = 4
 o.expandtab = true
+
+o.swapfile = false
+o.backup = false
+o.undodir = vim.fn.stdpath("state") .. "/undo"
+o.undofile = true
 
 -- searching behavior
 o.hlsearch = true   -- highlight matches
@@ -42,6 +47,8 @@ au('BufReadPost', {
 vim.cmd [[command! KillWhitespace :normal :%s/ *$//g<cr><c-o><cr>]]
 vim.keymap.set('n', 'dx', ':KillWhitespace<CR>', { silent = true, remap = true, desc = 'Remove trailing whitespace' })
 
+g.no_plugin_maps = 1 -- disable plugin mappings
+g.loaded_matchit = 1 -- disable matchit
 
 -- {{{ common filetypes
 vim.filetype.add({
@@ -68,9 +75,11 @@ o.cursorlineopt = { 'number' } -- ... but only when showing line numbers
 o.textwidth = 120              -- 120 columns by default
 o.colorcolumn = '0'            -- show vertical line after textwidth
 o.number = true
+o.relativenumber = true
+
 o.foldcolumn = 'auto:9'
 if vim.fn.has('nvim-0.9') == 1 then
-    o.statuscolumn = ' %=%l %s%C'
+    o.statuscolumn = ' %=%{v:relnum ? v:relnum : v:lnum} %s%C'
 else
     o.signcolumn = 'number' -- always show the sign column
 end
@@ -108,6 +117,20 @@ au('BufEnter', {
 })
 au('InsertEnter', { callback = function() optl.listchars:remove('trail') end })
 au('InsertLeave', { callback = function() optl.listchars:append({ trail = listchars.trail }) end })
+
+vim.api.nvim_create_autocmd({ "VimEnter", "VimResume" }, {
+    group = vim.api.nvim_create_augroup("KittySetVarVimEnter", { clear = true }),
+    callback = function()
+        io.stdout:write("\x1b]1337;SetUserVar=in_editor=MQo\007")
+    end,
+})
+
+vim.api.nvim_create_autocmd({ "VimLeave", "VimSuspend" }, {
+    group = vim.api.nvim_create_augroup("KittyUnsetVarVimLeave", { clear = true }),
+    callback = function()
+        io.stdout:write("\x1b]1337;SetUserVar=in_editor\007")
+    end,
+})
 
 -- Build diagnostic signs according to the signs table.
 for kind, icon in pairs(signs) do
