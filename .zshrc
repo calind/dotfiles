@@ -186,7 +186,11 @@ if [[ -d "${HOME}/.local/bin" ]] ; then
     export PATH="${HOME}/.local/bin:$PATH"
 fi
 
-export EDITOR=vim
+if [ $commands[nvim] ]; then
+    export EDITOR=nvim
+else
+    export EDITOR=vim
+fi
 
 if [ -f /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc ] ; then
     source /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
