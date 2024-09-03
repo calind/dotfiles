@@ -1,7 +1,9 @@
-local ui = require("custom.ui")
+local ui = require('custom.ui')
 
 return {
-    { "folke/which-key.nvim",
+    {
+        'folke/which-key.nvim',
+        tag = 'v2.1.0',
         opts = {
             plugins = {
                 spelling = {
@@ -10,19 +12,19 @@ return {
                 },
             },
             operators = {
-                ["]x"] = "XML encode",
-                ["[x"] = "XML decode",
-                ["]u"] = "URL encode",
-                ["[u"] = "URL decode",
-                ["]y"] = "C string encode",
-                ["[y"] = "C string decode",
-                ["]C"] = "C string encode",
-                ["[C"] = "C string decode",
-                ["ga"] = "Align",
-                ["gA"] = "Align with preview",
-                ["gc"] = "Comment",
-                ["gq"] = "Format",
-                ["gw"] = "Text format",
+                [']x'] = 'XML encode',
+                ['[x'] = 'XML decode',
+                [']u'] = 'URL encode',
+                ['[u'] = 'URL decode',
+                [']y'] = 'C string encode',
+                ['[y'] = 'C string decode',
+                [']C'] = 'C string encode',
+                ['[C'] = 'C string decode',
+                ['ga'] = 'Align',
+                ['gA'] = 'Align with preview',
+                ['gc'] = 'Comment',
+                ['gq'] = 'Format',
+                ['gw'] = 'Text format',
             },
             window = {
                 border = ui.border,
@@ -31,17 +33,17 @@ return {
             },
         },
         config = function(_, opts)
-            local wk = require("which-key")
+            local wk = require('which-key')
             wk.setup(opts)
             wk.register({
-                gqq = "Format current line",
-                gww = "Text format current line",
+                gqq = 'Format current line',
+                gww = 'Text format current line',
             }, {
                 mode = { 'n' }
             })
             wk.register({
-                gqq = "Format selected lines",
-                gww = "Text format selected lines",
+                gqq = 'Format selected lines',
+                gww = 'Text format selected lines',
             }, {
                 mode = { 'v' }
             })

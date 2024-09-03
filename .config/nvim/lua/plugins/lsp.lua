@@ -1,13 +1,71 @@
 local ui = require('custom.ui')
 
-local function capabilities(override)
-    override = override or {}
-    local ok, cmp_lsp = pcall(require, 'cmp_nvim_lsp')
-    if ok then
-        override = cmp_lsp.default_capabilities(override)
-    end
+-- local function capabilities(override)
+--     override = override or {}
+--     vim.print(vim.inspect(override))
+--     local ok, cmp_lsp = pcall(require, 'cmp_nvim_lsp')
+--     if ok then
+--         override = cmp_lsp.default_capabilities(override)
+--     end
+--
+--     return override
+-- end
 
-    return override
+local function create_capabilities()
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+    -- this is a fix for nvim 10 - it appears that cmp_nvim_lsp was overwriting
+    -- the capabilities.textDocument which caused errors in json-lsp
+    capabilities.textDocument.completion = {
+        dynamicRegistration = false,
+        completionItem = {
+            snippetSupport = true,
+            commitCharactersSupport = true,
+            deprecatedSupport = true,
+            preselectSupport = true,
+            tagSupport = {
+                valueSet = {
+                    1, -- Deprecated
+                },
+            },
+            insertReplaceSupport = true,
+            resolveSupport = {
+                properties = {
+                    'documentation',
+                    'detail',
+                    'additionalTextEdits',
+                    'sortText',
+                    'filterText',
+                    'insertText',
+                    'textEdit',
+                    'insertTextFormat',
+                    'insertTextMode',
+                },
+            },
+            insertTextModeSupport = {
+                valueSet = {
+                    1, -- asIs
+                    2, -- adjustIndentation
+                },
+            },
+            labelDetailsSupport = true,
+        },
+        contextSupport = true,
+        insertTextMode = 1,
+        completionList = {
+            itemDefaults = {
+                'commitCharacters',
+                'editRange',
+                'insertTextFormat',
+                'insertTextMode',
+                'data',
+            },
+        },
+    }
+
+    return capabilities
+
+    -- return cmp_lsp.default_capabilities(capabilities.textDocument)
 end
 
 return {
@@ -43,6 +101,7 @@ return {
         },
         { 'folke/neodev.nvim',      opts = {} },
         { 'bitpoke/wordpress.nvim', dev = true },
+        'towolf/vim-helm',
         'fladson/vim-kitty',
     },
     config = function()
@@ -81,7 +140,7 @@ return {
                 ['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = ui.border }),
                 ['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = ui.border }),
             },
-            capabilities = capabilities(),
+            capabilities = create_capabilities(),
         })
 
         -- first, setup mason

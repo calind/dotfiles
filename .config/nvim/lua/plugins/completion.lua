@@ -8,7 +8,7 @@ return {
             'hrsh7th/cmp-buffer',
             'hrsh7th/cmp-nvim-lsp',
             'hrsh7th/cmp-cmdline',
-            'hrsh7th/cmp-git',
+            'petertriho/cmp-git',
             'hrsh7th/cmp-calc',
             'hrsh7th/cmp-nvim-lsp-document-symbol',
 
@@ -19,6 +19,8 @@ return {
         config = function()
             local cmp = require('cmp')
             local snippy = require('snippy')
+
+            require('cmp_git').setup()
 
             vim.opt.completeopt = { 'menuone', 'noselect', 'preview' }
             cmp.setup({
@@ -61,7 +63,7 @@ return {
                 }),
                 sources = cmp.config.sources(
                     {
-                        { name = 'cmp_git' },
+                        { name = 'git' },
                     },
                     {
                         { name = 'copilot' },
@@ -116,15 +118,6 @@ return {
                     cmp_autopairs.on_confirm_done()
                 )
             end
-
-            vim.api.nvim_create_autocmd('BufEnter', {
-                pattern = 'copilot-*',
-                callback = function()
-                    cmp.setup.buffer({
-                        enabled = false,
-                    })
-                end
-            })
 
             -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
             cmp.setup.cmdline({ '/', '?' }, {
