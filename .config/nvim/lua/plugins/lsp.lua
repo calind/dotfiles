@@ -87,7 +87,6 @@ return {
 
         {
             'luckasRanarison/tailwind-tools.nvim',
-            dev = true,
             opts = {
                 document_color = {
                     enabled = false,
@@ -99,8 +98,8 @@ return {
                 custom_filetypes = { 'php.wp', 'javascript.wp' },
             }
         },
-        { 'folke/neodev.nvim',      opts = {} },
-        { 'bitpoke/wordpress.nvim', dev = true },
+        { 'folke/neodev.nvim',     opts = {} },
+        { 'bitpoke/wordpress.nvim' },
         'towolf/vim-helm',
         'fladson/vim-kitty',
     },

@@ -27,16 +27,16 @@
     untracked = normal dim
 [push]
     default = simple
-[tag]
-    forceSignAnnotated = true
+# [tag]
+#    forceSignAnnotated = true
 [user]
     name = Calin Don
     email = calin.don@gmail.com
-    signingkey = B34726BF
-[commit]
-    gpgsign = true
-; [url "git@github.com:"]
-;     insteadOf = https://github.com/
+#   signingkey = B34726BF
+# [commit]
+#    gpgsign = true
+[url "git@github.com:"]
+    insteadOf = https://github.com/
 [diff "sopsdiffer"]
     textconv = sops -d
 [pull]

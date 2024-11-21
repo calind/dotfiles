@@ -1,10 +1,10 @@
 return {
     {
-        "calind/selenized.nvim", dev = true,
+        'calind/selenized.nvim',
         lazy = false,
         priority = 1000,
         config = function()
-            vim.cmd.colorscheme "selenized"
+            vim.cmd.colorscheme 'selenized'
         end,
     },
 }

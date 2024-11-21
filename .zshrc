@@ -43,9 +43,17 @@ colors[br_orange]="#fd9456"
 colors[br_violet]="#bd96fa"
 export colors
 
+if [ -d "${HOME}/.rd/bin" ] ; then
+    PATH="${HOME}/.rd/bin:${PATH}"
+fi
+
 # setup Homebrew environment
 if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/usr/local/bin/brew" ] ; then
     eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/opt/homebrew/bin/brew" ] ; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
 if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/home/linuxbrew/.linuxbrew/bin/brew" ] ; then
