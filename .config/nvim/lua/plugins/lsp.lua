@@ -96,7 +96,7 @@ return {
                 conceal = {
                     enabled = false,
                 },
-                custom_filetypes = { 'php.wp', 'javascript.wp' },
+                custom_filetypes = { 'php.wp', 'javascript.wp', 'css' },
             }
         },
         { 'folke/neodev.nvim',      opts = {} },
@@ -125,7 +125,7 @@ return {
                 border = ui.border,
             },
             virtual_text = {
-                source = 'if_many',
+                source = true,
             },
             signs = {
                 priority = 50,
@@ -208,8 +208,8 @@ return {
         lspconfig.eslint.setup({
             filetypes = table.insert(lspconfig.eslint.document_config.default_config.filetypes, 'javascript.wp'),
         })
-        lspconfig.tsserver.setup({
-            filetypes = table.insert(lspconfig.tsserver.document_config.default_config.filetypes, 'javascript.wp'),
+        lspconfig.ts_ls.setup({
+            filetypes = table.insert(lspconfig.ts_ls.document_config.default_config.filetypes, 'javascript.wp'),
         })
         table.insert(null_ls_sources, null_ls.builtins.formatting.prettier.with({
             disabled_filetypes = { 'html' }, -- format with html language server instead
@@ -232,7 +232,7 @@ return {
             end,
             filetypes = {
                 'html', 'htmldjango', 'php', 'php.wp', 'javascript', 'javascript.wp',
-                'typescript', 'javascriptreact', 'typescriptreact'
+                'typescript', 'javascriptreact', 'typescriptreact', 'css'
             },
             init_options = {
                 userLanguages = {
@@ -244,8 +244,9 @@ return {
                 tailwindCSS = {
                     experimental = {
                         classRegex = {
-                            { [[body_class(.*)]], [[(?:'|")([^"']*)(?:'|")]] },
-                            { [[array(.*)]],      [[(?:'|")([^"']*)(?:'|")]] },
+                            { [[body_class(.*)]],    [[(?:'|")([^"']*)(?:'|")]] },
+                            { [[array(.*)]],         [[(?:'|")([^"']*)(?:'|")]] },
+                            { [['[^']+_class'(.*)]], [[(?:'|")([^"']*)(?:'|")]] },
                         }
                     }
                 }
@@ -268,13 +269,23 @@ return {
                 },
             },
         })
-        lspconfig.ruff_lsp.setup({})
+        lspconfig.ruff.setup({})
 
-        -- Bash, shell, docker
+        -- Bash, shell, docker, kubernetes
 
         lspconfig.bashls.setup({})
         lspconfig.dockerls.setup({})
         table.insert(null_ls_sources, null_ls.builtins.diagnostics.hadolint)
+
+        lspconfig.helm_ls.setup {
+            settings = {
+                ['helm-ls'] = {
+                    yamlls = {
+                        path = 'yaml-language-server',
+                    }
+                }
+            }
+        }
 
         -- none-ls
         null_ls.setup({
