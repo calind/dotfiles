@@ -31,7 +31,6 @@ return {
                     },
                     lualine_c = {
                         'searchcount',
-                        function() return vim.fn['nvim_treesitter#statusline']() end
                     },
                     lualine_x = {
                         {
