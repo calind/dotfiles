@@ -255,6 +255,67 @@ _envchain() {
 
 compdef _envchain envchain
 
+# Function to find .venv directory in current or parent directories
+find_venv_dir() {
+    local current_dir="$PWD"
+    while [[ "$current_dir" != "/" ]]; do
+        if [[ -d "$current_dir/.venv" ]]; then
+            echo "$current_dir/.venv"
+            return 0
+        fi
+        current_dir="$(dirname "$current_dir")"
+    done
+    return 1
+}
+
+# Function to check if current directory is inside a virtualenv
+is_inside_venv() {
+    local venv_path="$1"
+    local current_path="$PWD"
+
+    # Strip '/bin/activate' if it exists in the path
+    venv_base_path="${venv_path%/bin/activate}"
+
+    # Check if current path starts with venv path
+    [[ "$current_path" == "$venv_base_path"* ]]
+}
+
+# Variable to track which virtualenv we activated
+typeset -g AUTO_ACTIVATED_VENV=""
+
+# The chpwd hook function
+auto_venv_handler() {
+    # Find .venv directory
+    local venv_path=$(find_venv_dir)
+
+    # If we found a .venv directory
+    if [[ -n "$venv_path" ]]; then
+        # Only activate if there's no active virtualenv or if the active one
+        # was activated by us
+        if [[ -z "$VIRTUAL_ENV" ]] || [[ -n "$AUTO_ACTIVATED_VENV" ]]; then
+            deactivate 2>/dev/null
+            source "$venv_path/bin/activate"
+            AUTO_ACTIVATED_VENV="$venv_path"
+        fi
+    # If we didn't find a .venv directory
+    else
+        # Only deactivate if:
+        # 1. We were the ones who activated it AND
+        # 2. We're not inside the virtualenv directory tree
+        if [[ -n "$AUTO_ACTIVATED_VENV" ]] && ! is_inside_venv "$VIRTUAL_ENV"; then
+            deactivate
+            AUTO_ACTIVATED_VENV=""
+        fi
+    fi
+}
+
+# Register the hook
+autoload -U add-zsh-hook
+add-zsh-hook chpwd auto_venv_handler
+
+# Run once for the current directory when the shell starts
+auto_venv_handler
+
 export PATH="${HOME}/bin:$PATH"
 
 source ~/.aliases
