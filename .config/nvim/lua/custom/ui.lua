@@ -50,8 +50,8 @@ local _M = {
 }
 
 function _M.cmp_format(entry, vim_item)
-    if pcall(require, "tailwind-tools.cmp") then
-        vim_item =  require("tailwind-tools.cmp").lspkind_format(entry, vim_item)
+    if pcall(require, 'tailwind-tools.cmp') then
+        vim_item = require('tailwind-tools.cmp').lspkind_format(entry, vim_item)
     end
 
     local kind = vim_item.kind
@@ -63,7 +63,7 @@ function _M.cmp_format(entry, vim_item)
         vim_item.abbr = vim.fn.strcharpart(vim_item.abbr, 0, maxwidth) .. ellipsis
     end
 
-    vim_item.kind = ( symbol and symbol .. ' ' or '' ) .. ' ' .. kind
+    vim_item.kind = (symbol and symbol .. ' ' or '') .. ' ' .. kind
     return vim_item
 end
 
@@ -86,7 +86,7 @@ function _M.setup()
         vim.opt.statuscolumn = [[ %{ v:relnum == 0 ? v:lnum : '' } %=%{v:relnum ? v:relnum : '' } %s%C]]
         au('BufEnter', {
             callback = function()
-                if vim.bo.buftype ~= "" then
+                if vim.bo.buftype ~= '' then
                     vim.opt_local.statuscolumn = ''
                 end
             end
