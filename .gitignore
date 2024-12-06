@@ -53,6 +53,10 @@ key*
 !.local/share/darwin
 !.local/share/darwin/**
 
+# ... except bat config
+!.config/bat
+!.config/bat/**
+
 # ... except for fonts
 !.local/share/fonts
 !.local/share/fonts/**
