@@ -1,0 +1,41 @@
+# ghostty config
+#
+# 
+# 🭽▔▔▔▔🭾
+# ▏    ▕
+# 🭼▁▁▁▁🭿
+#
+# ┓ ┛
+#
+# 􀀀▁ 􀀃 􀀁􀀂 􀀃
+# 􀀀▁
+# 􀀀 ▁ 􀀃 􀀁􀀂 􀀄􀀅 􀀆 􀀇
+#
+# 􀀁􀀂  􀀁􀀄􀀂
+# 􀀀􀀃  􀀇 􀀆
+#     􀀀􀀅􀀃
+#
+# 􀀁 􀀂
+# ▎ 🮇
+# ▎ 🮇
+# 􀀀▁􀀃
+#
+#
+font-family=SauceCodePro Nerd Font
+font-size=14
+font-thicken
+font-codepoint-map = U+100000-U+1000FF=SauceCodeBox
+minimum-contrast=1.1
+
+cursor-style=block
+theme=selenized-dark
+
+window-padding-x=10
+window-padding-y=15
+
+macos-titlebar-style=tabs
+
+keybind = cmd+left=previous_tab
+keybind = cmd+right=next_tab
+keybind = cmd+enter=new_split:down
+keybind = cmd+`=toggle_quick_terminal

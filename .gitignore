@@ -41,6 +41,10 @@ key*
 !.config/nvim/**
 .config/nvim/plugin/packer_compiled.lua
 
+# ... except ghostty config
+!.config/ghostty
+!.config/ghostty/**
+
 # ... except kitty config
 !.config/kitty
 !.config/kitty/**
