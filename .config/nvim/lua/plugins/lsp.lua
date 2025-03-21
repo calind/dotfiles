@@ -195,7 +195,17 @@ return {
 
         -- PHP (with WordPress support)
         local wp = require('wordpress')
-        lspconfig.intelephense.setup(wp.intelephense)
+        lspconfig.intelephense.setup(vim.tbl_extend('force', wp.intelephense, {
+            -- the original intelephense root dir functions, sets the root to cwd if .git or composer.json is a descendant
+            -- that means that if you open a file from $HOME, even though the file is in a git repo, the root will be $HOME
+            -- which is not what I want
+            root_dir = lspconfig.util.root_pattern('composer.json', '.git'),
+            init_options = {
+                globalStoragePath = vim.fn.stdpath('data') .. '/intelephense/',
+                storagePath = vim.fn.stdpath('cache') .. '/intelephense/',
+            }
+        }))
+
         table.insert(null_ls_sources, null_ls.builtins.diagnostics.phpcs.with(wp.null_ls_phpcs))
         table.insert(null_ls_sources, null_ls.builtins.formatting.phpcbf.with(wp.null_ls_phpcs))
 
