@@ -12,7 +12,8 @@ return {
         'zbirenbaum/copilot-cmp',
         {
             'CopilotC-Nvim/CopilotChat.nvim',
-            branch = 'canary',
+            version = '^3',
+            build = 'make tiktoken',
         },
     },
     config = function()
@@ -35,11 +36,11 @@ return {
         })
         require('copilot_cmp').setup()
 
-        require('CopilotChat.integrations.cmp').setup()
         require('CopilotChat').setup({
             question_header = '   User ',
             answer_header = '   Copilot ',
             error_header = '   Error ',
+            chat_autocomplete = true,
             mappings = {
                 complete = {
                     insert = '',

@@ -89,6 +89,7 @@ vim.keymap.set({ 'n', 'v' }, '<leader>ce', vim.cmd.CopilotChatExplain, { desc = 
 vim.keymap.set({ 'n', 'v' }, '<leader>cf', vim.cmd.CopilotChatFixDiagnostic, { desc = 'Fix diagnostics' })
 vim.keymap.set({ 'n', 'v' }, '<leader>cF', vim.cmd.CopilotChatFix, { desc = 'Fix the code!' })
 vim.keymap.set({ 'n', 'v' }, '<leader>cR', vim.cmd.CopilotChatFix, { desc = 'Refactor' })
+vim.keymap.set({ 'n', 'v' }, '<leader>cx', vim.cmd.CopilotChatReset, { desc = 'Reset chat' })
 vim.keymap.set({ 'n', 'v' }, '<leader>cq',
     function()
         local selection = require('CopilotChat.select').visual
@@ -134,10 +135,10 @@ vim.keymap.set({ 'n' }, '<leader>cQ',
 )
 
 vim.keymap.set('n', '<leader>cd', function()
-    local chat = require('CopilotChat')
     local select_textobject = require('nvim-treesitter.textobjects.select').select_textobject
-
     select_textobject('@function.outer')
+
+    local chat = require('CopilotChat')
     chat.ask('/Document', { selection = require('CopilotChat.select').visual })
 end, { desc = 'Comment the current function' })
 
