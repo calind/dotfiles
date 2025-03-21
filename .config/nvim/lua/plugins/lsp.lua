@@ -96,7 +96,7 @@ return {
                 conceal = {
                     enabled = false,
                 },
-                custom_filetypes = { 'php.wp', 'javascript.wp', 'css' },
+                custom_filetypes = { 'php.wp', 'javascript.wp', 'css', 'templ' },
             }
         },
         { 'folke/neodev.nvim',      opts = {} },
@@ -232,10 +232,11 @@ return {
             end,
             filetypes = {
                 'html', 'htmldjango', 'php', 'php.wp', 'javascript', 'javascript.wp',
-                'typescript', 'javascriptreact', 'typescriptreact', 'css'
+                'typescript', 'javascriptreact', 'typescriptreact', 'css', 'templ'
             },
             init_options = {
                 userLanguages = {
+                    ['templ'] = 'html',
                     ['php.wp'] = 'html',
                     ['javascript.wp'] = 'javascript',
                 }
@@ -247,6 +248,7 @@ return {
                             { [[body_class(.*)]],    [[(?:'|")([^"']*)(?:'|")]] },
                             { [[array(.*)]],         [[(?:'|")([^"']*)(?:'|")]] },
                             { [['[^']+_class'(.*)]], [[(?:'|")([^"']*)(?:'|")]] },
+                            { [[Class(.*)]],         [[(?:'|")([^"']*)(?:'|")]] },
                         }
                     }
                 }
@@ -254,6 +256,7 @@ return {
         })
 
         lspconfig.gopls.setup({})
+        lspconfig.templ.setup({})
         table.insert(null_ls_sources, null_ls.builtins.diagnostics.golangci_lint.with {
             prefer_local = 'bin',
         })
