@@ -69,8 +69,8 @@ if [ -d "${HOMEBREW_PREFIX}/opt/python@3.12/bin" ] ; then
     export PATH="${HOMEBREW_PREFIX}/opt/python@3.12/bin:${PATH}"
 fi
 
-if [ -d "${HOMEBREW_PREFIX}/opt/go@1.21/bin" ] ; then
-    export PATH="${HOMEBREW_PREFIX}/opt/go@1.21/bin:${PATH}"
+if [ -d "${HOMEBREW_PREFIX}/opt/go@1.23/bin" ] ; then
+    export PATH="${HOMEBREW_PREFIX}/opt/go@1.23/bin:${PATH}"
 fi
 
 if [ -d "${HOMEBREW_PREFIX}/opt/php@8.1/bin" ] ; then
