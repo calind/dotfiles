@@ -107,6 +107,7 @@ return {
                     })
                 }
             })
+            require('mini.sessions').setup()
             require('mini.comment').setup()
             require('mini.notify').setup({
                 window = {
