@@ -1,6 +1,7 @@
 local wk = require('which-key')
 local lsp = require('custom.lsp')
 local gitsigns = require('gitsigns')
+local trim = require('mini.trailspace').trim
 
 -- <CR> to clear search highlight
 vim.api.nvim_create_autocmd('BufReadPost', {
@@ -13,8 +14,7 @@ vim.api.nvim_create_autocmd('BufReadPost', {
 })
 
 -- dx strips trailing whitespace in normal mode
-vim.keymap.set('n', 'dx', require('mini.trailspace').trim,
-    { silent = true, desc = 'Remove trailing whitespace' })
+vim.keymap.set('n', 'dx', trim, { silent = true, desc = 'Remove trailing whitespace' })
 
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move lines up' })
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { desc = 'Move lines down' })
