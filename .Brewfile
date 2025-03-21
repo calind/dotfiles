@@ -31,6 +31,7 @@ brew "wget"
 brew "yq"
 brew "watch"
 brew "mtr"
+brew "gron"
 
 brew "gh"
 
@@ -47,17 +48,20 @@ brew "mas"
 
 cask "font-sauce-code-pro-nerd-font"
 
+cask "ghostty"
+
 cask "discord"
 cask "ngrok"
 cask "tunnelblick"
 cask "firefox"
 cask "gpg-suite-no-mail"
-cask "kitty"
 cask "orbstack"
 cask "rectangle"
 cask "secretive"
 cask "sequel-ace"
 cask "slack"
+cask "poedit"
+cask "dictionaries"
 # cask "microsoft-teams"
 cask "skype"
 cask "tableplus"
@@ -75,3 +79,4 @@ mas "Microsoft Excel", id:462058435
 mas "Microsoft Word", id:462054704
 mas "Pages", id:409201541
 mas "Numbers", id:409203825
+mas "paperLESS vToken", id:6667100978
