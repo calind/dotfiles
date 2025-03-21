@@ -103,6 +103,13 @@ return {
         { 'bitpoke/wordpress.nvim', dev = true },
         'towolf/vim-helm',
         'fladson/vim-kitty',
+        {
+            'ghostty-macos',
+            dir = '/Applications/Ghostty.app/Contents/Resources/nvim/site/',
+            cond = function()
+                return vim.fn.has('macunix') and vim.fn.executable('ghostty') == 1
+            end,
+        },
     },
     config = function()
         local lsp = require('custom.lsp')
