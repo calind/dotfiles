@@ -69,6 +69,7 @@ return {
                         { name = 'copilot' },
                         { name = 'snippy' },
                         { name = 'nvim_lsp' },
+                        { name = 'wordpress' },
                     },
                     {
                         { name = 'path' },

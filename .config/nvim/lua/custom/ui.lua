@@ -46,6 +46,7 @@ local _M = {
         Operator = '󰆕',
         TypeParameter = '',
         Copilot = '',
+        WordPress = '',
     },
 }
 
