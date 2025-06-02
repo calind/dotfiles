@@ -19,6 +19,7 @@ return {
                     'markdown', 'comment', 'dot',
                     'bash', 'dockerfile', 'make', 'diff', 'awk',
                     'git_rebase', 'gitignore', 'gitattributes', 'gitcommit',
+                    'hcl', 'terraform',
                     'json', 'jsonc', 'yaml', 'toml', 'hcl', 'jsonnet',
                     'proto',
                 },

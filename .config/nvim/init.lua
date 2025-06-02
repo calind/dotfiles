@@ -5,21 +5,21 @@
 --]]
 
 -- Setup Leader key
-vim.g.mapleader = ","
-vim.g.maplocalleader = ","
+vim.g.mapleader = ','
+vim.g.maplocalleader = ','
 
 -- Setup UI
-local ui = require("custom.ui")
+local ui = require('custom.ui')
 ui.setup()
 
-local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
+local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.uv.fs_stat(lazypath) then
     vim.fn.system {
-        "git",
-        "clone",
-        "--filter=blob:none",
-        "https://github.com/folke/lazy.nvim.git",
-        "--branch=stable",
+        'git',
+        'clone',
+        '--filter=blob:none',
+        'https://github.com/folke/lazy.nvim.git',
+        '--branch=stable',
         lazypath,
     }
 end
@@ -29,7 +29,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- Set up lazy, and load my `lua/custom/plugins/` folder
-require("lazy").setup({ import = "plugins" }, {
+require('lazy').setup({ import = 'plugins' }, {
     change_detection = {
         notify = false,
     },
@@ -38,6 +38,6 @@ require("lazy").setup({ import = "plugins" }, {
         backdrop = 100,
     },
     dev = {
-        path = "~/work/src/github.com/calind",
+        path = '~/work/src/github.com/calind',
     },
 })

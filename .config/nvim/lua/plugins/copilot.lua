@@ -46,41 +46,41 @@ return {
                     insert = '',
                 },
             },
-            prompts = {
-                Refactor = {
-                    prompt = 'Refactor the following code to improve its clarity and readability.'
-                },
-                BetterNamings = {
-                    prompt = 'Provide better names for the following variables and functions.'
-                },
-                Document = {
-                    prompt = prompts.DOCUMENT,
-                },
-                SwaggerApiDocs = {
-                    prompt = 'Provide documentation for the following API using Swagger.'
-                },
-                SwaggerJsDocs = {
-                    prompt = 'Write JSDoc for the following API using Swagger.'
-                },
-                Summarize = {
-                    prompt = 'Summarize the following text.'
-                },
-                Spelling = {
-                    prompt = 'Correct any grammar and spelling errors in the following text.'
-                },
-                Wording = {
-                    prompt = 'Improve the grammar and wording of the following text.'
-                },
-                Concise = {
-                    prompt = 'Rewrite the following text to make it more concise.'
-                },
-                TranslateRomanian = {
-                    prompt = 'Translate the following text to Romanian'
-                },
-                TranslateEnglish = {
-                    prompt = 'Translate the following text to English'
-                },
-            },
+            -- prompts = {
+            --     Refactor = {
+            --         prompt = 'Refactor the following code to improve its clarity and readability.'
+            --     },
+            --     BetterNamings = {
+            --         prompt = 'Provide better names for the following variables and functions.'
+            --     },
+            --     Document = {
+            --         prompt = prompts.DOCUMENT,
+            --     },
+            --     SwaggerApiDocs = {
+            --         prompt = 'Provide documentation for the following API using Swagger.'
+            --     },
+            --     SwaggerJsDocs = {
+            --         prompt = 'Write JSDoc for the following API using Swagger.'
+            --     },
+            --     Summarize = {
+            --         prompt = 'Summarize the following text.'
+            --     },
+            --     Spelling = {
+            --         prompt = 'Correct any grammar and spelling errors in the following text.'
+            --     },
+            --     Wording = {
+            --         prompt = 'Improve the grammar and wording of the following text.'
+            --     },
+            --     Concise = {
+            --         prompt = 'Rewrite the following text to make it more concise.'
+            --     },
+            --     TranslateRomanian = {
+            --         prompt = 'Translate the following text to Romanian'
+            --     },
+            --     TranslateEnglish = {
+            --         prompt = 'Translate the following text to English'
+            --     },
+            -- },
         })
     end
 }

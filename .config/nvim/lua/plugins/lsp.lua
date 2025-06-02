@@ -1,82 +1,14 @@
 local ui = require('custom.ui')
 
--- local function capabilities(override)
---     override = override or {}
---     vim.print(vim.inspect(override))
---     local ok, cmp_lsp = pcall(require, 'cmp_nvim_lsp')
---     if ok then
---         override = cmp_lsp.default_capabilities(override)
---     end
---
---     return override
--- end
-
-local function create_capabilities()
-    local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-    -- this is a fix for nvim 10 - it appears that cmp_nvim_lsp was overwriting
-    -- the capabilities.textDocument which caused errors in json-lsp
-    capabilities.textDocument.completion = {
-        dynamicRegistration = false,
-        completionItem = {
-            snippetSupport = true,
-            commitCharactersSupport = true,
-            deprecatedSupport = true,
-            preselectSupport = true,
-            tagSupport = {
-                valueSet = {
-                    1, -- Deprecated
-                },
-            },
-            insertReplaceSupport = true,
-            resolveSupport = {
-                properties = {
-                    'documentation',
-                    'detail',
-                    'additionalTextEdits',
-                    'sortText',
-                    'filterText',
-                    'insertText',
-                    'textEdit',
-                    'insertTextFormat',
-                    'insertTextMode',
-                },
-            },
-            insertTextModeSupport = {
-                valueSet = {
-                    1, -- asIs
-                    2, -- adjustIndentation
-                },
-            },
-            labelDetailsSupport = true,
-        },
-        contextSupport = true,
-        insertTextMode = 1,
-        completionList = {
-            itemDefaults = {
-                'commitCharacters',
-                'editRange',
-                'insertTextFormat',
-                'insertTextMode',
-                'data',
-            },
-        },
-    }
-
-    return capabilities
-
-    -- return cmp_lsp.default_capabilities(capabilities.textDocument)
-end
-
 return {
     'neovim/nvim-lspconfig',
     dependencies = {
-        'williamboman/mason.nvim',
-        'williamboman/mason-lspconfig.nvim',
 
         'b0o/schemastore.nvim',
 
         'nvimtools/none-ls.nvim',
+        'mason-org/mason.nvim',
+        'mason-org/mason-lspconfig.nvim',
         'jay-babu/mason-null-ls.nvim',
 
         'nvim-lua/lsp-status.nvim',
@@ -100,8 +32,8 @@ return {
             }
         },
         { 'folke/neodev.nvim',      opts = {} },
-        { 'bitpoke/wordpress.nvim', dev = true },
-        'towolf/vim-helm',
+        { 'bitpoke/wordpress.nvim', dev = true, opts = {} },
+        { 'towolf/vim-helm',        ft = 'helm' },
         'fladson/vim-kitty',
         {
             'ghostty-macos',
@@ -119,6 +51,14 @@ return {
         local lightbulb = require('nvim-lightbulb')
 
         -- setup UI
+        local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+        ---@diagnostic disable-next-line: duplicate-set-field
+        function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+            opts = opts or {}
+            opts.border = ui.border
+            return orig_util_open_floating_preview(contents, syntax, opts, ...)
+        end
+
         require('lspconfig.ui.windows').default_options.border = ui.border
         lightbulb.setup({
             sign = { enabled = false },
@@ -127,6 +67,7 @@ return {
                 enabled = true
             }
         })
+
         vim.diagnostic.config({
             float = {
                 border = ui.border,
@@ -136,35 +77,35 @@ return {
             },
             signs = {
                 priority = 50,
+                text = {
+                    [vim.diagnostic.severity.ERROR] = ui.signs.Error,
+                    [vim.diagnostic.severity.WARN] = ui.signs.Warn,
+                    [vim.diagnostic.severity.INFO] = ui.signs.Info,
+                    [vim.diagnostic.severity.HINT] = ui.signs.Hint,
+                },
             },
             severity_sort = true,
         })
 
         vim.g.code_action_menu_window_border = ui.border
 
-        lspconfig.util.default_config = vim.tbl_extend('force', lspconfig.util.default_config, {
-            handlers = {
-                ['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = ui.border }),
-                ['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = ui.border }),
-            },
-            capabilities = create_capabilities(),
-        })
-
         -- first, setup mason
         require('mason').setup({
             ui = {
                 border = ui.border,
+                backdrop = 100,
             }
         })
-        require('mason-lspconfig').setup({ automatic_installation = true })
+        require('mason-lspconfig').setup({ automatic_enable = true })
         require('mason-null-ls').setup({ automatic_installation = { exclude = { 'phpcs', 'phpcbf' } } })
+
 
         vim.api.nvim_create_autocmd('BufWritePre', { callback = function() lsp.buf.format() end })
 
         -- Language servers
 
         -- YAML/json
-        lspconfig.yamlls.setup({
+        vim.lsp.config('yamlls', {
             settings = {
                 yaml = {
                     keyOrdering = false,
@@ -172,7 +113,7 @@ return {
                 },
             },
         })
-        lspconfig.jsonls.setup({
+        vim.lsp.config('jsonls', {
             settings = {
                 json = {
                     schemas = require('schemastore').json.schemas(),
@@ -182,7 +123,7 @@ return {
         })
 
         -- Lua
-        lspconfig.lua_ls.setup({
+        vim.lsp.config('lua_ls', {
             settings = {
                 Lua = {
                     runtime = {
@@ -195,11 +136,11 @@ return {
 
         -- PHP (with WordPress support)
         local wp = require('wordpress')
-        lspconfig.intelephense.setup(vim.tbl_extend('force', wp.intelephense, {
+        vim.lsp.config('intelephense', vim.tbl_extend('force', wp.intelephense, {
             -- the original intelephense root dir functions, sets the root to cwd if .git or composer.json is a descendant
             -- that means that if you open a file from $HOME, even though the file is in a git repo, the root will be $HOME
             -- which is not what I want
-            root_dir = lspconfig.util.root_pattern('composer.json', '.git'),
+            -- root_dir = lspconfig.util.root_pattern('composer.json', '.git'),
             init_options = {
                 globalStoragePath = vim.fn.stdpath('data') .. '/intelephense/',
                 storagePath = vim.fn.stdpath('cache') .. '/intelephense/',
@@ -210,7 +151,7 @@ return {
         table.insert(null_ls_sources, null_ls.builtins.formatting.phpcbf.with(wp.null_ls_phpcs))
 
         -- html/css/js
-        lspconfig.html.setup({
+        vim.lsp.config('html', {
             filetypes = { 'html', 'templ', 'htmldjango' },
             -- https://github.com/microsoft/vscode-docs/blob/cccc58b6e71c71ff843d401f67a3424a2e131ef9/docs/languages/html.md#formatting
             settings = {
@@ -222,10 +163,10 @@ return {
             },
         })
 
-        lspconfig.eslint.setup({
+        vim.lsp.config('eslint', {
             filetypes = table.insert(lspconfig.eslint.document_config.default_config.filetypes, 'javascript.wp'),
         })
-        lspconfig.ts_ls.setup({
+        vim.lsp.config('ts_ls', {
             filetypes = table.insert(lspconfig.ts_ls.document_config.default_config.filetypes, 'javascript.wp'),
         })
         table.insert(null_ls_sources, null_ls.builtins.formatting.prettier.with({
@@ -240,7 +181,7 @@ return {
             end,
         }))
 
-        lspconfig.tailwindcss.setup({
+        vim.lsp.config('tailwindcss', {
             on_attach = function(client, _)
                 -- https://github.com/hrsh7th/nvim-cmp/issues/1828#issuecomment-1985851622
                 client.server_capabilities.completionProvider.triggerCharacters = {
@@ -272,13 +213,16 @@ return {
             }
         })
 
-        lspconfig.gopls.setup({})
-        lspconfig.templ.setup({})
-        table.insert(null_ls_sources, null_ls.builtins.diagnostics.golangci_lint.with {
-            prefer_local = 'bin',
-        })
-
-        lspconfig.pyright.setup({
+        vim.lsp.config('gopls', {})
+        -- vim.lsp.config('gopls_proxy', {
+        --     cmd = { 'go', 'run', '/Users/calin/work/src/github.com/calind/lsp-proxy/cmd/fw/main.go', '/Users/calin/.local/share/nvim/mason/bin/gopls' },
+        --     filetypes = { 'go' },
+        --     root_markers = { '.git', 'go.mod' },
+        -- })
+        -- vim.lsp.enable('gopls_proxy')
+        -- vim.lsp.set_log_level('debug')
+        vim.lsp.config('templ', {})
+        vim.lsp.config('pyright', {
             settings = {
                 python = {
                     analysis = {
@@ -289,12 +233,12 @@ return {
                 },
             },
         })
-        lspconfig.ruff.setup({})
+        vim.lsp.config('ruff', {})
 
         -- Bash, shell, docker, kubernetes
 
-        lspconfig.bashls.setup({})
-        lspconfig.dockerls.setup({})
+        vim.lsp.config('bashls', {})
+        vim.lsp.config('dockerls', {})
         table.insert(null_ls_sources, null_ls.builtins.diagnostics.hadolint)
 
         lspconfig.helm_ls.setup {
@@ -306,6 +250,9 @@ return {
                 }
             }
         }
+
+        -- Terraform
+        vim.lsp.config('terraformls', {})
 
         -- none-ls
         null_ls.setup({
@@ -330,15 +277,7 @@ return {
             vim.api.nvim_create_autocmd('FileType', {
                 pattern = { 'html', 'htmldjango', 'php', 'php.wp' },
                 callback = function(args)
-                    local buf = args.buf
                     otter.activate({ 'javascript' })
-                    vim.api.nvim_buf_create_user_command(buf, 'OtterRename', otter.ask_rename, {})
-                    vim.api.nvim_buf_create_user_command(buf, 'OtterHover', otter.ask_hover, {})
-                    vim.api.nvim_buf_create_user_command(buf, 'OtterReferences', otter.ask_references, {})
-                    vim.api.nvim_buf_create_user_command(buf, 'OtterTypeDefinition', otter.ask_type_definition, {})
-                    vim.api.nvim_buf_create_user_command(buf, 'OtterDefinition', otter.ask_definition, {})
-                    vim.api.nvim_buf_create_user_command(buf, 'OtterFormat', otter.ask_format, {})
-                    vim.api.nvim_buf_create_user_command(buf, 'OtterDocumentSymbols', otter.ask_document_symbols, {})
                 end
             })
         end

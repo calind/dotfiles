@@ -88,7 +88,6 @@ vim.keymap.set({ 'n', 'v' }, '<leader>cr', vim.cmd.CopilotChatReview, { desc = '
 vim.keymap.set({ 'n', 'v' }, '<leader>ce', vim.cmd.CopilotChatExplain, { desc = 'Explain selection' })
 vim.keymap.set({ 'n', 'v' }, '<leader>cf', vim.cmd.CopilotChatFixDiagnostic, { desc = 'Fix diagnostics' })
 vim.keymap.set({ 'n', 'v' }, '<leader>cF', vim.cmd.CopilotChatFix, { desc = 'Fix the code!' })
-vim.keymap.set({ 'n', 'v' }, '<leader>cR', vim.cmd.CopilotChatFix, { desc = 'Refactor' })
 vim.keymap.set({ 'n', 'v' }, '<leader>cx', vim.cmd.CopilotChatReset, { desc = 'Reset chat' })
 vim.keymap.set({ 'n', 'v' }, '<leader>cq',
     function()
@@ -139,8 +138,8 @@ vim.keymap.set('n', '<leader>cd', function()
     select_textobject('@function.outer')
 
     local chat = require('CopilotChat')
-    chat.ask('/Document', { selection = require('CopilotChat.select').visual })
-end, { desc = 'Comment the current function' })
+    chat.ask('/Docs', { selection = require('CopilotChat.select').visual })
+end, { desc = 'Document the current function' })
 
 -- Toggle options
 wk.register({ ['<leader>o'] = { name = 'T[o]ggle' } })

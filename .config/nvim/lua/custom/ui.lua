@@ -74,7 +74,7 @@ function _M.setup()
     local fillchars = _M.fillchars
     local listchars = _M.listchars
 
-    _M.border = _M.borders.box           -- use box border
+    _M.border = _M.borders.heavy         -- use box border
 
     vim.opt.cursorline = true            -- highlight the line of the cursor ...
     vim.opt.cursorlineopt = { 'number' } -- ... but only when showing line numbers
@@ -102,11 +102,6 @@ function _M.setup()
     vim.opt.list = true
     vim.opt.showbreak = '↪ '
 
-    -- Build diagnostic signs according to the signs table.
-    for kind, icon in pairs(signs) do
-        local hl = 'DiagnosticSign' .. kind
-        vim.fn.sign_define(hl, { text = icon, texthl = hl })
-    end
     vim.fn.sign_define('LightBulbSign', { text = signs.LightBulb, texthl = 'LightBulbSign', numhl = 'LightBulbSign' })
 
     -- Show listchars, except for tailing whitespace which is shown only on normal mode.
