@@ -24,6 +24,7 @@
 font-family=SauceCodePro Nerd Font
 font-size=14
 font-thicken
+font-thicken-strength=128
 font-codepoint-map = U+100000-U+1000FF=SauceCodeBox
 minimum-contrast=1.1
 
