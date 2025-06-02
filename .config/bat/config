@@ -1,2 +1,3 @@
 # Set the theme to "ANSI"
 --theme="ansi"
+--map-syntax="/**/nginx/**/*.conf:nginx"
