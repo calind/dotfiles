@@ -245,6 +245,8 @@ EOD
 
 export FZF_DEFAULT_OPTS
 
+export RIPGREP_CONFIG_PATH="${HOME}/.config/ripgrep/config"
+
 
 __envchain_namespaces() {
     _values 'namespace' "${(uonzf)$(envchain --list)}"

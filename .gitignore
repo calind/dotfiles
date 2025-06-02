@@ -61,6 +61,10 @@ key*
 !.config/bat
 !.config/bat/**
 
+# ... except ripgrep config
+!.config/ripgrep
+!.config/ripgrep/**
+
 # ... except for fonts
 !.local/share/fonts
 !.local/share/fonts/**
