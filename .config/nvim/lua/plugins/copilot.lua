@@ -37,9 +37,11 @@ return {
         require('copilot_cmp').setup()
 
         require('CopilotChat').setup({
-            question_header = '   User ',
-            answer_header = '   Copilot ',
-            error_header = '   Error ',
+            highlight_headers = false,
+            separator = '',
+            question_header = '##   User',
+            answer_header = '##   Copilot',
+            error_header = '##   Error',
             chat_autocomplete = true,
             mappings = {
                 complete = {

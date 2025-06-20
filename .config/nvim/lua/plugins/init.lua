@@ -92,7 +92,6 @@ return {
             })
         end
     },
-
     {
         'echasnovski/mini.nvim',
         version = false,
@@ -124,6 +123,33 @@ return {
                 },
             })
             vim.ui.select = require('mini.pick').ui_select
+            require('mini.icons').setup({})
+        end
+    },
+    {
+        'MeanderingProgrammer/render-markdown.nvim',
+        config = function()
+            require('render-markdown').setup({
+                file_types = { 'markdown', 'codecompanion', 'copilot-chat' },
+                overrides = {
+                    buftype = {
+                        nofile = {
+                            code = { style = 'normal', disable_background = true, left_pad = 0, right_pad = 0 },
+                        },
+                    },
+                    filetype = {
+                        ['copilot-chat'] = {
+                            anti_conceal = {
+                                enabled = false,
+                            },
+                            heading = {
+                                position = 'inline',
+                                icons = { ' ' }
+                            }
+                        }
+                    }
+                }
+            })
         end
     },
 }

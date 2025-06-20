@@ -1,6 +1,6 @@
 -- place marks at the beginning and the end of treesitter codeblocks
 
-local enabled_langs = { markdown = true, help = true }
+local enabled_langs = { help = true }
 local ns = vim.api.nvim_create_namespace('codeblock')
 
 local function clear_marks()
@@ -20,7 +20,7 @@ local function place_marks()
     local ok, parser = pcall(vim.treesitter.get_parser, buf, lang)
     if not ok then return end
 
-    local highlighter = require("vim.treesitter.highlighter")
+    local highlighter = require('vim.treesitter.highlighter')
     local hl = highlighter.active[buf]
     if not hl then
         return
@@ -47,4 +47,4 @@ local function place_marks()
     end
 end
 vim.api.nvim_create_autocmd({ 'BufWinEnter', 'WinNew' }, { callback = place_marks })
-vim.api.nvim_create_autocmd({ 'CursorHold', 'TextChangedI' }, { callback = place_marks })
+-- vim.api.nvim_create_autocmd({ 'CursorHold', 'TextChangedI' }, { callback = place_marks })

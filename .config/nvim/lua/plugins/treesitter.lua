@@ -16,7 +16,7 @@ return {
                     'html', 'css',
                     'sql',
                     'vim',
-                    'markdown', 'comment', 'dot',
+                    'markdown', 'markdown_inline', 'comment', 'dot',
                     'bash', 'dockerfile', 'make', 'diff', 'awk',
                     'git_rebase', 'gitignore', 'gitattributes', 'gitcommit',
                     'hcl', 'terraform',
