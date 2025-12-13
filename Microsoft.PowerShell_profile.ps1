@@ -1,20 +1,22 @@
 # PowerShell Profile
 
 function Get-GitBranch {
-    $gitStatus = git status 2>$null
+    # Try to get git status, return empty if not in a git repository
+    $status = git status --porcelain 2>$null
     if ($LASTEXITCODE -eq 0) {
         $branch = git rev-parse --abbrev-ref HEAD 2>$null
         
-        # Check for changes
+        # Check for changes (untracked or modified files)
         $hasChanges = $false
         $hasStaged = $false
         
-        $status = git status --porcelain 2>$null
         if ($status) {
             foreach ($line in $status) {
+                # Untracked (??) or modified unstaged (.M) files
                 if ($line -match '^\?\?|^.M') {
                     $hasChanges = $true
                 }
+                # Staged files (A, M, D, R, C in first column)
                 if ($line -match '^[MADRC]') {
                     $hasStaged = $true
                 }
@@ -67,5 +69,6 @@ function prompt {
     Write-Host "$currentPath" -NoNewline
     Write-Host "$gitInfo" -NoNewline
     
+    # Return the prompt character (❯ U+276F)
     return " `u{276F} "
 }
