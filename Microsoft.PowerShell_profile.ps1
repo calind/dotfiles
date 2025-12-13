@@ -12,13 +12,10 @@ function Get-GitBranch {
         $status = git status --porcelain 2>$null
         if ($status) {
             foreach ($line in $status) {
-                if ($line -match '^\?\?') {
+                if ($line -match '^\?\?|^.M') {
                     $hasChanges = $true
                 }
-                elseif ($line -match '^.[M\s]') {
-                    $hasChanges = $true
-                }
-                elseif ($line -match '^[MADRC]') {
+                if ($line -match '^[MADRC]') {
                     $hasStaged = $true
                 }
             }
