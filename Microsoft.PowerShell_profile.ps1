@@ -94,7 +94,7 @@ function dir {
     
     # Call Get-ChildItem with provided arguments
     $items = if ($Path) {
-        Get-ChildItem @Path
+        Get-ChildItem $Path
     } else {
         Get-ChildItem
     }
@@ -122,7 +122,11 @@ function dir {
         # Check if file is executable (has execute permission on Unix or is .exe/.cmd/.bat on Windows)
         if (-not $item.PSIsContainer) {
             $isExecutable = $false
-            if ($IsWindows -or $PSVersionTable.PSVersion.Major -lt 6) {
+            # Check if we're on Windows
+            $isWindowsOS = $PSVersionTable.PSVersion.Major -lt 6 -or 
+                           ([System.Environment]::OSVersion.Platform -eq 'Win32NT')
+            
+            if ($isWindowsOS) {
                 $isExecutable = $item.Extension -match '\.(exe|cmd|bat|com|reg|app)$'
             } else {
                 # On Unix-like systems, check execute permission
