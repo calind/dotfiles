@@ -70,5 +70,5 @@ function prompt {
     Write-Host "$gitInfo" -NoNewline
     
     # Return the prompt character (❯ U+276F)
-    return " `u{276F} "
+    return " ❯ "
 }
