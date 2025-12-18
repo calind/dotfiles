@@ -89,6 +89,7 @@ vim.keymap.set({ 'n', 'v' }, '<leader>ce', vim.cmd.CopilotChatExplain, { desc = 
 vim.keymap.set({ 'n', 'v' }, '<leader>cf', vim.cmd.CopilotChatFixDiagnostic, { desc = 'Fix diagnostics' })
 vim.keymap.set({ 'n', 'v' }, '<leader>cF', vim.cmd.CopilotChatFix, { desc = 'Fix the code!' })
 vim.keymap.set({ 'n', 'v' }, '<leader>cx', vim.cmd.CopilotChatReset, { desc = 'Reset chat' })
+vim.keymap.set({ 'n', 'v' }, '<leader>ch', vim.cmd.CopilotChatCommit, { desc = 'Commit Message' })
 vim.keymap.set({ 'n', 'v' }, '<leader>cq',
     function()
         local selection = require('CopilotChat.select').visual
@@ -102,18 +103,6 @@ vim.keymap.set({ 'n', 'v' }, '<leader>cq',
         end
     end,
     { desc = 'Copilot Quick Chat' }
-)
-vim.keymap.set({ 'n', 'v' }, '<leader>ca',
-    function()
-        local selection = require('CopilotChat.select').visual
-        if vim.api.nvim_get_mode().mode == 'n' then
-            selection = require('CopilotChat.select').buffer
-        end
-
-        local actions = require('CopilotChat.actions')
-        actions.pick(actions.prompt_actions({ selection = selection }))
-    end,
-    { desc = 'Copilot actions' }
 )
 
 vim.keymap.set({ 'n' }, '<leader>cQ',

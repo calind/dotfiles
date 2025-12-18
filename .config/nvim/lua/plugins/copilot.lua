@@ -1,10 +1,14 @@
-local prompts = {}
-
-prompts.DOCUMENT = [[/COPILOT_GENERATE
-Write documentation for the selected code. The reply should be a codeblock containing the original code with the
-documentation added as comments. Use the most appropriate documentation style for the programming language used (e.g.
-JSDoc for JavaScript, PHPDoc for PHP, google-style docstrings for Python etc.).
+local commit_prompt = [[
+Write commit message for the change. Keep the title under 50 characters and wrap message at 72 characters. Format as a gitcommit code block.
+Title should be capitalized and written in imperative mood, completing the sentence "If applied, this commit will...".
+Body should explain the what and why of the change, not the how.
 ]]
+
+-- prompts.DOCUMENT = [[/COPILOT_GENERATE
+-- Write documentation for the selected code. The reply should be a codeblock containing the original code with the
+-- documentation added as comments. Use the most appropriate documentation style for the programming language used (e.g.
+-- JSDoc for JavaScript, PHPDoc for PHP, google-style docstrings for Python etc.).
+-- ]]
 
 return {
     'zbirenbaum/copilot.lua',
@@ -12,7 +16,7 @@ return {
         'zbirenbaum/copilot-cmp',
         {
             'CopilotC-Nvim/CopilotChat.nvim',
-            version = '^3',
+            version = '^4',
             build = 'make tiktoken',
         },
     },
@@ -20,7 +24,7 @@ return {
         require('copilot').setup({
             panel = { enabled = false },
             suggestion = { enabled = false, auto_trigger = true },
-            copilot_node_command = '/usr/local/opt/node@20/bin/node',
+            copilot_node_command = '/usr/local/opt/node@22/bin/node',
             filetypes = {
                 -- enable copilot for README files
                 markdown = function()
@@ -36,18 +40,25 @@ return {
         })
         require('copilot_cmp').setup()
 
+        local prompts = require('CopilotChat.config.prompts')
+        prompts.Commit.prompt = commit_prompt
+
         require('CopilotChat').setup({
+            headers = {
+                user = '##   User',
+                assistant = '##   Copilot',
+                error = '##   Error',
+                tool = '## 󱁤 Tool',
+            },
             highlight_headers = false,
-            separator = '',
-            question_header = '##   User',
-            answer_header = '##   Copilot',
-            error_header = '##   Error',
+            separator = '━━',
             chat_autocomplete = true,
             mappings = {
                 complete = {
                     insert = '',
                 },
             },
+            prompts = prompts,
             -- prompts = {
             --     Refactor = {
             --         prompt = 'Refactor the following code to improve its clarity and readability.'

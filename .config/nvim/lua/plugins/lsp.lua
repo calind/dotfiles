@@ -96,7 +96,11 @@ return {
                 backdrop = 100,
             }
         })
-        require('mason-lspconfig').setup({ automatic_enable = true })
+        require('mason-lspconfig').setup({
+            automatic_enable = {
+                exclude = { 'helm_ls' }
+            }
+        })
         require('mason-null-ls').setup({ automatic_installation = { exclude = { 'phpcs', 'phpcbf' } } })
 
 

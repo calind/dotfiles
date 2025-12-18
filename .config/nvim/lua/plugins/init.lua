@@ -107,6 +107,10 @@ return {
                 }
             })
             require('mini.sessions').setup()
+            require('mini.starter').setup({
+                autoread = true,
+                verbose = { read = true, write = true, delete = true },
+            })
             require('mini.comment').setup()
             require('mini.notify').setup({
                 window = {

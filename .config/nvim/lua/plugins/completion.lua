@@ -29,7 +29,8 @@ return {
                 },
                 snippet = {
                     expand = function(args)
-                        vim.snippet.expand(args.body)
+                        -- vim.snippet.expand(args.body)
+                        require('snippy').expand_snippet(args.body)
                     end,
                 },
                 mapping = cmp.mapping.preset.insert({
@@ -82,11 +83,11 @@ return {
                 sorting = {
                     priority_weight = 2,
                     comparators = {
+                        cmp.config.compare.exact,
                         require('copilot_cmp.comparators').prioritize,
                         -- Below is the default comparitor list and order for nvim-cmp
                         cmp.config.compare.offset,
                         -- cmp.config.compare.scopes, -- this is commented in nvim-cmp too
-                        cmp.config.compare.exact,
                         cmp.config.compare.score,
                         cmp.config.compare.recently_used,
                         cmp.config.compare.locality,
