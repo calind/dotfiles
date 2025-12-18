@@ -28,6 +28,8 @@ font-thicken-strength=128
 font-codepoint-map = U+100000-U+1000FF=SauceCodeBox
 minimum-contrast=1.1
 
+scrollback-limit=10000000
+
 cursor-style=block
 theme=selenized-dark
 
