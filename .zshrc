@@ -77,6 +77,10 @@ if [ -d "${HOMEBREW_PREFIX}/opt/php@8.1/bin" ] ; then
     export PATH="${HOMEBREW_PREFIX}/opt/php@8.1/bin:${PATH}"
 fi
 
+if [ $commands[uv] ] ; then
+    export PATH="$(uv tool dir):${PATH}"
+fi
+
 FPATH="${HOME}/.zfunc:${FPATH}"
 autoload -Uz compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
@@ -329,3 +333,5 @@ source ~/.aliases
 if [[ -f "${HOME}/.zshrc.local" ]] ; then
     source "${HOME}/.zshrc.local"
 fi
+
+zstyle ':completion:*:(all-|)files' ignored-patterns '*_templ.go'
