@@ -32,6 +32,7 @@ brew "yq"
 brew "watch"
 brew "mtr"
 brew "gron"
+brew "awk"
 
 brew "gh"
 
