@@ -21,10 +21,15 @@ return {
         },
     },
     config = function()
+        local copilot_node_command = nil
+        if vim.env.HOMEBREW_PREFIX and vim.env.HOMEBREW_PREFIX ~= "" then
+            copilot_node_command = vim.env.HOMEBREW_PREFIX .. '/opt/node@24/bin/node'
+        end
+
         require('copilot').setup({
             panel = { enabled = false },
             suggestion = { enabled = false, auto_trigger = true },
-            copilot_node_command = '/usr/local/opt/node@22/bin/node',
+            copilot_node_command = copilot_node_command,
             filetypes = {
                 -- enable copilot for README files
                 markdown = function()
