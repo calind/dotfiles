@@ -61,20 +61,20 @@ if [ -n "${HOMEBREW_PREFIX}" ]; then
 fi
 
 # Add development tools to PATH
-if [ -d "${HOMEBREW_PREFIX}/opt/node@20/bin" ] ; then
-    export PATH="${HOMEBREW_PREFIX}/opt/node@20/bin:${PATH}"
+if [ -d "${HOMEBREW_PREFIX}/opt/node@24/bin" ] ; then
+    export PATH="${HOMEBREW_PREFIX}/opt/node@24/bin:${PATH}"
 fi
 
 if [ -d "${HOMEBREW_PREFIX}/opt/python@3.12/bin" ] ; then
     export PATH="${HOMEBREW_PREFIX}/opt/python@3.12/bin:${PATH}"
 fi
 
-if [ -d "${HOMEBREW_PREFIX}/opt/go@1.23/bin" ] ; then
-    export PATH="${HOMEBREW_PREFIX}/opt/go@1.23/bin:${PATH}"
+if [ -d "${HOMEBREW_PREFIX}/opt/go@1.26/bin" ] ; then
+    export PATH="${HOMEBREW_PREFIX}/opt/go@1.26/bin:${PATH}"
 fi
 
-if [ -d "${HOMEBREW_PREFIX}/opt/php@8.1/bin" ] ; then
-    export PATH="${HOMEBREW_PREFIX}/opt/php@8.1/bin:${PATH}"
+if [ -d "${HOMEBREW_PREFIX}/opt/php@8.3/bin" ] ; then
+    export PATH="${HOMEBREW_PREFIX}/opt/php@8.3/bin:${PATH}"
 fi
 
 if [ $commands[uv] ] ; then
@@ -200,12 +200,12 @@ else
     export EDITOR=vim
 fi
 
-if [ -f /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc ] ; then
-    source /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
+if [ -f "${HOMEBREW_PREFIX}/share/google-cloud-sdk/completion.zsh.inc" ] ; then
+    source "${HOMEBREW_PREFIX}/share/google-cloud-sdk/completion.zsh.inc"
 fi
 
-if [ -f /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc ] ; then
-    source /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc
+if [ -f "${HOMEBREW_PREFIX}/share/google-cloud-sdk/path.zsh.inc" ] ; then
+    source "${HOMEBREW_PREFIX}/share/google-cloud-sdk/path.zsh.inc"
 fi
 
 # lazy load kubectl completion

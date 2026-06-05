@@ -1,5 +1,3 @@
-tap "ngrok/ngrok"
-
 brew "coreutils"
 brew "gnu-sed"
 brew "gnu-tar"
@@ -8,13 +6,14 @@ brew "gzip"
 brew "envchain"
 brew "git"
 brew "neovim"
+brew "tree-sitter-cli"
 brew "zsh"
 brew "zsh-completions"
 
 brew "composer"
-brew "go@1.21"
-brew "node@20" # latest LTS
-brew "php@8.1" # latests supported WordPress version
+brew "go@1.26"
+brew "node@24" # latest LTS
+brew "php@8.3" # latests supported WordPress version
 brew "python@3.12"
 brew "uv"
 
@@ -44,10 +43,10 @@ brew "kustomize"
 brew "docker-completion"
 brew "doctl"
 
-brew "dockutil"
-brew "mas"
+brew "dockutil" if OS.mac?
+brew "mas" if OS.mac?
 
-cask "font-sauce-code-pro-nerd-font"
+cask "font-sauce-code-pro-nerd-font" if OS.mac?
 
 cask "ghostty"
 
@@ -64,14 +63,13 @@ cask "slack"
 cask "poedit"
 cask "dictionaries"
 # cask "microsoft-teams"
-cask "skype"
 cask "tableplus"
 cask "the-unarchiver"
 cask "whatsapp"
 cask "spotify"
 cask "imageoptim"
 
-cask "google-cloud-sdk"
+cask "gcloud-cli"
 
 cask "adobe-acrobat-reader"
 mas "Enpass", id:732710998   # Install Enpass from App Store so that I can unlock it with Touch ID
