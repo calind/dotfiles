@@ -1,5 +1,8 @@
 local ui = require('custom.ui')
 
+-- Language servers to install with mason
+-- MasonInstall bash-language-server css-lsp dockerfile-language-server golangci-lint golangci-lint-langserver gopls hadolint helm-ls html-lsp intelephense json-lsp lua-language-server nginx-language-server pyright ruff shellcheck tailwindcss-language-server templ terraform-ls typescript-language-server yaml-language-server
+
 return {
     'neovim/nvim-lspconfig',
     dependencies = {
@@ -45,7 +48,6 @@ return {
     },
     config = function()
         local lsp = require('custom.lsp')
-        local lspconfig = require('lspconfig')
         local null_ls = require('null-ls')
         local null_ls_sources = {}
         local lightbulb = require('nvim-lightbulb')
@@ -59,7 +61,6 @@ return {
             return orig_util_open_floating_preview(contents, syntax, opts, ...)
         end
 
-        require('lspconfig.ui.windows').default_options.border = ui.border
         lightbulb.setup({
             sign = { enabled = false },
             status_text = { enabled = true, text = ui.signs.LightBulb },
@@ -168,10 +169,26 @@ return {
         })
 
         vim.lsp.config('eslint', {
-            filetypes = table.insert(lspconfig.eslint.document_config.default_config.filetypes, 'javascript.wp'),
+            filetypes = {
+                'javascript',
+                'javascriptreact',
+                'typescript',
+                'typescriptreact',
+                'vue',
+                'svelte',
+                'astro',
+                'htmlangular',
+                'javascript.wp',
+            },
         })
         vim.lsp.config('ts_ls', {
-            filetypes = table.insert(lspconfig.ts_ls.document_config.default_config.filetypes, 'javascript.wp'),
+            filetypes = {
+                'javascript',
+                'javascriptreact',
+                'typescript',
+                'typescriptreact',
+                'javascript.wp',
+            },
         })
         table.insert(null_ls_sources, null_ls.builtins.formatting.prettier.with({
             disabled_filetypes = { 'html' }, -- format with html language server instead
@@ -245,15 +262,15 @@ return {
         vim.lsp.config('dockerls', {})
         table.insert(null_ls_sources, null_ls.builtins.diagnostics.hadolint)
 
-        lspconfig.helm_ls.setup {
-            settings = {
-                ['helm-ls'] = {
-                    yamlls = {
-                        path = 'yaml-language-server',
-                    }
-                }
-            }
-        }
+        -- lspconfig.helm_ls.setup {
+        --     settings = {
+        --         ['helm-ls'] = {
+        --             yamlls = {
+        --                 path = 'yaml-language-server',
+        --             }
+        --         }
+        --     }
+        -- }
 
         -- Terraform
         vim.lsp.config('terraformls', {})
