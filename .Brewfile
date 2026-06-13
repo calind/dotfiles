@@ -68,6 +68,7 @@ cask "the-unarchiver"
 cask "whatsapp"
 cask "spotify"
 cask "imageoptim"
+cask "stats"
 
 cask "gcloud-cli"
 
