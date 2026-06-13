@@ -35,31 +35,16 @@
     signingkey = B34726BF
 [commit]
     gpgsign = true
-; [url "git@github.com:"]
-;     insteadOf = https://github.com/
 [diff "sopsdiffer"]
     textconv = sops -d
 [pull]
     ff = only
 
-[includeIf "gitdir:~/work/src/gitlab.com/"]
-    path = ~/.config/git/config-bitpoke.inc
+[include]
+    path = ~/.config/git/config.local
 
-[includeIf "gitdir:~/work/src/github.com/bitpoke/"]
-    path = ~/.config/git/config-bitpoke.inc
-[includeIf "gitdir:~/work/src/github.com/SubscriptionGroup/"]
-    path = ~/.config/git/config-bitpoke.inc
-[includeIf "gitdir:~/work/src/github.com/AudioTribeRO/"]
-    path = ~/.config/git/config-bitpoke.inc
-
-[includeIf "gitdir:~/work/src/github.com/AudioTribeRO/"]
-    path = ~/.config/git/enable-fsmonitor.inc
-[includeIf "gitdir:~/work/src/github.com/bitpoke/"]
-    path = ~/.config/git/enable-fsmonitor.inc
-[includeIf "gitdir:~/work/src/github.com/calind/"]
-    path = ~/.config/git/enable-fsmonitor.inc
 [safe]
     bareRepository = all
     ; bareRepository = explicit
 [diff "nodiff"]
-	command = /usr/bin/true
+    command = /usr/bin/true

@@ -68,3 +68,7 @@ key*
 # ... except for fonts
 !.local/share/fonts
 !.local/share/fonts/**
+
+# Ignore everything that is local
+*.local
+.config/git/allowed_signers
