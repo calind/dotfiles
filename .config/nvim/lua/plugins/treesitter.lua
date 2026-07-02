@@ -1,4 +1,4 @@
--- :TSInstall go gomod templ php phpdoc python htmldjango lua c cpp c_sharp javascript typescript tsx jq html css sql vim markdown markdown_inline comment dot bash dockerfile make diff awk git_rebase gitignore gitattributes gitcommit hcl terraform json jsonc yaml toml hcl jsonnet proto helm
+-- TSInstall go gomod templ php phpdoc python htmldjango lua c cpp c_sharp javascript typescript tsx jq html css sql vim markdown markdown_inline comment dot bash dockerfile make diff awk git_rebase gitignore gitattributes gitcommit hcl terraform json jsonc yaml toml hcl jsonnet proto helm
 
 local languages = {
     'go', 'gomod', 'templ',
@@ -22,6 +22,7 @@ local languages = {
 return {
     {
         'nvim-treesitter/nvim-treesitter',
+        branch = 'main',
         build = ':TSUpdate',
         lazy = false,
         init = function()
@@ -35,5 +36,8 @@ return {
             })
         end,
     },
-    'nvim-treesitter/nvim-treesitter-textobjects',
+    {
+        'nvim-treesitter/nvim-treesitter-textobjects',
+        branch = 'main'
+    },
 }

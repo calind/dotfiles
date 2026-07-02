@@ -1,7 +1,11 @@
 local ui = require('custom.ui')
 
+local tailwind_tools_dev_path = vim.fn.expand('~/work/src/github.com/calind/tailwind-tools.nvim')
+
 -- Language servers to install with mason
 -- MasonInstall bash-language-server css-lsp dockerfile-language-server golangci-lint golangci-lint-langserver gopls hadolint helm-ls html-lsp intelephense json-lsp lua-language-server nginx-language-server pyright ruff shellcheck tailwindcss-language-server templ terraform-ls typescript-language-server yaml-language-server
+
+local wp_dev_path = vim.fn.expand('~/work/src/github.com/calind/wordpress.nvim')
 
 return {
     'neovim/nvim-lspconfig',
@@ -22,7 +26,7 @@ return {
 
         {
             'luckasRanarison/tailwind-tools.nvim',
-            dev = true,
+            dev = vim.fn.isdirectory(tailwind_tools_dev_path) == 1,
             opts = {
                 document_color = {
                     enabled = false,
@@ -35,7 +39,7 @@ return {
             }
         },
         { 'folke/neodev.nvim',      opts = {} },
-        { 'bitpoke/wordpress.nvim', dev = true, opts = {} },
+        { 'bitpoke/wordpress.nvim', dev = vim.fn.isdirectory(wp_dev_path) == 1, opts = {} },
         { 'towolf/vim-helm',        ft = 'helm' },
         'fladson/vim-kitty',
         {
