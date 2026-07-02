@@ -6,6 +6,20 @@
 curl -Lks https://raw.githubusercontent.com/calind/dotfiles/main/script/bootstrap | /bin/bash
 ```
 
+## Personal Homebrew packages
+
+The main `~/.Brewfile` installs packages shared by all setups. It also loads
+`~/.Brewfile.local` when that file exists, allowing machine-specific packages.
+
+To use the provided personal package list:
+
+```bash
+cp ~/.Brewfile.local.example ~/.Brewfile.local
+brew bundle --global
+```
+
+Edit `~/.Brewfile.local` as needed. It is ignored by Git.
+
 ## Windows (PowerShell)
 
 1. Clone the repository:

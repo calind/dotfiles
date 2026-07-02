@@ -41,42 +41,9 @@ brew "kubectl"
 brew "kubectx"
 brew "kustomize"
 brew "docker-completion"
-brew "doctl"
 
 brew "dockutil" if OS.mac?
-brew "mas" if OS.mac?
-
-cask "font-sauce-code-pro-nerd-font" if OS.mac?
-
 cask "ghostty"
 
-cask "discord"
-cask "ngrok"
-cask "tunnelblick"
-cask "firefox"
-cask "gpg-suite-no-mail"
-cask "orbstack"
-cask "rectangle"
-cask "secretive"
-cask "sequel-ace"
-cask "slack"
-cask "poedit"
-cask "dictionaries"
-# cask "microsoft-teams"
-cask "tableplus"
-cask "the-unarchiver"
-cask "whatsapp"
-cask "spotify"
-cask "imageoptim"
-cask "stats"
-
-cask "gcloud-cli"
-
-cask "adobe-acrobat-reader"
-mas "Enpass", id:732710998   # Install Enpass from App Store so that I can unlock it with Touch ID
-mas "OneDrive", id:823766827
-mas "Microsoft Excel", id:462058435
-mas "Microsoft Word", id:462054704
-mas "Pages", id:409201541
-mas "Numbers", id:409203825
-mas "paperLESS vToken", id:6667100978
+local_brewfile = File.expand_path("~/.Brewfile.local")
+eval(File.read(local_brewfile), binding, local_brewfile) if File.exist?(local_brewfile)

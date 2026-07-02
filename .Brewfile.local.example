@@ -1,0 +1,37 @@
+# Packages used for a personal setup, but not necessarily on a work laptop.
+brew "mas" if OS.mac?
+
+cask "font-sauce-code-pro-nerd-font" if OS.mac?
+
+cask "discord"
+cask "ngrok"
+cask "tunnelblick"
+cask "firefox"
+cask "gpg-suite-no-mail"
+cask "orbstack"
+cask "rectangle"
+cask "secretive"
+cask "sequel-ace"
+cask "slack"
+cask "poedit"
+cask "dictionaries"
+cask "tableplus"
+cask "the-unarchiver"
+cask "whatsapp"
+cask "spotify"
+cask "imageoptim"
+cask "stats"
+cask "steam" if OS.mac?
+cask "tailscale-app"
+
+brew "doctl"
+cask "gcloud-cli"
+
+cask "adobe-acrobat-reader"
+mas "Enpass", id:732710998 # Install Enpass from App Store to unlock it with Touch ID
+mas "OneDrive", id:823766827
+mas "Microsoft Excel", id:462058435
+mas "Microsoft Word", id:462054704
+mas "Pages", id:361309726
+mas "Numbers", id:361304891
+mas "paperLESS vToken", id:6667100978

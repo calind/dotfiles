@@ -28,6 +28,7 @@ key*
 !.local/share
 .local/share/*
 !.Brewfile
+!.Brewfile.local.example
 
 # ... except for whitelisted ones
 !.dircolors
