@@ -73,3 +73,6 @@ key*
 # Ignore everything that is local
 *.local
 .config/git/allowed_signers
+
+# Ignore mpdev
+bin/mpdev
