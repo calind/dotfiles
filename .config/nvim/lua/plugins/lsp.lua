@@ -49,6 +49,7 @@ return {
                 return vim.fn.has('macunix') and vim.fn.executable('ghostty') == 1
             end,
         },
+        'bfontaine/Brewfile.vim',
     },
     config = function()
         local lsp = require('custom.lsp')
