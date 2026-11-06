@@ -30,8 +30,8 @@ setopt autocd
 unsetopt beep
 
 # Home, End, Delete key bindings
-bindkey '\e[H'  beginning-of-line
-bindkey '\e[F'  end-of-line
+bindkey '\e[H' beginning-of-line
+bindkey '\e[F' end-of-line
 bindkey '\e[3~' delete-char
 
 # Set locales
@@ -43,12 +43,12 @@ fi
 HISTFILE=~/.histfile
 HISTSIZE=10000
 SAVEHIST=100000
-setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
-setopt HIST_EXPIRE_DUPS_FIRST    # Expire duplicate entries first when trimming history.
-setopt HIST_IGNORE_DUPS          # Don't record an entry that was just recorded again.
-setopt HIST_FIND_NO_DUPS         # Do not display a line previously found.
-setopt HIST_IGNORE_SPACE         # Don't record an entry starting with a space.
-setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry.
+setopt INC_APPEND_HISTORY     # Write to the history file immediately, not when the shell exits.
+setopt HIST_EXPIRE_DUPS_FIRST # Expire duplicate entries first when trimming history.
+setopt HIST_IGNORE_DUPS       # Don't record an entry that was just recorded again.
+setopt HIST_FIND_NO_DUPS      # Do not display a line previously found.
+setopt HIST_IGNORE_SPACE      # Don't record an entry starting with a space.
+setopt HIST_REDUCE_BLANKS     # Remove superfluous blanks before recording entry.
 
 declare -A colors
 colors[bg_0]="#103c48"
@@ -76,15 +76,15 @@ colors[br_violet]="#bd96fa"
 export colors
 
 # setup Homebrew environment
-if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/usr/local/bin/brew" ] ; then
+if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/usr/local/bin/brew" ]; then
     eval "$(/usr/local/bin/brew shellenv)"
 fi
 
-if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/opt/homebrew/bin/brew" ] ; then
+if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/opt/homebrew/bin/brew" ]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/home/linuxbrew/.linuxbrew/bin/brew" ] ; then
+if [ -z "${HOMEBREW_PREFIX}" ] && [ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
@@ -93,23 +93,23 @@ if [ -n "${HOMEBREW_PREFIX}" ]; then
 fi
 
 # Add development tools to PATH
-if [ -d "${HOMEBREW_PREFIX}/opt/node@24/bin" ] ; then
+if [ -d "${HOMEBREW_PREFIX}/opt/node@24/bin" ]; then
     export PATH="${HOMEBREW_PREFIX}/opt/node@24/bin:${PATH}"
 fi
 
-if [ -d "${HOMEBREW_PREFIX}/opt/python@3.12/bin" ] ; then
+if [ -d "${HOMEBREW_PREFIX}/opt/python@3.12/bin" ]; then
     export PATH="${HOMEBREW_PREFIX}/opt/python@3.12/bin:${PATH}"
 fi
 
-if [ -d "${HOMEBREW_PREFIX}/opt/go@1.26/bin" ] ; then
+if [ -d "${HOMEBREW_PREFIX}/opt/go@1.26/bin" ]; then
     export PATH="${HOMEBREW_PREFIX}/opt/go@1.26/bin:${PATH}"
 fi
 
-if [ -d "${HOMEBREW_PREFIX}/opt/php@8.3/bin" ] ; then
+if [ -d "${HOMEBREW_PREFIX}/opt/php@8.3/bin" ]; then
     export PATH="${HOMEBREW_PREFIX}/opt/php@8.3/bin:${PATH}"
 fi
 
-if [ $commands[uv] ] ; then
+if [ $commands[uv] ]; then
     export PATH="$(uv tool dir):${PATH}"
 fi
 
@@ -136,8 +136,8 @@ zstyle ':vcs_info:*:*' nvcsformats ''
 zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
 
 +vi-git-untracked() {
-    if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
-        git status --porcelain | grep -q '^?? ' 2> /dev/null ; then
+    if [[ $(git rev-parse --is-inside-work-tree 2>/dev/null) == 'true' ]] &&
+        git status --porcelain | grep -q '^?? ' 2>/dev/null; then
         hook_com[unstaged]='*'
     fi
 }
@@ -151,10 +151,10 @@ _set_prompt() {
 
     local venv=""
 
-    if [[ -n "${VIRTUAL_ENV}" ]] ; then
-        if [[ -n "${VIRTUAL_ENV_PROMPT}" ]] ; then
+    if [[ -n "${VIRTUAL_ENV}" ]]; then
+        if [[ -n "${VIRTUAL_ENV_PROMPT}" ]]; then
             venv="${VIRTUAL_ENV_PROMPT}"
-        elif [[ "${VIRTUAL_ENV##*/}" == ".venv" ]] ; then
+        elif [[ "${VIRTUAL_ENV##*/}" == ".venv" ]]; then
             venv="(${$(dirname "$VIRTUAL_ENV")##*/}) "
         else
             venv="(${VIRTUAL_ENV##*/}) "
@@ -182,7 +182,7 @@ _set_prompt() {
 function git() {
     if [ "${PWD}" = "${HOME}" ] || [ "${PWD}" = "${HOME}/.config" ] || [ "${PWD}" = "${HOME}/.local" ]; then
         GIT_DIR="${HOME}/.dotfiles.git" \
-        GIT_WORK_TREE="${HOME}" \
+            GIT_WORK_TREE="${HOME}" \
             command git "$@"
     else
         command git "$@"
@@ -215,14 +215,14 @@ if [[ -x "${DIRCOLORS}" ]]; then
     alias egrep='egrep --color=auto'
 fi
 
-if [[ -d "${HOME}/.composer/vendor/bin" ]] ; then
+if [[ -d "${HOME}/.composer/vendor/bin" ]]; then
     export PATH="${HOME}/.composer/vendor/bin:$PATH"
 fi
 
 export GOPATH="$HOME/work"
 export PATH="$GOPATH/bin:$PATH"
 
-if [[ -d "${HOME}/.local/bin" ]] ; then
+if [[ -d "${HOME}/.local/bin" ]]; then
     export PATH="${HOME}/.local/bin:$PATH"
 fi
 
@@ -232,30 +232,30 @@ else
     export EDITOR=vim
 fi
 
-if [ -f "${HOMEBREW_PREFIX}/share/google-cloud-sdk/completion.zsh.inc" ] ; then
+if [ -f "${HOMEBREW_PREFIX}/share/google-cloud-sdk/completion.zsh.inc" ]; then
     source "${HOMEBREW_PREFIX}/share/google-cloud-sdk/completion.zsh.inc"
 fi
 
-if [ -f "${HOMEBREW_PREFIX}/share/google-cloud-sdk/path.zsh.inc" ] ; then
+if [ -f "${HOMEBREW_PREFIX}/share/google-cloud-sdk/path.zsh.inc" ]; then
     source "${HOMEBREW_PREFIX}/share/google-cloud-sdk/path.zsh.inc"
 fi
 
 # lazy load kubectl completion
 if [ $commands[kubectl] ]; then
-  kubectl() {
-    unfunction "$0"
-    source <(kubectl completion zsh)
-    $0 "$@"
-  }
+    kubectl() {
+        unfunction "$0"
+        source <(kubectl completion zsh)
+        $0 "$@"
+    }
 fi
 
 # lazy load azure-cli completion
 if [ $commands[az] ]; then
-  az() {
-    unfunction "$0"
-    test -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/az" && source "${HOMEBREW_PREFIX}/etc/bash_completion.d/az"
-    $0 "$@"
-  }
+    az() {
+        unfunction "$0"
+        test -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/az" && source "${HOMEBREW_PREFIX}/etc/bash_completion.d/az"
+        $0 "$@"
+    }
 fi
 
 FZF_PREVIEW_OPTS="cat {}"
@@ -263,7 +263,8 @@ if [ $commands[rich] ]; then
     FZF_PREVIEW_OPTS="rich --force-terminal -n -y --max-width=\$FZF_PREVIEW_COLUMNS {}"
 fi
 
-FZF_DEFAULT_OPTS=$(cat <<-EOD
+FZF_DEFAULT_OPTS=$(
+    cat <<-EOD
     --color="fg:${colors[fg_0]},bg:${colors[bg_0]},hl:${colors[cyan]}:bold"
     --color="fg+:${colors[fg_0]}:regular,bg+:${colors[bg_1]},hl+:$colors[br_cyan]:bold"
     --color="pointer:${colors[cyan]},prompt:${colors[yellow]}:bold"
@@ -282,7 +283,6 @@ EOD
 export FZF_DEFAULT_OPTS
 
 export RIPGREP_CONFIG_PATH="${HOME}/.config/ripgrep/config"
-
 
 __envchain_namespaces() {
     _values 'namespace' "${(uonzf)$(envchain --list)}"
@@ -362,7 +362,7 @@ export PATH="${HOME}/bin:$PATH"
 
 source ~/.aliases
 
-if [[ -f "${HOME}/.zshrc.local" ]] ; then
+if [[ -f "${HOME}/.zshrc.local" ]]; then
     source "${HOME}/.zshrc.local"
 fi
 
@@ -371,20 +371,39 @@ zstyle ':completion:*:(all-|)files' ignored-patterns '*_templ.go'
 # OrbStack's guest tools and kernel identify machines, including isolated ones.
 # Host metadata comes through ORBENV, so no guest-to-Mac access is required.
 if [[ $OSTYPE == linux* && -d /opt/orbstack-guest &&
-      $(uname -r) == *orbstack* &&
-      ( $TERM_PROGRAM == ghostty || $TERM == xterm-ghostty ) &&
-      -n $GHOSTTY_ORB_MAC_HOME && -n $GHOSTTY_ORB_MAC_HOST ]]; then
+    $(uname -r) == *orbstack* &&
+    ($TERM_PROGRAM == ghostty || $TERM == xterm-ghostty) &&
+    -n $GHOSTTY_ORB_MAC_HOME && -n $GHOSTTY_ORB_MAC_HOST ]]; then
     typeset -g _orb_ghostty_machine=$(uname -n)
     _orb_ghostty_report_pwd() {
         local mapped="${GHOSTTY_ORB_MAC_HOME}/OrbStack/${_orb_ghostty_machine}${PWD}"
-        builtin print -rn -- $'\e]7;kitty-shell-cwd://'"${GHOSTTY_ORB_MAC_HOST//[[:cntrl:]]}${mapped//[[:cntrl:]]}"$'\a'
+        builtin print -rn -- $'\e]7;kitty-shell-cwd://'"${GHOSTTY_ORB_MAC_HOST//[[:cntrl:]]/}${mapped//[[:cntrl:]]/}"$'\a'
     }
     _orb_ghostty_precmd() {
-        if (( $+functions[_ghostty_report_pwd] )); then
+        if (($+functions[_ghostty_report_pwd])); then
             functions[_ghostty_report_pwd]=$functions[_orb_ghostty_report_pwd]
         fi
         _orb_ghostty_report_pwd
     }
     add-zsh-hook precmd _orb_ghostty_precmd
     add-zsh-hook chpwd _orb_ghostty_report_pwd
+fi
+
+if [[ $OSTYPE == linux* ]]; then
+    pbcopy() {
+        local buffer
+        # Read from stdin if no arguments are provided, otherwise use the arguments as the buffer
+        if [ $# -eq 0 ]; then
+            buffer=$(cat)
+        else
+            buffer="$*"
+        fi
+
+        # Base64 encode the buffer and remove any newlines
+        local b64
+        b64=$(printf "%s" "$buffer" | base64 | tr -d '\n')
+
+        # Trimite secvența de evadare ANSI OSC 52 către terminal
+        printf "\033]52;c;%s\007" "$b64"
+    }
 fi
