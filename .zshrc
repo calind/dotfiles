@@ -136,7 +136,7 @@ _set_prompt() {
     fi
 
     host_prompt=""
-    if [ -n "$SSH_CONNECTION" ] [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+    if [ -n "$SSH_CONNECTION" ] || [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
         host_prompt="%K{${colors[bg_1]}}%F{${colors[dim_0]}} %n@%m %f%k "
     fi
 
