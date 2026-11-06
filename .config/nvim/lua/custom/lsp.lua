@@ -23,6 +23,9 @@ local filtered_goto = function(name)
 end
 
 local format_filter = function(client)
+    if vim.tbl_contains({ 'sh', 'bash', 'zsh' }, vim.bo.filetype) then
+        return client.name == 'null-ls'
+    end
     local formatters = vim.b.lsp_formatters or {}
     if vim.tbl_isempty(formatters) or vim.tbl_contains(formatters, client.name) then
         return true
