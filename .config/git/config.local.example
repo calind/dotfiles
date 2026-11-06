@@ -1,0 +1,28 @@
+; vim: set ft=gitconfig:
+
+;; Custom user information for Git commits
+;[user]
+;    name = Calin Don
+;    email = calin.don@gmail.com
+
+;; Use SSH instead of HTTPS for GitHub repositories
+;[url "git@github.com:"]
+;    insteadOf = https://github.com/
+
+;; Sign commits with SSH keys instead of GPG keys
+;[user]
+;    signingkey = /Users/calin/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/PublicKeys/12e675d7c9025ce0e722456227aecdfd.pub
+;[commit]
+;    gpgsign = true
+;[gpg]
+;    format = ssh
+;[gpg "ssh"]
+;    allowedSignersFile = ~/.config/git/allowed_signers
+
+;; Force signing of annotated tags
+;[tag]
+;   forceSignAnnotated = true
+
+;; Enable fsmonitor for specific repositories
+;[includeIf "gitdir:~/work/src/github.com/calind/"]
+;    path = ~/.config/git/enable-fsmonitor.inc

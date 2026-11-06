@@ -32,9 +32,6 @@
 [user]
     name = Calin Don
     email = calin.don@gmail.com
-    signingkey = B34726BF
-[commit]
-    gpgsign = true
 [diff "sopsdiffer"]
     textconv = sops -d
 [pull]
