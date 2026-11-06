@@ -3,7 +3,7 @@ local ui = require('custom.ui')
 local tailwind_tools_dev_path = vim.fn.expand('~/work/src/github.com/calind/tailwind-tools.nvim')
 
 -- Language servers to install with mason
--- MasonInstall bash-language-server css-lsp dockerfile-language-server golangci-lint golangci-lint-langserver gopls hadolint helm-ls html-lsp intelephense json-lsp lua-language-server nginx-language-server pyright ruff shellcheck tailwindcss-language-server templ terraform-ls typescript-language-server yaml-language-server
+-- MasonInstall bash-language-server css-lsp dockerfile-language-server golangci-lint golangci-lint-langserver gopls hadolint helm-ls html-lsp intelephense json-lsp lua-language-server nginx-language-server pyright ruff shellcheck tailwindcss-language-server templ terraform-ls typescript-language-server yaml-language-server hadolint shfmt dockerftm
 
 local wp_dev_path = vim.fn.expand('~/work/src/github.com/calind/wordpress.nvim')
 
