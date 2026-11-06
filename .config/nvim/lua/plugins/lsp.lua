@@ -28,6 +28,8 @@ return {
             'luckasRanarison/tailwind-tools.nvim',
             dev = vim.fn.isdirectory(tailwind_tools_dev_path) == 1,
             opts = {
+                -- Server configuration is managed below with vim.lsp.config.
+                server = { override = false },
                 document_color = {
                     enabled = false,
                     kind = 'background',
@@ -46,7 +48,7 @@ return {
             'ghostty-macos',
             dir = '/Applications/Ghostty.app/Contents/Resources/nvim/site/',
             cond = function()
-                return vim.fn.has('macunix') and vim.fn.executable('ghostty') == 1
+                return vim.fn.has('macunix') == 1 and vim.fn.executable('ghostty') == 1
             end,
         },
         'bfontaine/Brewfile.vim',
