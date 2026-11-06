@@ -1,3 +1,29 @@
+# Preserve OrbStack sessions when Ghostty inherits a machine filesystem path.
+if [[ $OSTYPE == darwin* && $TERM_PROGRAM == ghostty ]]; then
+    orb() {
+        local -x GHOSTTY_ORB_MAC_HOME="$HOME"
+        local -x GHOSTTY_ORB_MAC_HOST="$HOST"
+        local -x ORBENV="${ORBENV:+${ORBENV}:}GHOSTTY_ORB_MAC_HOME:GHOSTTY_ORB_MAC_HOST:TERM_PROGRAM"
+        command orb "$@"
+    }
+
+    _orb_ghostty_reconnect() {
+        local root="$HOME/OrbStack/" relative machine workdir
+        [[ $PWD == "$root"* ]] || return 0
+        relative=${PWD#$root}
+        machine=${relative%%/*}
+        # Require an OrbStack machine root, excluding Docker's filesystem view.
+        [[ -n $machine && -d "$root$machine/opt/orbstack-guest" ]] || return 0
+        workdir=${relative#$machine}
+        local -x GHOSTTY_ORB_MAC_HOME="$HOME"
+        local -x GHOSTTY_ORB_MAC_HOST="$HOST"
+        local -x ORBENV="${ORBENV:+${ORBENV}:}GHOSTTY_ORB_MAC_HOME:GHOSTTY_ORB_MAC_HOST:TERM_PROGRAM"
+        exec orb -m "$machine" -w "${workdir:-/}"
+    }
+    _orb_ghostty_reconnect
+    unfunction _orb_ghostty_reconnect
+fi
+
 # zmodload zsh/zprof
 
 setopt autocd
@@ -341,3 +367,24 @@ if [[ -f "${HOME}/.zshrc.local" ]] ; then
 fi
 
 zstyle ':completion:*:(all-|)files' ignored-patterns '*_templ.go'
+
+# OrbStack's guest tools and kernel identify machines, including isolated ones.
+# Host metadata comes through ORBENV, so no guest-to-Mac access is required.
+if [[ $OSTYPE == linux* && -d /opt/orbstack-guest &&
+      $(uname -r) == *orbstack* &&
+      ( $TERM_PROGRAM == ghostty || $TERM == xterm-ghostty ) &&
+      -n $GHOSTTY_ORB_MAC_HOME && -n $GHOSTTY_ORB_MAC_HOST ]]; then
+    typeset -g _orb_ghostty_machine=$(uname -n)
+    _orb_ghostty_report_pwd() {
+        local mapped="${GHOSTTY_ORB_MAC_HOME}/OrbStack/${_orb_ghostty_machine}${PWD}"
+        builtin print -rn -- $'\e]7;kitty-shell-cwd://'"${GHOSTTY_ORB_MAC_HOST//[[:cntrl:]]}${mapped//[[:cntrl:]]}"$'\a'
+    }
+    _orb_ghostty_precmd() {
+        if (( $+functions[_ghostty_report_pwd] )); then
+            functions[_ghostty_report_pwd]=$functions[_orb_ghostty_report_pwd]
+        fi
+        _orb_ghostty_report_pwd
+    }
+    add-zsh-hook precmd _orb_ghostty_precmd
+    add-zsh-hook chpwd _orb_ghostty_report_pwd
+fi

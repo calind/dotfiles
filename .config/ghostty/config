@@ -44,3 +44,6 @@ keybind = cmd+enter=new_split:down
 keybind = cmd+`=toggle_quick_terminal
 
 shell-integration-features = ssh-env,ssh-terminfo
+
+# Preserve OrbStack machine directories in new tabs.
+tab-inherit-working-directory = true
