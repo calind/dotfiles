@@ -264,6 +264,10 @@ return {
         -- Bash, shell, docker, kubernetes
 
         vim.lsp.config('bashls', {})
+        table.insert(null_ls_sources, null_ls.builtins.formatting.shfmt.with({
+            filetypes = { 'sh', 'bash', 'zsh' },
+            extra_args = { '-i', '4' },
+        }))
         vim.lsp.config('dockerls', {
             on_init = function(client)
                 -- Let Tree-sitter handle Dockerfile highlighting,
