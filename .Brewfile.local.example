@@ -27,6 +27,9 @@ cask "tailscale-app"
 brew "doctl"
 cask "gcloud-cli"
 
+cask "codex"
+cask "codex-app"
+
 cask "adobe-acrobat-reader"
 mas "Enpass", id:732710998 # Install Enpass from App Store to unlock it with Touch ID
 mas "OneDrive", id:823766827

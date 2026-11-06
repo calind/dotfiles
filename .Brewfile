@@ -1,4 +1,5 @@
 brew "coreutils"
+brew "moreutils"
 brew "gnu-sed"
 brew "gnu-tar"
 brew "gzip"
