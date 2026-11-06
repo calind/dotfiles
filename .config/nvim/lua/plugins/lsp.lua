@@ -264,8 +264,15 @@ return {
         -- Bash, shell, docker, kubernetes
 
         vim.lsp.config('bashls', {})
-        vim.lsp.config('dockerls', {})
+        vim.lsp.config('dockerls', {
+            on_init = function(client)
+                -- Let Tree-sitter handle Dockerfile highlighting,
+                -- including injected Bash in RUN heredocs.
+                client.server_capabilities.semanticTokensProvider = nil
+            end,
+        })
         table.insert(null_ls_sources, null_ls.builtins.diagnostics.hadolint)
+        table.insert(null_ls_sources, require('custom.dockerfmt'))
 
         -- lspconfig.helm_ls.setup {
         --     settings = {
