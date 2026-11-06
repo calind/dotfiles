@@ -9,16 +9,15 @@ OS_NAME=$(uname -s)
 
 HOMEBREW_PREFIX="/opt/homebrew"
 
-if [ "${OS_NAME}" == "Darwin" ] && [ "${OS_ARCH}" == "x86_64" ] ; then
+if [ "${OS_NAME}" == "Darwin" ] && [ "${OS_ARCH}" == "x86_64" ]; then
     HOMEBREW_PREFIX="/usr/local"
-elif [ "${OS_NAME}" == "Linux" ] ; then
+elif [ "${OS_NAME}" == "Linux" ]; then
     HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
 else
     HOMEBREW_PREFIX="/opt/homebrew"
 fi
 
-
-if [ ! -x "${HOMEBREW_PREFIX}/bin/brew" ] ; then
+if [ ! -x "${HOMEBREW_PREFIX}/bin/brew" ]; then
     echo "Installing homebrew..." >&2
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
@@ -33,10 +32,12 @@ echo '1' | envchain -s brew HOMEBREW_NO_INSTALL_CLEANUP && echo
 chmod go-w "${HOMEBREW_PREFIX}/share"
 chmod -R go-w "${HOMEBREW_PREFIX}/share/zsh"
 
-cp "${HOME}/.local/share/fonts/SauceCodeBox.ttf" "${HOME}/Library/Fonts/"
+if [ "${OS_NAME}" == "Darwin" ]; then
 
-if [ "${OS_NAME}" == "Darwin" ] ; then
-echo "Installing Romanian Programmer's Keyboard layout..." >&2
+    echo "Installing SauceCodeBox font..." >&2
+    cp "${HOME}/.local/share/fonts/SauceCodeBox.ttf" "${HOME}/Library/Fonts/"
+
+    echo "Installing Romanian Programmer's Keyboard layout..." >&2
     # removing the previous version
     sudo rm -f "/Library/Keyboard Layouts/Romanian Programmers Mac.keylayout"
     sudo rm -f "/Library/Keyboard Layouts/Romanian Programmers Mac.icns"
@@ -47,7 +48,7 @@ echo "Installing Romanian Programmer's Keyboard layout..." >&2
     sudo find /System/Library/Caches -name "*IntlDataCache*" 2>/dev/null | sudo xargs rm -v
     sudo find /var -name "*IntlDataCache*" 2>/dev/null | sudo xargs rm -v
 
-    if [ -z "$(sudo launchctl list | grep -o com.github.calind.remapTilde)" ] ; then
+    if ! sudo launchctl list | grep -q -o com.github.calind.remapTilde; then
         echo "Remap titde key..." >&2
         sudo cp "${HOME}/.local/share/darwin/Library/LaunchDaemons/com.github.calind.remapTilde.plist" "/Library/LaunchDaemons/"
         sudo launchctl load "/Library/LaunchDaemons/com.github.calind.remapTilde.plist"
