@@ -16,7 +16,7 @@ vim.api.nvim_create_autocmd('BufEnter', {
         spinner:start('Generating commit message...')
 
         local config = vim.tbl_deep_extend('force', require('CopilotChat.config.prompts').Commit, {
-            model = 'gpt-5-mini',
+            model = 'claude-haiku-5.5',
             headless = true,
             callback = function(response)
                 -- Extract content between first code block markers
