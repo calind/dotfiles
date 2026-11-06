@@ -16,13 +16,13 @@ return {
         'zbirenbaum/copilot-cmp',
         {
             'CopilotC-Nvim/CopilotChat.nvim',
-            version = '^4',
+            -- version = '^4',
             build = 'make tiktoken',
         },
     },
     config = function()
         local copilot_node_command = nil
-        if vim.env.HOMEBREW_PREFIX and vim.env.HOMEBREW_PREFIX ~= "" then
+        if vim.env.HOMEBREW_PREFIX and vim.env.HOMEBREW_PREFIX ~= '' then
             copilot_node_command = vim.env.HOMEBREW_PREFIX .. '/opt/node@24/bin/node'
         end
 
@@ -49,6 +49,7 @@ return {
         prompts.Commit.prompt = commit_prompt
 
         require('CopilotChat').setup({
+            model = 'auto',
             headers = {
                 user = '##   User',
                 assistant = '##   Copilot',
